@@ -1,0 +1,7 @@
+{ 
+"ProgramPath": "test.py",
+"Test1": {
+	"input": [],
+	"output": ["xz"]
+}
+}
