@@ -2,16 +2,10 @@ import json
 import sys
 import subprocess
 import multiprocessing
-
-'''
-# Iterating through the json 
-# list 
-for i in data['emp_details']: 
-    print(i) 
-
-'''
+import re
 
 PROGRAM_PATH_JSON = "ProgramPath"
+TEST_JSON = "Test\s?\d*"
 
 class ProgramOutput:
 
@@ -39,17 +33,16 @@ class ProgramOutput:
 class Parser:
 	
 	def __init__(self, path):
+		self.data = None
 		self.read_config_file(path)
 		self.validate_config_file()
 
 
 	def read_config_file(self, path):
-
-		self.data = None
 		
 		try:
 			with open(path) as f:
-				self.data =data = json.load(f)
+				self.data = json.load(f)
 
 		except EnvironmentError:
 			print('Failed to open config file')
@@ -57,6 +50,16 @@ class Parser:
 	def validate_config_file(self):
 		if PROGRAM_PATH_JSON not in self.data:
 		        raise KeyError('{} not found in config file!'.format(PROGRAM_PATH_JSON))
+
+		flag = False
+		for key in self.data:
+			flag = re.compile(TEST_JSON).match(key)
+			if flag:
+				break
+
+		if not flag:
+		        raise KeyError('no tests found in config file!')
+
 	
 
 if __name__ == "__main__":
@@ -67,7 +70,7 @@ if __name__ == "__main__":
 		parser = Parser(path)
 		data = parser.data
 
-		path = data["ProgramPath"]
+		path = data[PROGRAM_PATH_JSON]
 		timeout = 1
 		ProgramOutput(path, timeout)
 
