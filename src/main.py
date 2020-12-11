@@ -14,6 +14,17 @@ TEST_OUTPUT_JSON = "output"
 TEST_PASSED_MSG = "Test passed successfully!"
 TEST_FAILED_MSG = "Test failed :("
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 class ProgramOutput:
 
 	def __init__(self, path, timeout, tests):
@@ -26,7 +37,7 @@ class ProgramOutput:
 			shell=True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		communication_result = pipe.communicate(input=test.input_data)
 		assert(len(communication_result) == 2)
-		stdout = communication_result[0].decode("utf-8") 
+		stdout = communication_result[0].decode("utf-8")[:-1]
 		stderr = communication_result[1].decode("utf-8") 
 		if (pipe.returncode == 0):
 			self.display_test_result(stdout, stderr, test)
@@ -44,12 +55,14 @@ class ProgramOutput:
 	@staticmethod
 	def display_test_result(stdout, stderr, test):
 
-		if stdout == test.input_to_str():
-			print(TEST_PASSED_MSG)
+		if stdout == test.output_to_str():
+			print("{}{}".format(bcolors.OKGREEN,TEST_PASSED_MSG))
 
-		print("Input data: \tExpected:\tResult:")
-		print(test.input_to_str(), "\t", test.output_to_str(), "\t", stdout)
+		else:
+			print("{}{}".format(bcolors.FAIL,TEST_FAILED_MSG))
 
+		print ("{:<12} {:<12} {:<12}".format("Input data:", "Expected:", "Result:"))
+		print ("{:<12} {:<12} {:<12}{}".format(test.input_to_str(), test.output_to_str(), stdout,bcolors.ENDC))
 		
 class Test:
 
