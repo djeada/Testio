@@ -11,6 +11,8 @@ TIMEOUT_JSON = "Timeout"
 TEST_JSON = "Test\s?\d*"
 TEST_INPUT_JSON = "input"
 TEST_OUTPUT_JSON = "output"
+TEST_PASSED_MSG = "Test passed successfully!"
+TEST_FAILED_MSG = "Test failed :("
 
 class ProgramOutput:
 
@@ -19,26 +21,34 @@ class ProgramOutput:
 		self.tests = tests
 		self.start_program(timeout)
 		
-	def run_tests(self):
+	def run_test(self, test):
 		pipe = subprocess.Popen("python3 {}".format(self.path), 
 			shell=True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-		communication_result = pipe.communicate(input=self.tests[0].input_data)
+		communication_result = pipe.communicate(input=test.input_data)
 		assert(len(communication_result) == 2)
-		self.stdout = communication_result[0].decode("utf-8") 
-		self.stderr = communication_result[1].decode("utf-8") 
+		stdout = communication_result[0].decode("utf-8") 
+		stderr = communication_result[1].decode("utf-8") 
 		if (pipe.returncode == 0):
-			print("stdout: ", self.stdout)
-			print("expected: ", self.tests[0].output)
+			self.display_test_result(stdout, stderr, test)
+		else:
+			pass
 
 	def start_program(self, timeout):
-	    p = multiprocessing.Process(target=self.run_tests)
-	    p.start()
-	    p.join(timeout)
-	    if p.is_alive():
-	        p.terminate()
+		for test in self.tests:
+			p = multiprocessing.Process(target=self.run_test(test))
+			p.start()
+			p.join(timeout)
+			if p.is_alive():
+			    p.terminate()
 
-	def display_test_result(self):
-		pass
+	@staticmethod
+	def display_test_result(stdout, stderr, test):
+
+		if stdout == test.input_to_str():
+			print(TEST_PASSED_MSG)
+
+		print("Input data: \tExpected:\tResult:")
+		print(test.input_to_str(), "\t", test.output_to_str(), "\t", stdout)
 
 		
 class Test:
@@ -46,6 +56,14 @@ class Test:
 	def __init__(self, input_data, output):
 		self.input_data = input_data
 		self.output = output
+
+	def input_to_str(self):
+		string = ''.join(data for data in self.input_data)
+		return string
+
+	def output_to_str(self):
+		string = '\n'.join(data for data in self.output)
+		return string
 
 class Parser:
 	
@@ -99,7 +117,7 @@ def parse_command_line_args(args):
 			return path
 	
 	else:
-		raise IndexError("You have to provide path to config file as argument!")   
+		raise IndexError("You have to provide path to config file as an argument!")   
 
 def main():
 	path = parse_command_line_args(sys.argv)
