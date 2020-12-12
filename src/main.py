@@ -13,6 +13,9 @@ TEST_INPUT_JSON = "input"
 TEST_OUTPUT_JSON = "output"
 TEST_PASSED_MSG = "Test passed successfully!"
 TEST_FAILED_MSG = "Test failed :("
+TEST_ERROR_MSG = "Your program contains errors :("
+TEST_TIMEOUT_MSG = "Your program runs for too long :("
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -25,37 +28,52 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
 class ProgramOutput:
 
 	def __init__(self, path, timeout, tests):
 		self.path = path
 		self.tests = tests
-		self.start_program(timeout)
+		self.timeout = timeout
+		self.start_program()
 		
 	def run_test(self, test):
 		pipe = subprocess.Popen("python3 {}".format(self.path), 
 			shell=True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-		communication_result = pipe.communicate(input=test.input_data)
+
+		communication_result = None
+
+		try:
+			communication_result = pipe.communicate(input=test.input_data, timeout=self.timeout)
+
+		except subprocess.TimeoutExpired:
+			self.display_timeout_msg()
+			return
+
 		assert(len(communication_result) == 2)
 		stdout = communication_result[0].decode("utf-8")[:-1]
 		stderr = communication_result[1].decode("utf-8") 
-		if (pipe.returncode == 0):
-			self.display_test_result(stdout, stderr, test)
-		else:
-			pass
+		ProgramOutput.display_test_result(stdout, stderr, test)
 
-	def start_program(self, timeout):
+	def start_program(self):
+
 		for test in self.tests:
 			p = multiprocessing.Process(target=self.run_test(test))
 			p.start()
-			p.join(timeout)
-			if p.is_alive():
-			    p.terminate()
+			p.join(self.timeout)
+			while p.is_alive():
+				p.terminate()
+				if not p.is_alive():
+					ProgramOutput.display_timeout_msg()
 
 	@staticmethod
 	def display_test_result(stdout, stderr, test):
 
-		if stdout == test.output_to_str():
+		if len(stderr) > 0:
+			ProgramOutput.display_error_msg(stderr)
+			return 
+
+		elif stdout == test.output_to_str():
 			print("{}{}".format(bcolors.OKGREEN,TEST_PASSED_MSG))
 
 		else:
@@ -63,6 +81,16 @@ class ProgramOutput:
 
 		print ("{:<12} {:<12} {:<12}".format("Input data:", "Expected:", "Result:"))
 		print ("{:<12} {:<12} {:<12}{}".format(test.input_to_str(), test.output_to_str(), stdout,bcolors.ENDC))
+
+	@staticmethod
+	def display_error_msg(stderr):
+		print("{}{}{}".format(bcolors.FAIL, TEST_ERROR_MSG, bcolors.ENDC))
+		print(stderr)
+
+	@staticmethod
+	def display_timeout_msg():
+		print("{}{}{}".format(bcolors.WARNING, TEST_TIMEOUT_MSG, bcolors.ENDC))
+
 		
 class Test:
 
@@ -77,6 +105,7 @@ class Test:
 	def output_to_str(self):
 		string = '\n'.join(data for data in self.output)
 		return string
+
 
 class Parser:
 	
@@ -115,6 +144,7 @@ class Parser:
 		if len(self.tests) == 0:
 		        raise KeyError('no tests found in config file!')
 
+
 def file_exists(path):
 
 	if not os.path.isfile(path):
@@ -132,6 +162,7 @@ def parse_command_line_args(args):
 	else:
 		raise IndexError("You have to provide path to config file as an argument!")   
 
+
 def main():
 	path = parse_command_line_args(sys.argv)
 	parser = Parser(path)
@@ -143,4 +174,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
