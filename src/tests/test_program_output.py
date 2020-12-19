@@ -2,7 +2,7 @@
 import unittest
 import sys
 from io import StringIO
-from test_parser import ProgramOutput
+from testio import ProgramOutput
 
 def test_output(function, expected_output):
 	saved_stdout = sys.stdout

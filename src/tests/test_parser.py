@@ -1,7 +1,7 @@
 
 import unittest
 
-from test_parser import Parser
+from testio import Parser
 
 class TestParser(unittest.TestCase):
 	def test_read_config_file(self):

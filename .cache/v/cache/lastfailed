@@ -1,0 +1,5 @@
+{
+  "src/tests/test_parser.py::TestParser": true, 
+  "src/tests/test_program_output.py::TestProgramOutput": true, 
+  "src/tests/test_program_output.py::test_output": true
+}
