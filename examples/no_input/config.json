@@ -1,0 +1,8 @@
+{ 
+"ProgramPath": "test.py",
+"Timeout": 1,
+"Test1": {
+	"input": "",
+	"output": ["xz"]
+}
+}
