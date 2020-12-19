@@ -1,23 +1,19 @@
 os: linux
 dist: xenial
 branches:
-  only:
-    - master
+	only:
+		- master
 before_install:
-  - sudo apt-get update --quiet
-  - sudo apt-get install graphviz -y
-  - pip install poetry
+	- pip install poetry
 language: python
 python:
-  - "3.7"
-  - "3.8"
+	- "3.7"
+	- "3.8"
 install:
-  - poetry install -v
-services:
-  - postgresql
+	- poetry install -v
 script:
-  - poetry run pytest --verbose
+	- poetry run pytest --verbose
 notifications:
-  email:
-    on_success: change
-    on_failure: always
+	email:
+		on_success: change
+		on_failure: always
