@@ -1,19 +1,19 @@
 os: linux
 dist: xenial
 branches:
-	only:
-		- master
+ only:
+  - master
 before_install:
-	- pip install poetry
+ - pip install poetry
 language: python
 python:
-	- "3.7"
-	- "3.8"
+ - "3.7"
+ - "3.8"
 install:
-	- poetry install -v
+ - poetry install -v
 script:
-	- poetry run pytest --verbose
+ - poetry run pytest --verbose
 notifications:
-	email:
-		on_success: change
-		on_failure: always
+ email:
+  on_success: change
+  on_failure: always
