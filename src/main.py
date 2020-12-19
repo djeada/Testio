@@ -31,20 +31,23 @@ class bcolors:
 
 class ProgramOutput:
 
-	def __init__(self, path, timeout, tests):
+	def __init__(self, path, timeout, tests, leading_path = None):
 		self.path = path
 		self.tests = tests
 		self.timeout = timeout
+		self.leading_path = leading_path
 		self.start_program()
 		
 	def run_test(self, test):
-		pipe = subprocess.Popen("python3 {}".format(self.path), 
-			shell=True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+		path = os.path.join(self.leading_path, self.path) if self.leading_path else self.path
+		pipe = subprocess.Popen("python3 {}".format(path), shell=True, stdout = subprocess.PIPE, 
+					stdin=subprocess.PIPE, stderr = subprocess.PIPE)
 
 		communication_result = None
 
 		try:
-			communication_result = pipe.communicate(input=test.input_data, timeout=self.timeout)
+			communication_result = pipe.communicate(input=test.input_to_str().encode(), 
+						timeout=self.timeout)
 
 		except subprocess.TimeoutExpired:
 			self.display_timeout_msg()
@@ -80,7 +83,9 @@ class ProgramOutput:
 			print("{}{}".format(bcolors.FAIL,TEST_FAILED_MSG))
 
 		print("{:<12} {:<12} {:<12}".format("Input data:", "Expected:", "Result:"))
-		print("{:<12} {:<12} {:<12}{}".format(test.input_to_str(), test.output_to_str(), stdout,bcolors.ENDC))
+		print("{:<12} {:<12} {:<12}{}".format(test.input_to_str().replace("\n", " "), 
+			test.output_to_str().replace("\n", " "), stdout.replace("\n", " "), 
+			bcolors.ENDC))
 
 	@staticmethod
 	def display_error_msg(stderr):
@@ -99,12 +104,18 @@ class Test:
 		self.output = output
 
 	def input_to_str(self):
-		string = ''.join(data for data in self.input_data)
-		return string
+		if not self.input_data:
+			return ''
+
+		string = ''.join(data + '\n' for data in self.input_data)
+		return string[:-1]
 
 	def output_to_str(self):
-		string = '\n'.join(data for data in self.output)
-		return string
+		if not self.output:
+			return ''
+
+		string = ''.join(data + '\n' for data in self.output)
+		return string[:-1]
 
 
 class Parser:
@@ -144,6 +155,10 @@ class Parser:
 		if len(self.tests) == 0:
 		        raise KeyError('no tests found in config file!')
 
+def get_leading_path(path):
+	head, tail = os.path.split(path)
+	return head
+
 
 def file_exists(path):
 
@@ -160,16 +175,17 @@ def parse_command_line_args(args):
 			return path
 	
 	else:
-		raise IndexError("You have to provide path to config file as an argument!")   
+		raise Exception("You have to provide path to config file as an argument!")   
 
 
 def test_program_output():
 	path = parse_command_line_args(sys.argv)
+	leading_path = get_leading_path(path)
 	parser = Parser(path)
 	data = parser.data
 	path = data[PROGRAM_PATH_JSON]
 	timeout = data[TIMEOUT_JSON]
-	ProgramOutput(path, timeout, parser.tests)
+	ProgramOutput(path, timeout, parser.tests, leading_path)
 
 if __name__ == "__main__":
 	test_program_output()
