@@ -1,1 +1,3 @@
-print("xz")kjk
+x = 0
+while(True)
+	x += 1

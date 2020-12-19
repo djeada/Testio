@@ -1,1 +1,2 @@
-print("xz")kjk
+number = int(input())
+print(number * 2)

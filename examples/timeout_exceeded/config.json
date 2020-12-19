@@ -1,5 +1,5 @@
 { 
-"ProgramPath": "test.py",
+"ProgramPath": "program.py",
 "Timeout": 1,
 "Test1": {
 	"input": "",

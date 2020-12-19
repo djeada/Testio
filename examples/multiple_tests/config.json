@@ -1,0 +1,17 @@
+{ 
+	"ProgramPath": "program.py",
+	"Timeout": 1,
+	"Test1": {
+		"input": ["2", "10"],
+		"output": ["12", "20"]
+	},
+	"Test2": {
+		"input": ["-5", "7"],
+		"output": ["2", "-35"]
+	},
+	"Test3": {
+		"input": ["0", "0"],
+		"output": ["0", "1"]
+	}
+
+}

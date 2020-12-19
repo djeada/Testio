@@ -1,8 +1,8 @@
 { 
-"ProgramPath": "test.py",
-"Timeout": 1,
-"Test1": {
-	"input": "",
-	"output": ["xz"]
-}
+	"ProgramPath": "program.py",
+	"Timeout": 1,
+	"Test1": {
+		"input": [],
+		"output": ["5"]
+	}
 }
