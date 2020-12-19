@@ -79,8 +79,8 @@ class ProgramOutput:
 		else:
 			print("{}{}".format(bcolors.FAIL,TEST_FAILED_MSG))
 
-		print ("{:<12} {:<12} {:<12}".format("Input data:", "Expected:", "Result:"))
-		print ("{:<12} {:<12} {:<12}{}".format(test.input_to_str(), test.output_to_str(), stdout,bcolors.ENDC))
+		print("{:<12} {:<12} {:<12}".format("Input data:", "Expected:", "Result:"))
+		print("{:<12} {:<12} {:<12}{}".format(test.input_to_str(), test.output_to_str(), stdout,bcolors.ENDC))
 
 	@staticmethod
 	def display_error_msg(stderr):
@@ -163,7 +163,7 @@ def parse_command_line_args(args):
 		raise IndexError("You have to provide path to config file as an argument!")   
 
 
-def main():
+def test_program_output():
 	path = parse_command_line_args(sys.argv)
 	parser = Parser(path)
 	data = parser.data
@@ -171,6 +171,5 @@ def main():
 	timeout = data[TIMEOUT_JSON]
 	ProgramOutput(path, timeout, parser.tests)
 
-
 if __name__ == "__main__":
-	main()
+	test_program_output()
