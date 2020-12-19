@@ -4,7 +4,7 @@ import sys
 from io import StringIO
 from testio import ProgramOutput
 
-def test_output(function, expected_output):
+def check_output(function, expected_output):
 	saved_stdout = sys.stdout
 	try:
 		out = StringIO()
