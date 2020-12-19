@@ -1,3 +1,3 @@
 x = 0
-while(True)
+while(True):
 	x += 1

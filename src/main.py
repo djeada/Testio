@@ -76,12 +76,13 @@ class ProgramOutput:
 
 	def display_test_results(self):
 		
-		print("{}Passed: {}/{} Failed: {}/{}{}".format(bcolors.WARNING, 
+		print("{}Passed: {}/{} Failed: {}/{}{}".format(bcolors.HEADER, 
 			self.successful_tests, len(self.results), 
 			len(self.results) - self.successful_tests, 
 			len(self.results), bcolors.ENDC))
 
-		assert(len(self.tests) >= len(self.results))
+		if len(self.tests) > len(self.results):
+			return
 
 		for test in self.tests:
 			stdout, stderr = self.results.pop(0)
@@ -214,9 +215,9 @@ def test_program_output():
 	path = data[PROGRAM_PATH_JSON]
 	timeout = data[TIMEOUT_JSON]
 	
-	if os.path.isdir(path):	
-		for _file in files_in_dir(path):
-			ProgramOutput(path, timeout, parser.tests, leading_path)
+	if os.path.isdir(os.path.join(leading_path, path)):
+		for _file in files_in_dir(os.path.join(leading_path, path)):
+			ProgramOutput(_file, timeout, parser.tests, os.path.join(leading_path, path))
 
 	else:
 		ProgramOutput(path, timeout, parser.tests, leading_path)
