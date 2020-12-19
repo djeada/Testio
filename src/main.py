@@ -165,18 +165,27 @@ class Parser:
 	
 	def validate_config_file(self):
 		if PROGRAM_PATH_JSON not in self.data:
-		        raise KeyError('{} not found in config file!'.format(PROGRAM_PATH_JSON))
+		        raise Exception('{} not found in config file!'.format(PROGRAM_PATH_JSON))
 
 		if PROGRAM_PATH_JSON not in self.data:
-		        raise KeyError('{} not found in config file!'.format(TIMEOUT_JSON))
+		        raise Exception('{} not found in config file!'.format(TIMEOUT_JSON))
 
 		if len(self.tests) == 0:
-		        raise KeyError('no tests found in config file!')
+		        raise Exception('no tests found in config file!')
 
 
 def get_leading_path(path):
 	head, tail = os.path.split(path)
 	return head
+
+
+def files_in_dir(path):
+	result = []
+	for _file in os.listdir(path):
+		if os.path.isfile(os.path.join(path, _file)) and not os.path.isdir(os.path.join(path, _file)):
+			result.append(_file)
+
+	return result
 
 
 def file_exists(path):
@@ -204,7 +213,13 @@ def test_program_output():
 	data = parser.data
 	path = data[PROGRAM_PATH_JSON]
 	timeout = data[TIMEOUT_JSON]
-	ProgramOutput(path, timeout, parser.tests, leading_path)
+	
+	if os.path.isdir(path):	
+		for _file in files_in_dir(path):
+			ProgramOutput(path, timeout, parser.tests, leading_path)
+
+	else:
+		ProgramOutput(path, timeout, parser.tests, leading_path)
 
 
 if __name__ == "__main__":
