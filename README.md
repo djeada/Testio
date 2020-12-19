@@ -6,6 +6,6 @@
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 </div>
 
-![Testio](https://github.com/djeada/Testio/blob/main/logo.png =200x)
+<img src="https://github.com/djeada/Testio/blob/main/logo.png" alt="Testio" width="200"/>
 
 Testio is a lightweight framework developed for testing console output.
