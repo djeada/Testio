@@ -2,7 +2,7 @@ os: linux
 dist: xenial
 branches:
  only:
-  - master
+  - main
 before_install:
  - pip install poetry
 language: python
