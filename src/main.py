@@ -32,15 +32,15 @@ class bcolors:
 class ProgramOutput:
 
 	def __init__(self, path, timeout, tests, leading_path = None):
-		self.path = path
+		self.path = os.path.join(leading_path, path) if leading_path else path
 		self.tests = tests
 		self.timeout = timeout
-		self.leading_path = leading_path
-		self.start_program()
+		self.results = []
+		self.successful_tests = 0
+		self.run()
 		
 	def run_test(self, test):
-		path = os.path.join(self.leading_path, self.path) if self.leading_path else self.path
-		pipe = subprocess.Popen("python3 {}".format(path), shell=True, stdout = subprocess.PIPE, 
+		pipe = subprocess.Popen("python3 {}".format(self.path), shell=True, stdout = subprocess.PIPE, 
 					stdin=subprocess.PIPE, stderr = subprocess.PIPE)
 
 		communication_result = None
@@ -56,9 +56,13 @@ class ProgramOutput:
 		assert(len(communication_result) == 2)
 		stdout = communication_result[0].decode("utf-8")[:-1]
 		stderr = communication_result[1].decode("utf-8") 
-		ProgramOutput.display_test_result(stdout, stderr, test)
 
-	def start_program(self):
+		if stdout == test.output_to_str() and not stderr:
+			self.successful_tests += 1
+
+		self.results.append((stdout, stderr))
+
+	def run(self):
 
 		for test in self.tests:
 			p = multiprocessing.Process(target=self.run_test(test))
@@ -68,6 +72,20 @@ class ProgramOutput:
 				p.terminate()
 				if not p.is_alive():
 					ProgramOutput.display_timeout_msg()
+		self.display_test_results()
+
+	def display_test_results(self):
+		
+		print("{}Passed: {}/{} Failed: {}/{}{}".format(bcolors.WARNING, 
+			self.successful_tests, len(self.results), 
+			len(self.results) - self.successful_tests, 
+			len(self.results), bcolors.ENDC))
+
+		assert(len(self.tests) >= len(self.results))
+
+		for test in self.tests:
+			stdout, stderr = self.results.pop(0)
+			ProgramOutput.display_test_result(stdout, stderr, test)
 
 	@staticmethod
 	def display_test_result(stdout, stderr, test):
@@ -155,6 +173,7 @@ class Parser:
 		if len(self.tests) == 0:
 		        raise KeyError('no tests found in config file!')
 
+
 def get_leading_path(path):
 	head, tail = os.path.split(path)
 	return head
@@ -186,6 +205,7 @@ def test_program_output():
 	path = data[PROGRAM_PATH_JSON]
 	timeout = data[TIMEOUT_JSON]
 	ProgramOutput(path, timeout, parser.tests, leading_path)
+
 
 if __name__ == "__main__":
 	test_program_output()
