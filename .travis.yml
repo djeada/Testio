@@ -5,6 +5,7 @@ branches:
   - main
 before_install:
  - pip install poetry
+ - pip install fpdf
 language: python
 python:
  - "3.7"
