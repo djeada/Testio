@@ -5,6 +5,7 @@ import multiprocessing
 import re
 import os
 import errno
+import fpdf
 
 PROGRAM_PATH_JSON = "ProgramPath"
 TIMEOUT_JSON = "Timeout"
@@ -50,7 +51,7 @@ class ProgramOutput:
 						timeout=self.timeout)
 
 		except subprocess.TimeoutExpired:
-			self.display_timeout_msg()
+			self.results.append(('Timeout', ''))
 			return
 
 		assert(len(communication_result) == 2)
@@ -75,36 +76,64 @@ class ProgramOutput:
 		self.display_test_results()
 
 	def display_test_results(self):
-		
-		print("{}Passed: {}/{} Failed: {}/{}{}".format(bcolors.HEADER, 
+
+		pdf = fpdf.FPDF(format='letter')
+		pdf.add_page()
+		pdf.set_font("Arial", size=12)
+
+		msg = "{}Results for {} Passed: {}/{} Failed: {}/{}{}".format(
+			bcolors.HEADER, os.path.basename(self.path),
 			self.successful_tests, len(self.results), 
 			len(self.results) - self.successful_tests, 
-			len(self.results), bcolors.ENDC))
+			len(self.results), bcolors.ENDC)
+
+		print(msg)
+		pdf.multi_cell(0, 5, msg[5:-3] + '\n')
 
 		if len(self.tests) > len(self.results):
 			return
 
 		for test in self.tests:
 			stdout, stderr = self.results.pop(0)
-			ProgramOutput.display_test_result(stdout, stderr, test)
+			ProgramOutput.display_test_result(stdout, stderr, test, pdf)
+
+		pdf.output("test_result_{}.pdf".format(os.path.splitext(os.path.basename(self.path))[0]))
 
 	@staticmethod
-	def display_test_result(stdout, stderr, test):
+	def display_test_result(stdout, stderr, test, pdf = None):
 
 		if len(stderr) > 0:
 			ProgramOutput.display_error_msg(stderr)
+			if pdf:
+				pdf.multi_cell(0, 5, stderr + '\n')
 			return 
 
 		elif stdout == test.output_to_str():
-			print("{}{}".format(bcolors.OKGREEN,TEST_PASSED_MSG))
+			print("{}{}".format(bcolors.OKGREEN, TEST_PASSED_MSG))
+			if pdf:
+				pdf.multi_cell(0, 5, TEST_PASSED_MSG + '\n')
+
+		elif stdout == 'Timeout':
+			print("{}{}".format(bcolors.WARNING, TEST_TIMEOUT_MSG))
+			if pdf:
+				pdf.multi_cell(0, 5, TEST_TIMEOUT_MSG + '\n')
 
 		else:
-			print("{}{}".format(bcolors.FAIL,TEST_FAILED_MSG))
+			print("{}{}".format(bcolors.FAIL, TEST_FAILED_MSG))
+			if pdf:
+				pdf.multi_cell(0, 5, TEST_FAILED_MSG + '\n')
 
-		print("{:<12} {:<12} {:<12}".format("Input data:", "Expected:", "Result:"))
-		print("{:<12} {:<12} {:<12}{}".format(test.input_to_str().replace("\n", " "), 
-			test.output_to_str().replace("\n", " "), stdout.replace("\n", " "), 
-			bcolors.ENDC))
+		msg1 = "{:<15} {:<15} {:<15}".format("Input data:", "Expected:", "Result:")
+		msg2 = "{:<15} {:<15} {:<15}{}".format(test.input_to_str().replace("\n", " "), 
+				test.output_to_str().replace("\n", " "), stdout.replace("\n", " "), 
+				bcolors.ENDC)
+
+		print(msg1)
+		print(msg2)
+
+		if pdf:
+				for msg in (msg1, msg2[:-3]):
+					pdf.multi_cell(0, 5, msg + '\n')
 
 	@staticmethod
 	def display_error_msg(stderr):
