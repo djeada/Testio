@@ -46,8 +46,6 @@ class ProgramOutput:
 		pipe = subprocess.Popen("python3 {}".format(self.path), shell=True, stdout = subprocess.PIPE, 
 					stdin=subprocess.PIPE, stderr = subprocess.PIPE)
 
-		communication_result = None
-
 		try:
 			communication_result = pipe.communicate(input=test.input_to_str().encode(), 
 						timeout=self.timeout)
