@@ -7,32 +7,14 @@ import os
 import errno
 import fpdf
 
-PROGRAM_PATH_JSON = "ProgramPath"
-TIMEOUT_JSON = "Timeout"
-TEST_JSON = "Test\s?\d*"
-TEST_INPUT_JSON = "input"
-TEST_OUTPUT_JSON = "output"
-TEST_PASSED_MSG = "Test passed successfully!"
-TEST_FAILED_MSG = "Test failed :("
-TEST_ERROR_MSG = "Your program contains errors :("
-TEST_TIMEOUT_MSG = "Your program runs for too long :("
-
-
-class bcolors:
-    HEADER = "\033[95m"
-    OKBLUE = "\033[94m"
-    OKCYAN = "\033[96m"
-    OKGREEN = "\033[92m"
-    WARNING = "\033[93m"
-    FAIL = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
+from src.string_consts import COLOR_CODES, TEST_TIMEOUT_MSG, TEST_PASSED_MSG, TEST_FAILED_MSG, TEST_ERROR_MSG, \
+    TEST_JSON, \
+    TEST_INPUT_JSON, TEST_OUTPUT_JSON, PROGRAM_PATH_JSON, TIMEOUT_JSON
 
 
 class ProgramOutput:
     """
-		Displays the result of a test.
+	Displays the result of a test.
 	"""
 
     def __init__(self, path, timeout, tests, leading_path=None):
@@ -89,13 +71,13 @@ class ProgramOutput:
         pdf.set_font("Arial", size=12)
 
         msg = "{}Results for {} Passed: {}/{} Failed: {}/{}{}".format(
-            bcolors.HEADER,
+            COLOR_CODES.HEADER,
             os.path.basename(self.path),
             self.successful_tests,
             len(self.results),
             len(self.results) - self.successful_tests,
             len(self.results),
-            bcolors.ENDC,
+            COLOR_CODES.ENDC,
         )
 
         print(msg)
@@ -124,17 +106,17 @@ class ProgramOutput:
             return
 
         elif stdout == test.output_to_str():
-            print("{}{}".format(bcolors.OKGREEN, TEST_PASSED_MSG))
+            print("{}{}".format(COLOR_CODES.OKGREEN, TEST_PASSED_MSG))
             if pdf:
                 pdf.multi_cell(0, 5, TEST_PASSED_MSG + "\n")
 
         elif stdout == "Timeout":
-            print("{}{}".format(bcolors.WARNING, TEST_TIMEOUT_MSG))
+            print("{}{}".format(COLOR_CODES.WARNING, TEST_TIMEOUT_MSG))
             if pdf:
                 pdf.multi_cell(0, 5, TEST_TIMEOUT_MSG + "\n")
 
         else:
-            print("{}{}".format(bcolors.FAIL, TEST_FAILED_MSG))
+            print("{}{}".format(COLOR_CODES.FAIL, TEST_FAILED_MSG))
             if pdf:
                 pdf.multi_cell(0, 5, TEST_FAILED_MSG + "\n")
 
@@ -143,7 +125,7 @@ class ProgramOutput:
             test.input_to_str().replace("\n", " "),
             test.output_to_str().replace("\n", " "),
             stdout.replace("\n", " "),
-            bcolors.ENDC,
+            COLOR_CODES.ENDC,
         )
 
         print(msg1)
@@ -155,12 +137,12 @@ class ProgramOutput:
 
     @staticmethod
     def display_error_msg(stderr):
-        print("{}{}{}".format(bcolors.FAIL, TEST_ERROR_MSG, bcolors.ENDC))
+        print("{}{}{}".format(COLOR_CODES.FAIL, TEST_ERROR_MSG, COLOR_CODES.ENDC))
         print(stderr)
 
     @staticmethod
     def display_timeout_msg():
-        print("{}{}{}".format(bcolors.WARNING, TEST_TIMEOUT_MSG, bcolors.ENDC))
+        print("{}{}{}".format(COLOR_CODES.WARNING, TEST_TIMEOUT_MSG, COLOR_CODES.ENDC))
 
 
 class Test:
@@ -229,7 +211,7 @@ def files_in_dir(path):
     result = []
     for _file in os.listdir(path):
         if os.path.isfile(os.path.join(path, _file)) and not os.path.isdir(
-            os.path.join(path, _file)
+                os.path.join(path, _file)
         ):
             result.append(_file)
 
@@ -237,7 +219,6 @@ def files_in_dir(path):
 
 
 def file_exists(path):
-
     if not os.path.isfile(path):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
 
