@@ -6,7 +6,7 @@
 <a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 
-<img src="https://github.com/djeada/Testio/blob/main/logo.png" alt="Testio" width="200"/>
+<img src="https://github.com/djeada/Testio/blob/main/resources/logo.png" alt="Testio" width="200"/>
 
 Testio is a lightweight framework designed for testing applications' standard output. 
 
