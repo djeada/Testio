@@ -31,7 +31,9 @@ class bcolors:
 
 
 class ProgramOutput:
-
+	"""
+		Displays the result of a test.
+	"""
 	def __init__(self, path, timeout, tests, leading_path = None):
 		self.path = os.path.join(leading_path, path) if leading_path else path
 		self.tests = tests
