@@ -1,6 +1,6 @@
 import unittest
 
-from src.main import Parser
+from src.main import ConfigParser
 
 
 class TestParser(unittest.TestCase):
