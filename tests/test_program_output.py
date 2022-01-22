@@ -1,10 +1,12 @@
 import unittest
 import sys
 from io import StringIO
-from testio import ProgramOutput
+from src.testio import ProgramOutput
 
 
 def check_output(function, expected_output):
+    """
+    """
     saved_stdout = sys.stdout
     try:
         out = StringIO()
