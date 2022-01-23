@@ -112,7 +112,7 @@ class ConfigParser:
             raise ValueError("No tests are specified in config file!")
 
         for test in tests_data:
-            if not TEST_INPUT_JSON in test:
+            if TEST_INPUT_JSON not in test:
                 raise ValueError(f"Test {test} does not contain required field {TEST_INPUT_JSON}!")
-            if not TEST_OUTPUT_JSON in test:
+            if TEST_OUTPUT_JSON not in test:
                 raise ValueError(f"Test {test} does not contain required field {TEST_OUTPUT_JSON}!")

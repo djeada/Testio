@@ -32,7 +32,16 @@ def main() -> None:
     """
     path = parse_command_line_args(sys.argv)
     parser = ConfigParser(path)
-    ProgramOutput(parser.path_to_exe, parser.timeout, parser.tests, path)
+    path_to_exe = Path(parser.path_to_exe) if Path(parser.path_to_exe).is_absolute() else path.parents[0] / Path(parser.path_to_exe)
+
+    for test in parser.tests:
+        program_output = ProgramOutput(path_to_exe, test.input, parser.timeout)
+        if program_output.result.stdout is not None:
+            print(program_output.result.stdout)
+        if program_output.result.stderr is not None:
+            print(program_output.result.stderr)
+        if program_output.result.timeout:
+            print("Timeout!")
 
 
 if __name__ == "__main__":
