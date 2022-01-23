@@ -17,7 +17,7 @@ def files_in_dir(path: str) -> list:
     result = []
     for _file in os.listdir(path):
         if os.path.isfile(os.path.join(path, _file)) and not os.path.isdir(
-                os.path.join(path, _file)
+            os.path.join(path, _file)
         ):
             result.append(_file)
 
@@ -38,7 +38,7 @@ def strip_carriage_return(text: str) -> str:
     """
     Strips the carriage return from the given text.
     """
-    if text and text[-1] == '\r':
+    if text and text[-1] == "\r":
         return text[:-1]
 
     return text

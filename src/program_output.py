@@ -15,6 +15,7 @@ class ExecutionResult:
     """
     Class that represents the result of the execution of a program.
     """
+
     stdout: Optional[str] = None
     stderr: Optional[str] = None
     timeout: bool = False
@@ -56,7 +57,9 @@ class ProgramOutput:
         If the program times out, the timeout variable is set to True.
         """
         pipe = subprocess.Popen(
-            "C:\\Users\\Adam\\Documents\\Programowanie\\Testio\\venv\\Scripts\\python.exe {}".format(self.path),
+            "C:\\Users\\Adam\\Documents\\Programowanie\\Testio\\venv\\Scripts\\python.exe {}".format(
+                self.path
+            ),
             shell=True,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,

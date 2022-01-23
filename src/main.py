@@ -1,12 +1,9 @@
 import sys
-import os
 from pathlib import Path
 from typing import List, Optional
 
-from src.misc import file_exists, get_leading_path, files_in_dir
 from src.parsers import ConfigParser
 from src.program_output import ProgramOutput
-from src.string_consts import PROGRAM_PATH_JSON, TIMEOUT_JSON
 
 
 def parse_command_line_args(args: List[str]) -> Optional[Path]:
@@ -32,7 +29,11 @@ def main() -> None:
     """
     path = parse_command_line_args(sys.argv)
     parser = ConfigParser(path)
-    path_to_exe = Path(parser.path_to_exe) if Path(parser.path_to_exe).is_absolute() else path.parents[0] / Path(parser.path_to_exe)
+    path_to_exe = (
+        Path(parser.path_to_exe)
+        if Path(parser.path_to_exe).is_absolute()
+        else path.parents[0] / Path(parser.path_to_exe)
+    )
 
     for test in parser.tests:
         program_output = ProgramOutput(path_to_exe, test.input, parser.timeout)

@@ -4,11 +4,16 @@ This module defines Parser class.
 
 import json
 import re
-from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional
+from typing import List, Optional
 
-from src.string_consts import TEST_JSON, TEST_INPUT_JSON, TEST_OUTPUT_JSON, PROGRAM_PATH_JSON, TIMEOUT_JSON
+from src.string_consts import (
+    TEST_JSON,
+    TEST_INPUT_JSON,
+    TEST_OUTPUT_JSON,
+    PROGRAM_PATH_JSON,
+    TIMEOUT_JSON,
+)
 
 
 class Test:
@@ -18,7 +23,9 @@ class Test:
     each of them can be empty.
     """
 
-    def __init__(self, test_input: Optional[List[str]], test_output: Optional[List[str]]):
+    def __init__(
+        self, test_input: Optional[List[str]], test_output: Optional[List[str]]
+    ):
         self._input = test_input
         self._output = test_output
 
@@ -92,8 +99,15 @@ class ConfigParser:
         """
         Parse tests from config file.
         """
-        tests_data = [file_content[key] for key in file_content if re.compile(TEST_JSON).match(key)]
-        self.tests = [Test(test_data[TEST_INPUT_JSON], test_data[TEST_OUTPUT_JSON]) for test_data in tests_data]
+        tests_data = [
+            file_content[key]
+            for key in file_content
+            if re.compile(TEST_JSON).match(key)
+        ]
+        self.tests = [
+            Test(test_data[TEST_INPUT_JSON], test_data[TEST_OUTPUT_JSON])
+            for test_data in tests_data
+        ]
 
     @staticmethod
     def validate_config_file(file_content) -> None:
@@ -106,13 +120,21 @@ class ConfigParser:
         if PROGRAM_PATH_JSON not in file_content:
             raise ValueError(f"{TIMEOUT_JSON} is not specified in config file!")
 
-        tests_data = [file_content[key] for key in file_content if re.compile(TEST_JSON).match(key)]
+        tests_data = [
+            file_content[key]
+            for key in file_content
+            if re.compile(TEST_JSON).match(key)
+        ]
 
         if len(tests_data) == 0:
             raise ValueError("No tests are specified in config file!")
 
         for test in tests_data:
             if TEST_INPUT_JSON not in test:
-                raise ValueError(f"Test {test} does not contain required field {TEST_INPUT_JSON}!")
+                raise ValueError(
+                    f"Test {test} does not contain required field {TEST_INPUT_JSON}!"
+                )
             if TEST_OUTPUT_JSON not in test:
-                raise ValueError(f"Test {test} does not contain required field {TEST_OUTPUT_JSON}!")
+                raise ValueError(
+                    f"Test {test} does not contain required field {TEST_OUTPUT_JSON}!"
+                )

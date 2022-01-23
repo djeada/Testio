@@ -4,10 +4,16 @@
 import os
 import fpdf
 
-from src.string_consts import COLOR_CODES, TEST_TIMEOUT_MSG, TEST_PASSED_MSG, TEST_FAILED_MSG, TEST_ERROR_MSG
+from src.string_consts import (
+    COLOR_CODES,
+    TEST_TIMEOUT_MSG,
+    TEST_PASSED_MSG,
+    TEST_FAILED_MSG,
+    TEST_ERROR_MSG,
+)
+
 
 class OutputComparator:
-
     def __init__(self):
         pass
 
