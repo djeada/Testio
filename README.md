@@ -13,3 +13,7 @@ Testio is a lightweight framework designed for testing applications' standard ou
 # Purpose
 
 Main purpose is to help highschool and college teachers automate testing of students code. Instead of running each program individually and manulay provide input, teacher can specifiy inputs and expected outputs in config files and then only check the results. 
+
+# Design 
+
+![Alt text](https://github.com/djeada/Testio/blob/main/resources/diagram.png)
