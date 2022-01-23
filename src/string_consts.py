@@ -2,6 +2,8 @@
 
 """
 
+# convert to dataclass
+
 PROGRAM_PATH_JSON: str = "ProgramPath"
 TIMEOUT_JSON: str = "Timeout"
 TEST_JSON: str = "Test\s?\d*"
