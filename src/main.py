@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
+from src.output_comparator import OutputComparator, TestResult
 from src.parsers import ConfigParser
 from src.program_output import ProgramOutput
 
@@ -35,14 +36,21 @@ def main() -> None:
         else path.parents[0] / Path(parser.path_to_exe)
     )
 
+    test_results = []
+
     for test in parser.tests:
         program_output = ProgramOutput(path_to_exe, test.input, parser.timeout)
-        if program_output.result.stdout is not None:
-            print(program_output.result.stdout)
-        if program_output.result.stderr is not None:
-            print(program_output.result.stderr)
-        if program_output.result.timeout:
-            print("Timeout!")
+        result_stdout = program_output.result.stdout
+        result_stderr = program_output.result.stderr
+        result_timeout = program_output.result.timeout
+        test_results.append(
+            TestResult(
+                test.input, test.output, result_stdout, result_stderr, result_timeout
+            )
+        )
+
+    output_comparator = OutputComparator(test_results, path_to_exe)
+    output_comparator.display_test_results()
 
 
 if __name__ == "__main__":

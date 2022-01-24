@@ -16,9 +16,7 @@ TEST_TIMEOUT_MSG: str = "Your program runs for too long :("
 
 
 class COLOR_CODES:
-    """
-
-    """
+    """ """
 
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"

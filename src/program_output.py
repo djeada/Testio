@@ -23,8 +23,8 @@ class ExecutionResult:
 
 class ProgramOutput:
     """
-	Displays the result of a test.
-	"""
+    Displays the result of a test.
+    """
 
     def __init__(self, path_to_exe, input_data, timeout):
         self.path = path_to_exe

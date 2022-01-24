@@ -42,7 +42,7 @@ class Test:
 
     @input.setter
     def input(self, value: List[str]) -> None:
-        """	
+        """
         :param value: Input data.
         :return: None
         """
@@ -61,7 +61,7 @@ class Test:
 
     @output.setter
     def output(self, value: List[str]) -> None:
-        """	
+        """
         :param value: Output data.
         :return: None
         """
@@ -70,7 +70,7 @@ class Test:
 
 class ConfigParser:
     """
-    Parser used for parsing config file 
+    Parser used for parsing config file
     and creating tests from it.
     """
 
