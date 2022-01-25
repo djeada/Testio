@@ -16,8 +16,8 @@ class ExecutionResult:
     Class that represents the result of the execution of a program.
     """
 
-    stdout: Optional[str] = None
-    stderr: Optional[str] = None
+    stdout: Optional[str] = ''
+    stderr: Optional[str] = ''
     timeout: bool = False
 
 
@@ -46,9 +46,9 @@ class ProgramOutput:
         while p.is_alive():
             p.terminate()
             if not p.is_alive():
-                self.result = ExecutionResult(timeout=True)
                 break
-        self.result = queue.get()
+        result = queue.get()
+        self.result = result if len([x for x in [result.stdout, result.stderr, result.timeout] if x]) != 0 else ExecutionResult(timeout=True)
 
     def execute_program(self, queue) -> None:
         """

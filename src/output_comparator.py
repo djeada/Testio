@@ -26,12 +26,11 @@ class TestResult:
     """
     Class that represents the result of a test.
     """
-
     input: str
     output: str
-    stdout: Optional[str] = None
-    stderr: Optional[str] = None
-    timeout: Optional[bool] = None
+    stdout: Optional[str] = ''
+    stderr: Optional[str] = ''
+    timeout: Optional[bool] = False
 
     def __post_init__(self) -> None:
         if len([x for x in [self.stdout, self.stderr, self.timeout] if x]) != 1:
@@ -53,9 +52,9 @@ class OutputComparator:
         self.successful_tests = [
             test
             for test in self.test_results
-            if test.stdout is not None and test.stdout == test.output
+            if test.stdout and test.stdout == test.output
         ]
-        self.failed_tests = [test for test in self.test_results if test.stdout is None]
+        self.failed_tests = [test for test in self.test_results if not (test.stdout and test.stdout == test.output)]
 
         self.msg = f"{COLOR_CODES.HEADER}Results for {self.path.name} \n" \
                    f"Passed: {len(self.successful_tests)}/{len(self.test_results)} " \
@@ -100,7 +99,7 @@ class OutputComparator:
         Additionally, a pdf is created with the result of the test.
         """
 
-        if test.stdout is not None:
+        if test.stdout:
             if test.stdout == test.output:
                 color = COLOR_CODES.SUCCESS
                 msg = f"{color}{i}.{REPORT_MESSAGES.TEST_PASSED}{COLOR_CODES.END}"
@@ -109,9 +108,9 @@ class OutputComparator:
                 color = COLOR_CODES.FAIL
                 msg = f"{color}{i}.{REPORT_MESSAGES.TEST_FAILED}{COLOR_CODES.END}"
                 print(msg)
-                if test.stderr:
-                    color = COLOR_CODES.FAIL
-                    print(f"{color}Error: {test.stderr}{COLOR_CODES.END}")
+        elif test.stderr:
+            color = COLOR_CODES.FAIL
+            print(f"{color}Error: {test.stderr}{COLOR_CODES.END}")
 
         else:
             color = COLOR_CODES.WARNING
@@ -142,7 +141,7 @@ class OutputComparator:
         """
         pdf.set_font("Arial", size=12)
 
-        if test.stdout is not None:
+        if test.stdout:
             if test.stdout == test.output:
                 msg = f"{i}.{REPORT_MESSAGES.TEST_PASSED}"
                 pdf.set_text_color(*HEX_CODES.SUCCESS)
@@ -151,10 +150,10 @@ class OutputComparator:
                 msg = f"{i}.{REPORT_MESSAGES.TEST_FAILED}"
                 pdf.set_text_color(*HEX_CODES.FAIL)
                 #pdf.multi_cell(0, 5, msg)
-                if test.stderr:
-                    pdf.set_text_color(*HEX_CODES.FAIL)
-                    msg += f"\nError: {test.stderr}"
-                    #pdf.multi_cell(0, 5, f"Error: {test.stderr}")
+        elif test.stderr:
+            pdf.set_text_color(*HEX_CODES.FAIL)
+            msg = f"Error: {test.stderr}"
+            #pdf.multi_cell(0, 5, f"Error: {test.stderr}")
         else:
             msg = f"{i}.{REPORT_MESSAGES.TIMEOUT}"
             pdf.set_text_color(*HEX_CODES.WARNING)
