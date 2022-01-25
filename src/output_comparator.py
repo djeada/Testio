@@ -58,21 +58,21 @@ class OutputComparator:
         self.failed_tests = [test for test in self.test_results if test.stdout is None]
 
         self.msg = f"{COLOR_CODES.HEADER}Results for {self.path.name} \n" \
-              f"Passed: {len(self.successful_tests)}/{len(self.test_results)} " \
-              f"Failed: {len(self.test_results) - len(self.successful_tests)}" \
-              f"/{len(self.test_results)}{COLOR_CODES.END}"
+                   f"Passed: {len(self.successful_tests)}/{len(self.test_results)} " \
+                   f"Failed: {len(self.test_results) - len(self.successful_tests)}" \
+                   f"/{len(self.test_results)}{COLOR_CODES.END}"
 
     def display_test_results(self) -> None:
         """
         Displays the results of the tests.
         """
 
-        print( self.msg )
+        print(self.msg)
 
         for test in self.test_results:
             self.display_test_result(test)
 
-    def generate_pdf_report(self):
+    def generate_pdf_report(self) -> None:
         """
         Generates a pdf report. The report contains the results of the tests.
         """
@@ -89,7 +89,7 @@ class OutputComparator:
         pdf.output(f"test_result_{self.path.stem}.pdf")
 
     @staticmethod
-    def display_test_result(test) -> None:
+    def display_test_result(test: TestResult) -> None:
         """
         Displays the result of a test.
         There are three possible results:
@@ -122,7 +122,7 @@ class OutputComparator:
         print("{: >20} {: >20} {: >20}{}".format(test.input, test.output, test.stdout, COLOR_CODES.END))
 
     @staticmethod
-    def append_test_to_pdf(test, pdf):
+    def append_test_to_pdf(test: TestResult, pdf: PDF) -> None:
         """
         Appends a test to a pdf. The test is displayed in a table.
         """
@@ -161,7 +161,7 @@ class OutputComparator:
                         </table>""")
 
     @staticmethod
-    def display_error_msg(message):
+    def display_error_msg(message: str) -> None:
         """
         Displays the error message.
         """
@@ -169,7 +169,7 @@ class OutputComparator:
         print(message)
 
     @staticmethod
-    def display_timeout_msg():
+    def display_timeout_msg() -> None:
         """
         Displays a message when a test times out.
         """

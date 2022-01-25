@@ -1,5 +1,5 @@
 """
-This module defines Parser class.
+This module defines Parser class for parsing config file.
 """
 
 import json

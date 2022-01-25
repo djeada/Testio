@@ -1,3 +1,7 @@
+"""
+Main module. It is used to run the program.
+"""
+
 import sys
 from pathlib import Path
 from typing import List, Optional
