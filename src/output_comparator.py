@@ -5,15 +5,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, List
 
-import fpdf
+from fpdf import FPDF, HTMLMixin
 
 from src.string_consts import (
-    COLOR_CODES,
-    TEST_TIMEOUT_MSG,
-    TEST_PASSED_MSG,
-    TEST_FAILED_MSG,
-    TEST_ERROR_MSG,
+    COLOR_CODES, HEX_CODES, REPORT_MESSAGES
 )
+
+
+class PDF(FPDF, HTMLMixin):
+    pass
 
 
 @dataclass
@@ -29,7 +29,6 @@ class TestResult:
     timeout: Optional[bool] = None
 
     def __post_init__(self) -> None:
-
         if len([x for x in [self.stdout, self.stderr, self.timeout] if x]) != 1:
             raise Exception(
                 "You have to provide exactly one of the following parameters: stdout, stderr, timeout"
@@ -42,6 +41,7 @@ class OutputComparator:
     The results are displayed on the standard output.
     A pdf report is also created and saved in the same directory as the application.     
     """
+
     def __init__(self, test_results: List[TestResult], path_to_exe: Path) -> None:
         self.test_results = test_results
         self.path = path_to_exe
@@ -57,17 +57,18 @@ class OutputComparator:
         Displays the results of the tests.
         """
 
-        pdf = fpdf.FPDF(format="letter")
+        pdf = PDF(format="letter")
         pdf.add_page()
         pdf.set_font("Arial", size=12)
 
-        msg = f"{COLOR_CODES.HEADER}Results for {self.path.name} " \
-              f"Passed: { len(self.successful_tests)}/{len(self.test_results)} " \
+        msg = f"{COLOR_CODES.HEADER}Results for {self.path.name} \n" \
+              f"Passed: {len(self.successful_tests)}/{len(self.test_results)} " \
               f"Failed: {len(self.test_results) - len(self.successful_tests)}" \
-              f"/{len(self.test_results)}{COLOR_CODES.ENDC}"
+              f"/{len(self.test_results)}{COLOR_CODES.END}"
 
         print(msg)
-        pdf.multi_cell(0, 5, msg[5:-3] + "\n")
+        pdf.multi_cell(0, 5, msg[5:-3].split("\n")[0] + "\n")
+        pdf.multi_cell(0, 5, msg[5:-3].split("\n")[1] + "\n")
 
         for test in self.test_results:
             self.display_test_result(test, pdf)
@@ -85,48 +86,66 @@ class OutputComparator:
         Different colors are used for different results.
         Additionally, a pdf is created with the result of the test.
         """
-        if len(test.stderr) > 0:
-            OutputComparator.display_error_msg(test.stderr)
-            if pdf:
-                pdf.multi_cell(0, 5, test.stderr + "\n")
-            return
 
-        elif test.stdout == test.output:
-            print("{}{}".format(COLOR_CODES.OKGREEN, TEST_PASSED_MSG))
-            if pdf:
-                pdf.multi_cell(0, 5, TEST_PASSED_MSG + "\n")
-
-        elif test.stdout == "Timeout":
-            print("{}{}".format(COLOR_CODES.WARNING, TEST_TIMEOUT_MSG))
-            if pdf:
-                pdf.multi_cell(0, 5, TEST_TIMEOUT_MSG + "\n")
-
+        if test.stdout is not None:
+            if test.stdout == test.output:
+                color = COLOR_CODES.SUCCESS
+                msg = f"{color}All tests passed{COLOR_CODES.END}"
+                print(msg)
+                if pdf is not None:
+                    pdf.set_text_color(*HEX_CODES.SUCCESS)
+                    pdf.multi_cell(0, 5, msg[5:-3] + "\n")
+            else:
+                color = COLOR_CODES.FAIL
+                msg = f"{color}Some tests failed{COLOR_CODES.END}"
+                print(msg)
+                if pdf is not None:
+                    pdf.set_text_color(*HEX_CODES.FAIL)
+                    pdf.multi_cell(0, 5, msg[5:-3] + "\n")
+                if test.stderr is not None:
+                    color = COLOR_CODES.FAIL
+                    print(f"{color}Error: {test.stderr}{COLOR_CODES.END}")
+                    if pdf is not None:
+                        pdf.set_text_color(*HEX_CODES.FAIL)
+                        pdf.multi_cell(0, 5, f"{color}Error: {test.stderr}{COLOR_CODES.END}\n")
         else:
-            print("{}{}".format(COLOR_CODES.FAIL, TEST_FAILED_MSG))
-            if pdf:
-                pdf.multi_cell(0, 5, TEST_FAILED_MSG + "\n")
+            color = COLOR_CODES.WARNING
+            msg = f"{color}Test timed out{COLOR_CODES.END}"
+            print(msg)
+            if pdf is not None:
+                pdf.set_text_color(*HEX_CODES.WARNING)
+                pdf.multi_cell(0, 5, msg[5:-3] + "\n")
 
-        msg1 = "{:<20} {:<20} {:<20}".format("Input data:", "Expected:", "Result:")
-        msg2 = "{:<20} {:<20} {:<20}{}".format(
-            test.input.replace("\n", " "),
-            test.output.replace("\n", " "),
-            test.stdout.replace("\n", " "),
-            COLOR_CODES.ENDC,
-        )
+        msg_1 = "{}{: >20} {: >20} {: >20}".format(color, "Input", "Expected output", "Actual output")
+        msg_2 = "{: >20} {: >20} {: >20}{}".format(test.input, test.output, test.stdout, COLOR_CODES.END)
 
-        print(msg1)
-        print(msg2)
+        print(msg_1)
+        print(msg_2)
 
-        if pdf:
-            for msg in (msg1, msg2[:-3]):
-                pdf.multi_cell(0, 5, msg + "\n")
+        if pdf is not None:
+            pdf.write_html(f"""<table border="0" align="left" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th align="left" width="33%">Input</th>
+                                        <th align="left" width="33%">Expected output</th>
+                                        <th align="left" width="33%">Actual output</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{test.input}</td>
+                                        <td>{test.output}</td>
+                                        <td>{test.stdout}</td>
+                                    </tr>
+                                </tbody>
+                            </table>""")
 
     @staticmethod
     def display_error_msg(message):
         """
         Displays the error message.
         """
-        print(f"{COLOR_CODES.FAIL}{TEST_ERROR_MSG}{COLOR_CODES.ENDC}")
+        print(f"{COLOR_CODES.FAIL}{REPORT_MESSAGES.TEST_ERROR_MSG}{COLOR_CODES.END}")
         print(message)
 
     @staticmethod
@@ -134,4 +153,4 @@ class OutputComparator:
         """
         Displays a message when a test times out.
         """
-        print("{}{}{}".format(COLOR_CODES.WARNING, TEST_TIMEOUT_MSG, COLOR_CODES.ENDC))
+        print("{}{}{}".format(COLOR_CODES.WARNING, REPORT_MESSAGES.TEST_TIMEOUT_MSG, COLOR_CODES.END))
