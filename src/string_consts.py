@@ -1,5 +1,5 @@
 """
-
+Constants for strings used in the program.
 """
 
 from dataclasses import dataclass
@@ -8,7 +8,7 @@ from dataclasses import dataclass
 @dataclass
 class CONFIG_SCHEMA:
     """
-
+    Class that represents the json schema for the config file.
     """
     PROGRAM_PATH_JSON: str = "ProgramPath"
     TIMEOUT_JSON: str = "Timeout"
@@ -20,17 +20,19 @@ class CONFIG_SCHEMA:
 @dataclass
 class REPORT_MESSAGES:
     """
-
+    Class that contains all the messages that are displayed in the report.
     """
-    TEST_PASSED_MSG: str = "Test passed successfully!"
-    TEST_FAILED_MSG: str = "Test failed :("
-    TEST_ERROR_MSG: str = "Your program contains errors :("
-    TEST_TIMEOUT_MSG: str = "Your program runs for too long :("
+    TEST_PASSED: str = "Test passed successfully!"
+    TEST_FAILED: str = "Test failed :("
+    ALL_SUCCESSFUL: str = "All tests passed :)"
+    ERROR: str = "Your program contains errors :("
+    TIMEOUT: str = "Your program runs for too long :("
+    
 
 @dataclass
 class COLOR_CODES:
     """
-
+    Class that contains the color codes used in the report.
     """
     HEADER: str = "\033[95m"
     NORMAL: str = "\033[94m"
@@ -45,7 +47,7 @@ class COLOR_CODES:
 @dataclass
 class HEX_CODES:
     """
-
+    Class that contains the hex codes used in the report.
     """
     HEADER: tuple = (255, 119, 255)
     NORMAL: tuple = (173,216,230)

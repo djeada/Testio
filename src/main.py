@@ -51,6 +51,7 @@ def main() -> None:
 
     output_comparator = OutputComparator(test_results, path_to_exe)
     output_comparator.display_test_results()
+    output_comparator.generate_pdf_report()
 
 
 if __name__ == "__main__":

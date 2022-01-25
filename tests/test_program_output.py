@@ -5,8 +5,7 @@ from src.main import ProgramOutput
 
 
 def check_output(function, expected_output):
-    """
-    """
+    """ """
     saved_stdout = sys.stdout
     try:
         out = StringIO()
