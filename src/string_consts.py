@@ -22,7 +22,7 @@ class REPORT_MESSAGES:
     """
     Class that contains all the messages that are displayed in the report.
     """
-    TEST_PASSED: str = "Test passed successfully!"
+    TEST_PASSED: str = "Test passed!"
     TEST_FAILED: str = "Test failed :("
     ALL_SUCCESSFUL: str = "All tests passed :)"
     ERROR: str = "Your program contains errors :("
@@ -52,7 +52,7 @@ class HEX_CODES:
     HEADER: tuple = (255, 119, 255)
     NORMAL: tuple = (173,216,230)
     OK: tuple = (224,255,255)
-    SUCCESS: tuple = (50,205,50)
+    SUCCESS: tuple = 	(0,100,0)
     WARNING: tuple = (255,255,224)
     FAIL: tuple = (247,13,26)
     END: tuple = (0, 0, 0)

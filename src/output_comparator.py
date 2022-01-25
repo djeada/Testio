@@ -81,7 +81,7 @@ class OutputComparator:
         pdf.set_font("Arial", size=12)
 
         pdf.multi_cell(0, 5, self.msg[5:-3].split("\n")[0] + "\n")
-        pdf.multi_cell(0, 5, self.msg[5:-3].split("\n")[1] + "\n")
+        pdf.multi_cell(0, 5, self.msg[5:-3].split("\n")[1] + "\n\n")
 
         for i, test in enumerate(self.test_results):
             self.append_test_to_pdf(test, pdf, i+1)
@@ -140,24 +140,27 @@ class OutputComparator:
         """
         Appends a test to a pdf. The test is displayed in a table.
         """
+        pdf.set_font("Arial", size=12)
+
         if test.stdout is not None:
             if test.stdout == test.output:
                 msg = f"{i}.{REPORT_MESSAGES.TEST_PASSED}"
                 pdf.set_text_color(*HEX_CODES.SUCCESS)
-                pdf.multi_cell(0, 5, msg + "\n")
+                #pdf.multi_cell(0, 5, msg)
             else:
                 msg = f"{i}.{REPORT_MESSAGES.TEST_FAILED}"
                 pdf.set_text_color(*HEX_CODES.FAIL)
-                pdf.multi_cell(0, 5, msg + "\n")
+                #pdf.multi_cell(0, 5, msg)
                 if test.stderr:
                     pdf.set_text_color(*HEX_CODES.FAIL)
-                    pdf.multi_cell(0, 5, f"Error: {test.stderr}\n")
+                    msg += f"\nError: {test.stderr}"
+                    #pdf.multi_cell(0, 5, f"Error: {test.stderr}")
         else:
             msg = f"{i}.{REPORT_MESSAGES.TIMEOUT}"
             pdf.set_text_color(*HEX_CODES.WARNING)
-            pdf.multi_cell(0, 5, msg + "\n")
+            #pdf.multi_cell(0, 5, msg)
 
-        pdf.write_html(f"""<table border="0" align="left" width="100%">
+        pdf.write_html(f"""<p>{msg}</p><table border="0" align="left" width="100%">
                             <thead>
                                 <tr>
                                     <th align="left" width="33%">Input</th>
