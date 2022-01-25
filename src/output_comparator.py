@@ -69,8 +69,8 @@ class OutputComparator:
 
         print(self.msg)
 
-        for test in self.test_results:
-            self.display_test_result(test)
+        for i, test in enumerate(self.test_results):
+            self.display_test_result(test, i+1)
 
     def generate_pdf_report(self) -> None:
         """
@@ -83,13 +83,13 @@ class OutputComparator:
         pdf.multi_cell(0, 5, self.msg[5:-3].split("\n")[0] + "\n")
         pdf.multi_cell(0, 5, self.msg[5:-3].split("\n")[1] + "\n")
 
-        for test in self.test_results:
-            self.append_test_to_pdf(test, pdf)
+        for i, test in enumerate(self.test_results):
+            self.append_test_to_pdf(test, pdf, i+1)
 
         pdf.output(f"test_result_{self.path.stem}.pdf")
 
     @staticmethod
-    def display_test_result(test: TestResult) -> None:
+    def display_test_result(test: TestResult, i: int) -> None:
         """
         Displays the result of a test.
         There are three possible results:
@@ -103,13 +103,13 @@ class OutputComparator:
         if test.stdout is not None:
             if test.stdout == test.output:
                 color = COLOR_CODES.SUCCESS
-                msg = f"{color}{REPORT_MESSAGES.ALL_SUCCESSFUL}{COLOR_CODES.END}"
+                msg = f"{color}{i}.{REPORT_MESSAGES.TEST_PASSED}{COLOR_CODES.END}"
                 print(msg)
             else:
                 color = COLOR_CODES.FAIL
-                msg = f"{color}{REPORT_MESSAGES.ERROR}{COLOR_CODES.END}"
+                msg = f"{color}{i}.{REPORT_MESSAGES.TEST_FAILED}{COLOR_CODES.END}"
                 print(msg)
-                if test.stderr is not None:
+                if test.stderr:
                     color = COLOR_CODES.FAIL
                     print(f"{color}Error: {test.stderr}{COLOR_CODES.END}")
 
@@ -119,27 +119,41 @@ class OutputComparator:
             print(msg)
 
         print("{}{: >20} {: >20} {: >20}".format(color, "Input", "Expected output", "Actual output"))
-        print("{: >20} {: >20} {: >20}{}".format(test.input, test.output, test.stdout, COLOR_CODES.END))
+
+        test_inputs = test.input.split('\n')
+        test_output = test.output.split('\n')
+        result_stdout = test.stdout.split('\n')
+
+        n = max((len(test_inputs), len(test_output), len(result_stdout)))
+
+        test_inputs.extend([''] * n)
+        test_output.extend([''] * n)
+        result_stdout.extend([''] * n)
+
+        for test_input, test_output, stdout in zip(test_inputs, test_output, result_stdout):
+            print("{: >20} {: >20} {: >20}".format(test_input, test_output, stdout))
+
+        print(f'{COLOR_CODES.END}', end='')
 
     @staticmethod
-    def append_test_to_pdf(test: TestResult, pdf: PDF) -> None:
+    def append_test_to_pdf(test: TestResult, pdf: PDF, i: int) -> None:
         """
         Appends a test to a pdf. The test is displayed in a table.
         """
         if test.stdout is not None:
             if test.stdout == test.output:
-                msg = f"{REPORT_MESSAGES.ALL_SUCCESSFUL}"
+                msg = f"{i}.{REPORT_MESSAGES.TEST_PASSED}"
                 pdf.set_text_color(*HEX_CODES.SUCCESS)
                 pdf.multi_cell(0, 5, msg + "\n")
             else:
-                msg = f"{REPORT_MESSAGES.ERROR}"
+                msg = f"{i}.{REPORT_MESSAGES.TEST_FAILED}"
                 pdf.set_text_color(*HEX_CODES.FAIL)
                 pdf.multi_cell(0, 5, msg + "\n")
-                if test.stderr is not None:
+                if test.stderr:
                     pdf.set_text_color(*HEX_CODES.FAIL)
                     pdf.multi_cell(0, 5, f"Error: {test.stderr}\n")
         else:
-            msg = f"{REPORT_MESSAGES.TIMEOUT}"
+            msg = f"{i}.{REPORT_MESSAGES.TIMEOUT}"
             pdf.set_text_color(*HEX_CODES.WARNING)
             pdf.multi_cell(0, 5, msg + "\n")
 

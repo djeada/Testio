@@ -34,28 +34,26 @@ def main() -> None:
     """
     path = parse_command_line_args(sys.argv)
     parser = ConfigParser(path)
-    path_to_exe = (
-        Path(parser.path_to_exe)
-        if Path(parser.path_to_exe).is_absolute()
-        else path.parents[0] / Path(parser.path_to_exe)
-    )
+    paths = parser.paths
 
-    test_results = []
+    for path_to_exe in paths:
 
-    for test in parser.tests:
-        program_output = ProgramOutput(path_to_exe, test.input, parser.timeout)
-        result_stdout = program_output.result.stdout
-        result_stderr = program_output.result.stderr
-        result_timeout = program_output.result.timeout
-        test_results.append(
-            TestResult(
-                test.input, test.output, result_stdout, result_stderr, result_timeout
+        test_results = []
+
+        for test in parser.tests:
+            program_output = ProgramOutput(path_to_exe, test.input, parser.timeout)
+            result_stdout = program_output.result.stdout
+            result_stderr = program_output.result.stderr
+            result_timeout = program_output.result.timeout
+            test_results.append(
+                TestResult(
+                    test.input, test.output, result_stdout, result_stderr, result_timeout
+                )
             )
-        )
 
-    output_comparator = OutputComparator(test_results, path_to_exe)
-    output_comparator.display_test_results()
-    output_comparator.generate_pdf_report()
+        output_comparator = OutputComparator(test_results, path_to_exe)
+        output_comparator.display_test_results()
+        output_comparator.generate_pdf_report()
 
 
 if __name__ == "__main__":

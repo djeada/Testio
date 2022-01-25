@@ -22,7 +22,7 @@ def strip_carriage_return(text: str) -> str:
     """
     Strips the carriage return from the given text.
     """
-    if text and text[-1] == "\r":
-        return text[:-1]
+    if text:
+        return text.replace('\r','')
 
     return text

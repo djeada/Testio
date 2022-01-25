@@ -18,7 +18,7 @@ class Test:
     """
 
     def __init__(
-        self, test_input: Optional[List[str]], test_output: Optional[List[str]]
+            self, test_input: Optional[List[str]], test_output: Optional[List[str]]
     ):
         self._input = test_input
         self._output = test_output
@@ -69,7 +69,7 @@ class ConfigParser:
     """
 
     def __init__(self, path):
-        self.path_to_exe = Path()
+        self.paths = Path()
         self.timeout = None
         self.tests = []
         self.read_config_file(path)
@@ -82,8 +82,8 @@ class ConfigParser:
             with open(path) as file_obj:
                 file_content = json.load(file_obj)
                 self.validate_config_file(file_content)
-                self.path_to_exe = file_content[CONFIG_SCHEMA.PROGRAM_PATH_JSON]
                 self.timeout = file_content[CONFIG_SCHEMA.TIMEOUT_JSON]
+                self.parse_path(file_content, path.parent)
                 self.parse_tests(file_content)
 
         except OSError:
@@ -102,6 +102,31 @@ class ConfigParser:
             Test(test_data[CONFIG_SCHEMA.TEST_INPUT_JSON], test_data[CONFIG_SCHEMA.TEST_OUTPUT_JSON])
             for test_data in tests_data
         ]
+
+    def parse_path(self, file_content: str, path_to_config: Path) -> None:
+        """
+        Parse path to executable from config file.
+        If path is relative, it is considered relative to config file.
+        If path is absolute, it is considered absolute.
+        If path is given as a glob pattern, it is considered relative to config file.
+        """
+        if (path_to_config / file_content[CONFIG_SCHEMA.PROGRAM_PATH_JSON]).is_file():
+            self.paths = [path_to_config / file_content[CONFIG_SCHEMA.PROGRAM_PATH_JSON]]
+            return
+
+        elif Path(file_content[CONFIG_SCHEMA.PROGRAM_PATH_JSON]).is_file():
+            self.paths = [Path(file_content[CONFIG_SCHEMA.PROGRAM_PATH_JSON])]
+            return
+
+        elif "*" in file_content[CONFIG_SCHEMA.PROGRAM_PATH_JSON]:
+            # check if there exists a file with the same name as the glob pattern
+            glob_pattern = file_content[CONFIG_SCHEMA.PROGRAM_PATH_JSON]
+            matches = list(path_to_config.rglob(glob_pattern))
+            if len(matches) > 0:
+                self.paths = matches
+                return
+
+        raise Exception("Invalid path to executable")
 
     @staticmethod
     def validate_config_file(file_content) -> None:
