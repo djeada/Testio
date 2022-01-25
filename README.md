@@ -12,7 +12,12 @@ Testio is a lightweight framework designed for testing applications' standard ou
 
 # Purpose
 
-Main purpose is to help highschool and college teachers automate testing of students code. Instead of running each program individually and manulay provide input, teacher can specifiy inputs and expected outputs in config files and then only check the results. 
+The aim of this project is to provide a simple and easy way to test your application's standard output. It is specifically targeted at highschool teachers and college instructors. If your students were assigned to write a program that for a given set of inputs is expected to produce an output, then this project is for you. Instead of testing each program individually, you can simply specify a directory containing all the programs, as well as a set of inputs and expected outputs. Testio will then run each program and compare the output to the expected output. If the output is correct, Testio will print a green checkmark. If the output is incorrect, Testio will print a red X. Additionally for each program, a pdf report will be generated containing the results of the tests.
+
+# Requirements
+
+* Python 3.8
+
 
 # Design 
 
