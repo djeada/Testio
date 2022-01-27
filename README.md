@@ -26,4 +26,4 @@ The aim of this project is to provide a simple and easy way to test your applica
 
 ## TODO
 
-- [] 
+- [] Change the timeout parameter from general to pro test. 
