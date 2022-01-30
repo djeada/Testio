@@ -1,17 +1,15 @@
-from distutils.command.config import config
 from pathlib import Path
 
-import pytest
+from src.main_command_line import ConfigParser
 
-from src.main import ConfigParser
 
 def test_read_single_input_config_file(tmp_path):
     """
     Test reading config file with single input.
     """
-    config_path = tmp_path/Path("test_config.json")
+    config_path = tmp_path / Path("test_config.json")
 
-    exe_path = tmp_path/Path('program.py')
+    exe_path = tmp_path / Path('program.py')
     exe_path.touch()
 
     with open(config_path, "w") as file:
@@ -29,7 +27,7 @@ def test_read_single_input_config_file(tmp_path):
         )
 
     config_parser = ConfigParser(Path(config_path))
-    assert config_parser.paths == [tmp_path/Path(f'{exe_path.name}')]
+    assert config_parser.paths == [tmp_path / Path(f'{exe_path.name}')]
     assert config_parser.timeout == 1
     assert len(config_parser.tests) == 1
     assert config_parser.tests[0].input == "3"
@@ -40,9 +38,9 @@ def test_read_multiple_tests_config_file(tmp_path):
     """	
     Test reading config file with multiple tests.
     """
-    config_path = tmp_path/Path("test_config.json")
+    config_path = tmp_path / Path("test_config.json")
 
-    exe_path = tmp_path/Path('program.py')
+    exe_path = tmp_path / Path('python program.py')
     exe_path.touch()
 
     with open(config_path, "w") as file:
@@ -64,7 +62,7 @@ def test_read_multiple_tests_config_file(tmp_path):
         )
 
     config_parser = ConfigParser(Path(config_path))
-    assert config_parser.paths == [tmp_path/Path(f'{exe_path.name}')]
+    assert config_parser.paths == [tmp_path / Path(f'{exe_path.name}')]
     assert config_parser.timeout == 1
     assert len(config_parser.tests) == 2
     assert config_parser.tests[0].input == "3"

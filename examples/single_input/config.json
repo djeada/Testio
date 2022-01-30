@@ -1,4 +1,5 @@
-{ 
+{
+	"PathToPython": "C:\\Users\\Adam\\Documents\\Programowanie\\Testio\\venv\\Scripts\\python.exe",
 	"ProgramPath": "program.py",
 	"Timeout": 1,
 	"Test1": {

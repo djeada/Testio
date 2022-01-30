@@ -52,7 +52,7 @@ class HEX_CODES:
     HEADER: tuple = (255, 119, 255)
     NORMAL: tuple = (173,216,230)
     OK: tuple = (224,255,255)
-    SUCCESS: tuple = 	(0,100,0)
+    SUCCESS: tuple = (0,100,0)
     WARNING: tuple = (255,255,224)
     FAIL: tuple = (247,13,26)
     END: tuple = (0, 0, 0)

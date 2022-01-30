@@ -7,7 +7,7 @@ import multiprocessing
 from dataclasses import dataclass
 from typing import Optional
 
-from src.misc import strip_carriage_return
+from src.testio_base.misc import strip_carriage_return
 
 
 @dataclass
@@ -57,9 +57,7 @@ class ProgramOutput:
         If the program times out, the timeout variable is set to True.
         """
         pipe = subprocess.Popen(
-            "C:\\Users\\Adam\\Documents\\Programowanie\\Testio\\venv\\Scripts\\python.exe {}".format(
-                self.path
-            ),
+            f"{self.path}",
             shell=True,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
