@@ -27,5 +27,6 @@ The aim of this project is to provide a simple and easy way to test your applica
 ## TODO
 
 - [-] Change the timeout parameter from regex based to array.
+- [-] Create the basic documentation structure.
 - [-] Add frontend generated with Flask templates.
 - [-] Create a desktop app with a browser that can run the Flask app using the QT framework. 
