@@ -27,38 +27,38 @@ There are two ways to install Testio. One is to install the project using virtua
 
 ## From virtualenv
 
-        $ git clone https://github.com/djeada/Testio.git
-        $ cd Testio
-        $ virtualenv env
-        $ source env/bin/activate
-        $ pip install -r requirements.txt
+    $ git clone https://github.com/djeada/Testio.git
+    $ cd Testio
+    $ virtualenv env
+    $ source env/bin/activate
+    $ pip install -r requirements.txt
 
 ### From poetry
 
-        $ git clone https://github.com/djeada/Testio.git
-        $ cd Testio
-        $ poetry shell
-        $ poetry update
+    $ git clone https://github.com/djeada/Testio.git
+    $ cd Testio
+    $ poetry shell
+    $ poetry update
 
 ### Starting the CLI application
 
-        $ src/main_command_line.py path/to/config_file.json
+    $ src/main_command_line.py path/to/config_file.json
 
 ### Starting the Flask server
 
-        $ src/flask_app/flask_app.py
+    $ src/flask_app/flask_app.py
 
 ### Starting the GUI application
 
-        $ src/qt_app/qt_app.py
+    $ src/qt_app/qt_app.py
 
 ## Design 
 
 The application is divided into three separate interface:
 
-    * The command line interface
-    * The flask server
-    * The Qt application
+* The command line interface
+* The flask server
+* The Qt application
 
 Each part is implemented in a different file. The command line interface is implemented in the main_command_line.py file. The flask server is implemented in the flask_app.py file. The Qt application is implemented in the qt_app.py file.
 
@@ -66,9 +66,9 @@ Each part is implemented in a different file. The command line interface is impl
 
 Backend scripts are located in the src/testio_core folder. The three main modules are:
 
-    * parser
-    * program_runner
-    * output_comparator
+* parser
+* program_runner
+* output_comparator
 
  First the config file containing paths to executables and tests consiting of inputs and expected outputs is parsed. Then the programs are run and the actual output is compared to the expected output. The results are stored in a dictionary. The results are then printed to the command line. There is also an option to generate a pdf report containing the results.
 
