@@ -8,7 +8,7 @@
 
 <img src="https://github.com/djeada/Testio/blob/main/resources/logo.png" alt="Testio" width="200"/>
 
-Testio is a lightweight framework for testing the standard output of applications.
+Testio is a lightweight framework that uses multiprocessing for testing the standard output of applications.
 
 ## Purpose
 
