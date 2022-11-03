@@ -88,3 +88,11 @@ The purpose of the Qt application is to embed the flask application in a desktop
 - [-] Create the basic documentation structure.
 - [-] Add frontend generated with Flask templates.
 - [-] Create a desktop app with a browser that can run the Flask app using the QT framework. 
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
