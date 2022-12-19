@@ -8,7 +8,7 @@
 
 <img src="https://github.com/djeada/Testio/blob/main/resources/logo.png" alt="Testio" width="200"/>
 
-Testio is a lightweight framework that uses multiprocessing for testing the standard output of applications.
+Testio is a simple and efficient testing framework that uses multiprocessing to verify the standard output of applications. With Testio, you can quickly and easily write tests to ensure that your applications are functioning as expected. Whether you are a software developer looking to improve the quality of your code or a student learning about testing techniques, Testio is a valuable tool for your toolkit.
 
 ## Purpose
 
