@@ -4,7 +4,7 @@
     "tests": [
         {
             "input": [],
-            "output": ["xz"],
+            "output": ["5"],
             "timeout": 1
         }
     ]

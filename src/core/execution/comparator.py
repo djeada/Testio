@@ -10,6 +10,7 @@ class OutputComparator:
     Used to compare the actual output of a program with the expected output.
     Saves the result of the comparison in a ComparisonOutputData object.
     """
+
     def compare(
         self, comparison_input_data: ComparisonInputData
     ) -> ComparisonOutputData:

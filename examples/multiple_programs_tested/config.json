@@ -1,6 +1,6 @@
-{ 
+{
 	"command": "python3",
-	"path": "program.py",
+	"path": "scripts",
 	"tests": [
         {
 			"input": ["2", "10"],
@@ -9,3 +9,4 @@
         }
     ]
 }
+

@@ -11,6 +11,7 @@ class TestData:
     """
     Represents a single test case.
     """
+
     input: Union[str, List[str]]
     output: Union[str, List[str]]
     timeout: int
@@ -22,6 +23,7 @@ class TestSuiteConfig:
     Complete test suite configuration.
     Consists of a multiple test cases.
     """
+
     command: str
     path: str
     tests: List[TestData]

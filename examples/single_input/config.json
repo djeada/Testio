@@ -1,9 +1,12 @@
 {
-	"PathToPython": "C:\\Users\\Adam\\Documents\\Programowanie\\Testio\\venv\\Scripts\\python.exe",
-	"ProgramPath": "program.py",
-	"Timeout": 1,
-	"Test1": {
-		"input": ["3"],
-		"output": ["6"]
-	}
+	"command": "python3",
+	"path": "program.py",
+	"tests": [
+        {
+			"input": ["3"],
+			"output": ["6"],
+            "timeout": 1
+        }
+    ]
 }
+

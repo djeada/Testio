@@ -16,7 +16,7 @@ class ResultRendererStrategy(ABC):
     """
 
     @abstractmethod
-    def render(self, comparison_output_data: ComparisonOutputData) -> str:
+    def render(self, comparison_output_data: ComparisonOutputData, i: int) -> str:
         """
         Renders the result of a comparison.
         :param comparison_output_data: The data to render.
@@ -30,7 +30,7 @@ class ResultRendererStrategyMatch(ResultRendererStrategy):
     Renders the result of a comparison when the result is a match.
     """
 
-    def render(self, comparison_output_data: ComparisonOutputData) -> str:
+    def render(self, comparison_output_data: ComparisonOutputData, i: int) -> str:
         """
         Renders the result of a comparison when the result is a match.
 
@@ -39,19 +39,19 @@ class ResultRendererStrategyMatch(ResultRendererStrategy):
         """
 
         result = f"{COLOR_CODES.OK}"
-        result += f"{REPORT_MESSAGES.TEST_PASSED}\n"
+        result += f"#{i} {REPORT_MESSAGES.TEST_PASSED}\n"
         result += (
-            f"Input: \n {comparison_output_data.input}\n"
+            f"Input: \n{comparison_output_data.input}\n"
             if comparison_output_data.input
-            else "No input given!\n"
+            else f"{REPORT_MESSAGES.NO_INPUT}\n"
         )
         result += (
-            f"Expected output: \n {comparison_output_data.expected_output}\n"
+            f"Expected output: \n{comparison_output_data.expected_output}\n"
             if comparison_output_data.expected_output
             else "No output was expected!\n"
         )
         result += (
-            f"Result: \n {comparison_output_data.output}\n"
+            f"Result: \n{comparison_output_data.output}\n"
             if comparison_output_data.output
             else "The program did not produce any output!\n"
         )
@@ -65,7 +65,7 @@ class ResultRendererStrategyMismatch(ResultRendererStrategy):
     Renders the result of a comparison when the result is a mismatch.
     """
 
-    def render(self, comparison_output_data: ComparisonOutputData) -> str:
+    def render(self, comparison_output_data: ComparisonOutputData, i: int) -> str:
         """
         Renders the result of a comparison when the result is a mismatch.
 
@@ -73,19 +73,19 @@ class ResultRendererStrategyMismatch(ResultRendererStrategy):
         :return: The rendered result.
         """
         result = f"{COLOR_CODES.FAIL}"
-        result += f"{REPORT_MESSAGES.TEST_FAILED}\n"
+        result += f"#{i} {REPORT_MESSAGES.TEST_FAILED}\n"
         result += (
-            f"Input: \n {comparison_output_data.input}\n"
+            f"Input: \n{comparison_output_data.input}\n"
             if comparison_output_data.input
-            else "No input given!\n"
+            else f"{REPORT_MESSAGES.NO_INPUT}\n"
         )
         result += (
-            f"Expected output: \n {comparison_output_data.expected_output}\n"
+            f"Expected output: \n{comparison_output_data.expected_output}\n"
             if comparison_output_data.expected_output
             else "No output was expected!\n"
         )
         result += (
-            f"Result: \n {comparison_output_data.output}\n"
+            f"Result: \n{comparison_output_data.output}\n"
             if comparison_output_data.output
             else "The program did not produce any output!\n"
         )
@@ -99,7 +99,7 @@ class ResultRendererStrategyExecutionError(ResultRendererStrategy):
     Renders the result of a comparison when the result is an execution error.
     """
 
-    def render(self, comparison_output_data: ComparisonOutputData) -> str:
+    def render(self, comparison_output_data: ComparisonOutputData, i: int) -> str:
         """
         Renders the result of a comparison when the result is an execution error.
 
@@ -107,13 +107,13 @@ class ResultRendererStrategyExecutionError(ResultRendererStrategy):
         :return: The rendered result.
         """
         result = f"{COLOR_CODES.FAIL}"
-        result += f"{REPORT_MESSAGES.ERROR}\n"
+        result += f"#{i} {REPORT_MESSAGES.ERROR}\n"
         result += (
-            f"Input: \n {comparison_output_data.input}\n"
+            f"Input: \n{comparison_output_data.input}\n"
             if comparison_output_data.input
-            else "No input given!\n"
+            else f"{REPORT_MESSAGES.NO_INPUT}\n"
         )
-        result += f"Error: \n {comparison_output_data.error}\n"
+        result += f"Error: \n{comparison_output_data.error}\n"
         result += f"{COLOR_CODES.END}"
 
         return result
@@ -124,7 +124,7 @@ class ResultRendererStrategyTimeout(ResultRendererStrategy):
     Renders the result of a comparison when the result is a timeout.
     """
 
-    def render(self, comparison_output_data: ComparisonOutputData) -> str:
+    def render(self, comparison_output_data: ComparisonOutputData, i: int) -> str:
         """
         Renders the result of a comparison when the result is a timeout.
 
@@ -132,11 +132,11 @@ class ResultRendererStrategyTimeout(ResultRendererStrategy):
         :return: The rendered result.
         """
         result = f"{COLOR_CODES.FAIL}"
-        result += f"{REPORT_MESSAGES.TIMEOUT}\n"
+        result += f"#{i} {REPORT_MESSAGES.TIMEOUT}\n"
         result += (
-            f"Input: \n {comparison_output_data.input}\n"
+            f"Input: \n{comparison_output_data.input}\n"
             if comparison_output_data.input
-            else "No input given!\n"
+            else f"{REPORT_MESSAGES.NO_INPUT}\n"
         )
         result += f"{COLOR_CODES.END}"
 
@@ -148,7 +148,7 @@ class ResultRenderer:
     Renders the result of a comparison using the appropriate strategy.
     """
 
-    def render(self, comparison_output_data: ComparisonOutputData) -> None:
+    def render(self, comparison_output_data: ComparisonOutputData, i: int) -> None:
         """
         Chooses the appropriate strategy and renders the result of a comparison.
 
@@ -165,4 +165,4 @@ class ResultRenderer:
             raise Exception("Invalid comparison result")
 
         renderer = result_to_renderer_strategy[comparison_output_data.result]
-        print(renderer.render(comparison_output_data))
+        print(renderer.render(comparison_output_data, i))

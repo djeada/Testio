@@ -18,6 +18,7 @@ class ExecutionManager:
     """
     Runs the specified program and compares its output with the expected output.
     """
+
     def run(self, data: ExecutionManagerInputData) -> ComparisonOutputData:
         """
         Uses the data provided to run the specified program and compare its output

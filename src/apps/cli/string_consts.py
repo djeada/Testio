@@ -16,6 +16,7 @@ class REPORT_MESSAGES:
     ALL_SUCCESSFUL: str = "All tests passed :)"
     ERROR: str = "Your program contains errors :("
     TIMEOUT: str = "Your program runs for too long :("
+    NO_INPUT: str = "This program doesn't expect any input."
 
 
 @dataclass
