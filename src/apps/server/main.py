@@ -2,12 +2,13 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from flask import Flask, render_template, request, redirect, url_for
-from src.core.output_comparator import OutputComparator, TestResult
-from src.core.parsers import ConfigParser
-from src.core.program_runner import ProgramOutput
+from flask import Flask, render_template
+from src.core.execution.comparator import OutputComparator, TestResult
+from src.core.config_parser.parsers import ConfigParser
+from src.core.execution.manager import ProgramOutput
 
 app = Flask(__name__)
+
 
 def parse_command_line_args(args: List[str]) -> Optional[Path]:
     """
@@ -22,6 +23,7 @@ def parse_command_line_args(args: List[str]) -> Optional[Path]:
             return path
 
     raise Exception("You have to provide path to config file as an argument!")
+
 
 @app.route("/")
 def main():
@@ -40,13 +42,18 @@ def main():
             result_timeout = program_output.result.timeout
             test_results.append(
                 TestResult(
-                    test.input, test.output, result_stdout, result_stderr, result_timeout
+                    test.input,
+                    test.output,
+                    result_stdout,
+                    result_stderr,
+                    result_timeout,
                 )
             )
 
         output_comparator = OutputComparator(test_results, path_to_exe)
         results[path_to_exe] = output_comparator.test_results
     return render_template("index.html", results=results)
+
 
 if __name__ == "__main__":
     app.run()

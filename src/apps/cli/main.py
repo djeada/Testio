@@ -3,58 +3,57 @@ Main module. It is used to run the program.
 """
 
 import sys
+
+from src.apps.cli.result_renderer import ResultRenderer
+from src.core.execution.data import (
+    ExecutionManagerInputData,
+    ExecutionManagerInputDataFactory,
+)
+
+sys.path.append(".")
+
+
 from pathlib import Path
-from typing import List, Optional
+import argparse
 
-from src.core.output_comparator import OutputComparator, TestResult
-from src.core.parsers import ConfigParser
-from src.core.program_runner import ProgramOutput
-
-
-def parse_command_line_args(args: List[str]) -> Optional[Path]:
-    """
-    Parses the command line arguments. The first argument is the path to the
-    config file. If the config file is not found, the program exits.
-    :param args: The command line arguments.
-    :return: The path to the config file.
-    """
-    if len(args) == 2:
-        path = Path(args[1])
-        if path.is_file():
-            return path
-
-    raise Exception("You have to provide path to config file as an argument!")
+from src.core.config_parser.parsers import ConfigParser
+from src.core.execution.manager import ExecutionManager
 
 
-def main() -> None:
+class Parser(argparse.ArgumentParser):
+    def __init__(self, *args, **kwargs):
+        super(Parser, self).__init__(*args, **kwargs)
+        self.add_argument("config_file", type=str, help="Path to config file")
+
+
+def main(argv) -> None:
     """
     Parse command line arguments and run tests that are described in config file.
     Then create pdf report with test results. If there are no tests in config file,
     print error message.
     """
-    path = parse_command_line_args(sys.argv)
-    parser = ConfigParser(path)
-    paths = parser.paths
+    # path = parse_command_line_args(sys.argv)
+    argument_parser = Parser()
+    args = argument_parser.parse_args(argv)
+    path = Path(args.config_file)
 
-    for path_to_exe in paths:
+    parser = ConfigParser()
+    test_suite_config = parser.parse(path)
+    execution_manager_data = ExecutionManagerInputDataFactory.from_test_suite_config(
+        test_suite_config, path
+    )
+    renderer = ResultRenderer()
 
-        test_results = []
+    for data in execution_manager_data:
 
-        for test in parser.tests:
-            program_output = ProgramOutput(path_to_exe, test.input, parser.timeout)
-            result_stdout = program_output.result.stdout
-            result_stderr = program_output.result.stderr
-            result_timeout = program_output.result.timeout
-            test_results.append(
-                TestResult(
-                    test.input, test.output, result_stdout, result_stderr, result_timeout
-                )
-            )
-
-        output_comparator = OutputComparator(test_results, path_to_exe)
-        output_comparator.display_test_results()
-        output_comparator.generate_pdf_report()
+        manager = ExecutionManager()
+        result = manager.run(data)
+        renderer.render(result)
 
 
 if __name__ == "__main__":
-    main()
+    argv = sys.argv[1]
+    # if argv is not list make it list
+    if not isinstance(argv, list):
+        argv = [argv]
+    main(argv)

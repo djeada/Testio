@@ -1,11 +1,26 @@
-def main():
-    # Parse command-line arguments
-    args = parse_args()
+import argparse
+import sys
+from apps.cli.main import main as cli_main
 
-    # Dispatch to the appropriate subapplication
-    if args.cli:
-        cli.run()
-    elif args.flask:
-        flask_app.run()
-    elif args.qt:
-        qt_app.run()
+
+def main():
+    # Parse the first argument to determine which script to run
+    script = sys.argv[1]
+
+    # Pass the remaining arguments to the selected script
+    if script == "--cli":
+        from apps.cli.main import main as cli_main
+
+        cli_main(sys.argv[2:])
+    elif script == "flask":
+        from src.flask_app import main as flask_main
+
+        flask_main(sys.argv[2:])
+    elif script == "qt":
+        from src.qt_app import main as qt_main
+
+        qt_main(sys.argv[2:])
+
+
+if __name__ == "__main__":
+    main()
