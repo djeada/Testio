@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import List, Optional
 
-from src.testio_core.string_consts import CONFIG_SCHEMA
+from src.core.string_consts import CONFIG_SCHEMA
 
 
 class Test:

@@ -7,7 +7,7 @@ import multiprocessing
 from dataclasses import dataclass
 from typing import Optional
 
-from src.testio_core.misc import strip_carriage_return
+from src.core.misc import strip_carriage_return
 
 
 @dataclass

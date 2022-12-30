@@ -10,22 +10,20 @@
 
 Testio is a simple and efficient testing framework that uses multiprocessing to verify the standard output of applications. With Testio, you can quickly and easily write tests to ensure that your applications are functioning as expected. Whether you are a software developer looking to improve the quality of your code or a student learning about testing techniques, Testio is a valuable tool for your toolkit.
 
-## Purpose
+## Overview
 
-The aim of this project is to provide a simple and easy way to test your application's standard output. It is specifically targeted at highschool teachers and college instructors. If your students were assigned to write a program that for a given set of inputs is expected to produce an output, then this project is for you. Instead of testing each program individually, you can simply specify a directory containing all the programs, as well as a set of inputs and expected outputs. Testio will then run each program and compare the output to the expected output. If the output is correct, Testio will print a green checkmark. If the output is incorrect, Testio will print a red X. Additionally for each program, a pdf report will be generated containing the results of the tests.
-
-Another use case for Testio is implementation of end-to-end tests in CI/CD pipelines. If you are using scripts or compiling executables, you can use Testio to test the output of your program for the given set of inputs. If single test fails, testio will exit with a non-zero exit code. If all tests pass, testio will exit with a zero exit code. 
+Testio allows you to test the standard output of applications by specifying a directory containing the programs to be tested, as well as a set of inputs and expected outputs. Testio is implemented in Python and is divided into three separate interfaces: a command-line interface, a Flask server, and a Qt application. The command-line interface allows you to run tests and generate reports from the command line, the Flask server provides a web interface for running tests, and the Qt application embeds the Flask application in a desktop GUI.
 
 ## Requirements
 
-* Python 3.8
-
+* Python 3.8+
+* flask
+* pyqt6
 
 ## Installation
 
-There are two ways to install Testio. One is to install the project using virtualenv. The other way is to install the project using poetry. Both will create a virtual environment in which you can keep your project's dependencies.
+The easiest way to install Testio is to use virtualenv:
 
-## From virtualenv
 
     $ git clone https://github.com/djeada/Testio.git
     $ cd Testio
@@ -33,64 +31,69 @@ There are two ways to install Testio. One is to install the project using virtua
     $ source env/bin/activate
     $ pip install -r requirements.txt
 
-### From poetry
+## Usage
 
-    $ git clone https://github.com/djeada/Testio.git
-    $ cd Testio
-    $ poetry shell
-    $ poetry update
+Testio provides three different interfaces for running tests: a command-line interface (CLI), a web interface using a Flask server, and a desktop graphical user interface (GUI) using Qt. All three interfaces provide the same functionality, but allow you to interact with Testio in different ways.
 
-### Starting the CLI application
+### Command-line interface
+
+To use the CLI, run the main_command_line.py script and pass the path to the config file as an argument:
 
     $ src/main_command_line.py path/to/config_file.json
 
-### Starting the Flask server
+The CLI will run the tests specified in the config file and display the results on the command line. You can also generate a PDF report containing the results by passing the --report flag:
 
-    $ src/flask_app/flask_app.py
-
-### Starting the GUI application
-
-    $ src/qt_app/qt_app.py
-
-## Design 
-
-The application is divided into three separate interface:
-
-* The command line interface
-* The flask server
-* The Qt application
-
-Each part is implemented in a different file. The command line interface is implemented in the main_command_line.py file. The flask server is implemented in the flask_app.py file. The Qt application is implemented in the qt_app.py file.
-
-### Command line interface
-
-Backend scripts are located in the src/testio_core folder. The three main modules are:
-
-* parser
-* program_runner
-* output_comparator
-
- First the config file containing paths to executables and tests consiting of inputs and expected outputs is parsed. Then the programs are run and the actual output is compared to the expected output. The results are stored in a dictionary. The results are then printed to the command line. There is also an option to generate a pdf report containing the results.
-
-![Alt text](https://github.com/djeada/Testio/blob/main/resources/diagram.png)
+    $ src/main_command_line.py path/to/config_file.json --report
 
 ### Flask server
 
-The purpose of the flask server is to provide a web interface for the command line interface. The flask server is implemented in the flask_app.py file.
+To use the web interface, run the flask_app.py script:
 
-### Qt application
+    $ src/flask_app/flask_app.py
 
-The purpose of the Qt application is to embed the flask application in a desktop GUI. The Qt application is implemented in the qt_app.py file.
+This will start the Flask server and serve the web interface at http://localhost:5000. You can specify the path to the config file using the --config flag:
 
-## TODO
+    $ src/flask_app/flask_app.py --config path/to/config_file.json
+
+### Desktop GUI
+
+To use the desktop GUI, run the qt_app.py script:
+
+    $ src/qt_app/qt_app.py
+
+This will start the Qt application and display the GUI. You can specify the path to the config file using the --config flag:
+
+    $ src/qt_app/qt_app.py --config path/to/config_file.json
+
+
+## Architecture
+
+Testio has three main modules: the parser module, the program_runner module, and the output_comparator module.
+
+The parser module parses the config file, which contains the paths to the executables and tests. The config file should be in JSON format and should include the following fields:
+
+* executables_dir: the directory containing the executables to be tested
+* tests_dir: the directory containing the tests
+* timeout: the maximum time (in seconds) that a program is allowed to run before it is terminated
+
+![Alt text](https://github.com/djeada/Testio/blob/main/resources/diagram.png)
+
+The program_runner module runs the programs and captures their standard output. The output_comparator module compares the actual output to the expected output. If the output is correct, Testio will print a green checkmark. If the output is incorrect, Testio will print a red X. The results are then stored in a dictionary and can be printed to the command line or reported in a PDF document.
+
+## Future Development
+
+There are a few planned features and known issues that are being worked on for Testio:
 
 - [-] Change the timeout parameter from regex based to array.
-- [-] Create the basic documentation structure.
 - [-] Add frontend generated with Flask templates.
 - [-] Create a desktop app with a browser that can run the Flask app using the QT framework. 
 
 ## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+We welcome contributions to Testio! If you would like to contribute, please follow these guidelines:
+
+1. Submit a pull request with a clear explanation of your changes
+1. Follow the style guide for the project (e.g. PEP8 for Python code)
+1. Include test cases for any new features or changes
 
 Please make sure to update tests as appropriate.
 

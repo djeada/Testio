@@ -8,7 +8,7 @@ from typing import Optional, List
 
 from fpdf import FPDF, HTMLMixin
 
-from src.testio_core.string_consts import (
+from src.core.string_consts import (
     COLOR_CODES, HEX_CODES, REPORT_MESSAGES
 )
 

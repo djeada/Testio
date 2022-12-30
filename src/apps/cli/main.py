@@ -6,9 +6,9 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from src.testio_core.output_comparator import OutputComparator, TestResult
-from src.testio_core.parsers import ConfigParser
-from src.testio_core.program_runner import ProgramOutput
+from src.core.output_comparator import OutputComparator, TestResult
+from src.core.parsers import ConfigParser
+from src.core.program_runner import ProgramOutput
 
 
 def parse_command_line_args(args: List[str]) -> Optional[Path]:

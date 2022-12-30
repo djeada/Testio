@@ -1,7 +1,7 @@
 import unittest
 import sys
 from io import StringIO
-from src.main_command_line import ProgramOutput
+from src.cli.main import ProgramOutput
 
 
 def check_output(function, expected_output):

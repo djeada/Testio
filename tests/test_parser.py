@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.main_command_line import ConfigParser
+from src.cli.main import ConfigParser
 
 
 def test_read_single_input_config_file(tmp_path):
