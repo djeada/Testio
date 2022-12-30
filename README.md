@@ -12,7 +12,11 @@ Testio is a simple and efficient testing framework that uses multiprocessing to 
 
 ## Overview
 
-Testio allows you to test the standard output of applications by specifying a directory containing the programs to be tested, as well as a set of inputs and expected outputs. Testio is implemented in Python and is divided into three separate interfaces: a command-line interface, a Flask server, and a Qt application. The command-line interface allows you to run tests and generate reports from the command line, the Flask server provides a web interface for running tests, and the Qt application embeds the Flask application in a desktop GUI.
+Testio was designed to provide a simple and efficient way to test the standard output of applications. It is specifically targeted at teachers, who can use it to easily test programs submitted by their students and ensure that they are functioning as expected.
+
+To use Testio for this purpose, teachers can specify a directory containing all the programs to be tested, as well as a set of inputs and expected outputs for each program. Testio will then run each program and compare the output to the expected output. If the output is correct, Testio will print a green checkmark. If the output is incorrect, Testio will print a red X. Additionally, for each program, Testio can generate a PDF report containing the results of the tests.
+
+In addition to being useful for teachers, Testio can also be used in the industry in CI/CD pipelines. In this context, Testio can be used to perform end-to-end tests on an application to ensure that it behaves as expected. For example, if you are using scripts or compiling executables, you can use Testio to test the output of your program for a given set of inputs. If a single test fails, Testio will exit with a non-zero exit code. If all tests pass, Testio will exit with a zero exit code, indicating that the application is functioning as expected.
 
 ## Requirements
 
