@@ -84,19 +84,22 @@ class ConfigParser:
     def __init__(self) -> None:
         pass
 
-    def parse(self, path: Path) -> TestSuiteConfig:
+    def parse_from_path(self, path: Path) -> TestSuiteConfig:
 
         if not self.validate(path):
             raise ConfigNotParsable()
 
         with open(path, "r") as f:
-            data = json.load(f)
+            data: dict = json.load(f)
 
-        command = data.get(CONFIG_SCHEMA.COMMAND)
-        path = data.get(CONFIG_SCHEMA.PATH)
+        return self.parse_from_json(data)
+
+    def parse_from_json(self, json_data: dict) -> Optional[TestSuiteConfig]:
+        command = json_data.get(CONFIG_SCHEMA.COMMAND)
+        path = json_data.get(CONFIG_SCHEMA.PATH)
 
         tests = []
-        for test_data in data.get(CONFIG_SCHEMA.TESTS, []):
+        for test_data in json_data.get(CONFIG_SCHEMA.TESTS, []):
             input_data = test_data.get(CONFIG_SCHEMA.TEST_INPUT)
             output_data = test_data.get(CONFIG_SCHEMA.TEST_OUTPUT)
             timeout = test_data.get(CONFIG_SCHEMA.TIMEOUT)

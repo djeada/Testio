@@ -12,14 +12,16 @@ def main():
         from apps.cli.main import main as cli_main
 
         cli_main(sys.argv[2:])
-    elif script == "flask":
-        from src.flask_app import main as flask_main
+
+    elif script == "--flask":
+        from apps.server.main import main as flask_main
 
         flask_main(sys.argv[2:])
-    elif script == "qt":
-        from src.qt_app import main as qt_main
 
-        qt_main(sys.argv[2:])
+    elif script == "--gui":
+        from src.gui.main import main as gui_main
+
+        gui_main(sys.argv[2:])
 
 
 if __name__ == "__main__":

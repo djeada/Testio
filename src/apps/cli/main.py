@@ -5,13 +5,13 @@ You can start the application by using the main function.
 
 import sys
 
+sys.path.append(".")
+
 from src.apps.cli.result_renderer import ResultRenderer
 from src.core.execution.data import (
     ExecutionManagerFactory,
     ComparisonResult,
 )
-
-sys.path.append(".")
 
 
 from pathlib import Path
@@ -30,7 +30,6 @@ class Parser(argparse.ArgumentParser):
 def main(argv: list) -> None:
     """
     Parses the command line arguments and starts the execution manager.
-
     :param argv: Command line arguments.
     :return: None
     """
@@ -39,7 +38,7 @@ def main(argv: list) -> None:
     path = Path(args.config_file)
 
     parser = ConfigParser()
-    test_suite_config = parser.parse(path)
+    test_suite_config = parser.parse_from_path(path)
     path_to_execution_manager_data = ExecutionManagerFactory.from_test_suite_config(
         test_suite_config, path
     )

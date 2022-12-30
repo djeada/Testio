@@ -59,6 +59,15 @@ This will start the Flask server and serve the web interface at http://localhost
 
     $ src/flask_app/flask_app.py --config path/to/config_file.json
 
+
+To update the test suite, use the following API endpoint:
+
+    curl -X POST \
+    --header "Content-Type: application/json" \
+    -d @/path/to/file.json \
+    http://localhost:5000/update_test_suite
+
+
 ### Desktop GUI
 
 To use the desktop GUI, run the qt_app.py script:
