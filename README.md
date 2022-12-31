@@ -78,6 +78,42 @@ This will start the Qt application and display the GUI. You can specify the path
 
     $ src/qt_app/qt_app.py --config path/to/config_file.json
 
+## Configuration
+
+To configure the script, you need to create a JSON file with the following structure:
+
+    {
+        "command": "python",
+        "path": "path/to/script.py",
+        "tests": [
+            {
+                "input": "input data",
+                "output": "output data",
+                "timeout": 10
+            },
+            {
+                "input": [
+                    "input line 1",
+                    "input line 2"
+                ],
+                "output": [
+                    "output line 1",
+                    "output line 2"
+                ],
+                "timeout": 15
+            }
+        ]
+    }
+
+* `command`: The command that will be used to execute the script. It can be a single executable (e.g. "python") or a compound command (e.g. "python path/to/script.py"). If you want to test an executable, you can leave this entry empty.
+* `path`: The path to the script file or folder. If it is a folder, all the files inside will be tested.
+* `tests`: A list of tests that will be run. There must be at least one test, but there can be many. Each test has the following properties:
+  - `input`: The input data for the test. It can be empty, a single entry, or an array of entries.
+  - `output`: The expected output data for the test. It can be empty, a single entry, or an array of entries.
+  - `timeout`: The timeout for the test in seconds.
+
+Note that input and output can be either empty, a single entry, or an array of entries. 
+
 
 ## Architecture
 
