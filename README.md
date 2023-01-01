@@ -12,11 +12,11 @@ Testio is a simple and efficient testing framework that uses multiprocessing to 
 
 ## Overview
 
-Testio was designed to provide a simple and efficient way to test the standard output of applications. It is specifically targeted at teachers, who can use it to easily test programs submitted by their students and ensure that they are functioning as expected.
+Testio was designed to provide an easy and efficient way to test the standard output of applications. It is particularly useful for teachers, who can use it to check programs submitted by their students and make sure they are working as intended.
 
-To use Testio for this purpose, teachers can specify a directory containing all the programs to be tested, as well as a set of inputs and expected outputs for each program. Testio will then run each program and compare the output to the expected output. If the output is correct, Testio will print a green checkmark. If the output is incorrect, Testio will print a red X. Additionally, for each program, Testio can generate a PDF report containing the results of the tests.
+To use the tool for this purpose, teachers can specify a directory with all the programs to be tested, along with a set of inputs and expected outputs for each program. The tool will then run each program and compare the output to the expected output. If the output is correct, it will print a green checkmark. If the output is incorrect, it will print a red X. Additionally, for each program, the tool can generate a PDF report with the test results.
 
-In addition to being useful for teachers, Testio can also be used in the industry in CI/CD pipelines. In this context, Testio can be used to perform end-to-end tests on an application to ensure that it behaves as expected. For example, if you are using scripts or compiling executables, you can use Testio to test the output of your program for a given set of inputs. If a single test fails, Testio will exit with a non-zero exit code. If all tests pass, Testio will exit with a zero exit code, indicating that the application is functioning as expected.
+In addition to being helpful for teachers, Testio can also be used in the industry in CI/CD pipelines. In this context, it can be used to perform end-to-end tests on an application to ensure it behaves as expected. For example, if you are using scripts or compiling executables, you can use the tool to test the output of your program for a given set of inputs. If a single test fails, the tool will exit with a non-zero exit code. If all tests pass, it will exit with a zero exit code, indicating that the application is functioning as expected.
 
 ## Requirements
 
