@@ -1,5 +1,72 @@
-<form action="/execute" method="post">
-    <input type="text" name="script_text">
-    <button type="submit">Submit</button>
-  </form>
-  
+<form id="form">
+  <textarea name="script_text"></textarea>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+  document.getElementById('form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    fetch('/execute', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      updateResult(data);
+    });
+  });
+</script>
+
+
+<div id="result">
+  <p>Total tests: <span id="total-tests"></span></p>
+  <p>Passed tests: <span id="passed-tests"></span>/<span id="total-tests"></span> (<span id="passed-tests-ratio"></span>%)</p>
+  <div id="test-results">
+      <!-- Test results will be displayed here -->
+  </div>
+</div>
+
+<script>
+  function updateResult(result) {
+      document.getElementById('total-tests').innerHTML = result.results.length;
+      document.getElementById('passed-tests').innerHTML = result.results.filter(r => r.result === 'ComparisonResult.MATCH').length;
+      document.getElementById('passed-tests-ratio').innerHTML = (result.passed_tests_ratio).toFixed(2);
+
+      /*
+      
+      {'results': [{'input': '3', 'expected_output': '6', 'output': '6', 'error': '', 'result': 'ComparisonResult.MATCH'}], 'passed_tests_ratio': 100.0} 
+      */
+
+      const testResultsContainer = document.getElementById('test-results');
+      testResultsContainer.innerHTML = ''; // Clear the container
+
+      result.results.forEach(testResult => {
+          const testResultContainer = document.createElement('div');
+          testResultContainer.classList.add('test-result');
+
+          const input = document.createElement('p');
+          input.innerHTML = `<strong>Input:</strong> ${testResult.input}`;
+          testResultContainer.appendChild(input);
+
+          const expectedOutput = document.createElement('p');
+          expectedOutput.innerHTML = `<strong>Expected output:</strong> ${testResult.expected_output}`;
+          testResultContainer.appendChild(expectedOutput);
+
+          const output = document.createElement('p');
+          output.innerHTML = `<strong>Output:</strong> ${testResult.output}`;
+          testResultContainer.appendChild(output);
+
+          const error = document.createElement('p');
+          error.innerHTML = `<strong>Error:</strong> ${testResult.error}`;
+          testResultContainer.appendChild(error);
+
+          const result = document.createElement('p');
+          result.innerHTML = `<strong>Result:</strong> ${testResult.result}`;
+          testResultContainer.appendChild(result);
+
+          testResultsContainer.appendChild(testResultContainer);
+      });
+  }
+</script>
+

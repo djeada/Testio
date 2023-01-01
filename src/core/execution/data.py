@@ -77,6 +77,19 @@ class ComparisonOutputData:
     error: str = ""
     result: ComparisonResult = ComparisonResult.MISMATCH
 
+    def to_dict(self) -> Dict[str, Union[str, int]]:
+        """
+        Converts the object to a dictionary.
+        :return: A dictionary representation of the object.
+        """
+        return {
+            "input": self.input,
+            "expected_output": self.expected_output,
+            "output": self.output,
+            "error": self.error,
+            "result": str(self.result),
+        }
+
 
 class ExecutionManagerFactory:
     @staticmethod
@@ -102,7 +115,7 @@ class ExecutionManagerFactory:
         return execution_manager_data_list
 
     @staticmethod
-    def from_test_suite_config(
+    def from_test_suite_config_local(
         test_suite_config: TestSuiteConfig, config_path: str
     ) -> Dict[str, List[ExecutionManagerInputData]]:
         """
@@ -136,3 +149,24 @@ class ExecutionManagerFactory:
                 )
             )
             return {path: execution_manager_data_list}
+
+    @staticmethod
+    def from_test_suite_config_server(
+        test_suite_config: TestSuiteConfig, path_to_program: Path
+    ) -> List[ExecutionManagerInputData]:
+        """
+        Creates a list of ExecutionManagerInputData objects based on the provided
+        TestSuiteConfig object and the path to the file being tested.
+
+        :param test_suite_config: The TestSuiteConfig object.
+        :param path_to_program: The path that server uses to access the file being
+                                tested.
+        :return: A list of ExecutionManagerInputData objects.
+        """
+
+        execution_manager_data_list = (
+            ExecutionManagerFactory._create_execution_manager_data(
+                test_suite_config, path_to_program
+            )
+        )
+        return execution_manager_data_list

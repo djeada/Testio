@@ -1,6 +1,7 @@
 """
 Contains miscellaneous functions.
 """
+import platform
 
 
 def files_in_dir(path: str) -> list:
@@ -24,5 +25,19 @@ def strip_carriage_return(text: str) -> str:
     """
     if text:
         return text.replace("\r", "")
+
+    return text
+
+
+def ensure_correct_newlines(text: str) -> str:
+    """
+    Ensures that the text has correct newlines.
+
+    :param text: The text to ensure correct newlines.
+    :return: The text with correct newlines.
+    """
+
+    if platform.system() != "Windows":
+        return text.replace("\r\n", "\n")
 
     return text

@@ -1,17 +1,30 @@
-from flask import Flask, request, jsonify, render_template
+from pathlib import Path
 
+from flask import Flask, request, jsonify, render_template
+import sys
+import argparse
 from src.core.config_parser.parsers import ConfigParser
 from src.core.execution.data import ComparisonResult, ExecutionManagerFactory
 from src.core.execution.manager import ExecutionManager
+from src.core.utils.misc import ensure_correct_newlines
 
 app = Flask(__name__)
 
 global_config = None
+PATH_TO_PROGRAM = "pogram.out"
 
 
-def update_tests(test_suite_config):
+class Parser(argparse.ArgumentParser):
+    def __init__(self, *args, **kwargs):
+        super(Parser, self).__init__(*args, **kwargs)
+        self.add_argument(
+            "config_file", type=str, help="Path to config file", nargs="?"
+        )
+
+
+def update_execution_manager_data(execution_manager_data):
     global global_config
-    global_config = test_suite_config
+    global_config = execution_manager_data
 
 
 @app.route("/")
@@ -27,8 +40,11 @@ def api_tests():
     parser = ConfigParser()
     test_suite_config = parser.parse_from_json(json_data)
 
-    # Update the tests
-    update_tests(test_suite_config)
+    # Update the execution manager data
+    execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
+        test_suite_config, PATH_TO_PROGRAM
+    )
+    update_execution_manager_data(execution_manager_data)
 
     # Return a success message
     return {"message": "Tests updated successfully"}, 200
@@ -38,16 +54,13 @@ def api_tests():
 def execute():
     # Get the script text from the request body
     global global_config
-    test_suite_config = global_config
+    execution_manager_data = global_config
 
-    script_text = request.get_data()
+    script_text = request.form["script_text"]
+
+    # create a file in PATH_TO_PROGRAM and write script_text to it
+    Path(PATH_TO_PROGRAM).write_text(script_text)
     manager = ExecutionManager()
-
-    # Create a list of ExecutionManagerInputData objects from the script text
-    # and the test_suite_config object
-    execution_manager_data = ExecutionManagerFactory.from_test_suite_config(
-        test_suite_config, ""
-    )
 
     # Initialize the result list and the passed test count
     results = []
@@ -66,13 +79,35 @@ def execute():
     total_test = len(results)
     passed_tests_ratio = passed_test_count / total_test * 100
 
-    # Return the results in JSON format
-    return {"results": results}, 200
+    # Return the results in JSON format, results are list of ComparisonOutputData objects which can be transformed to dict
+    return jsonify(
+        {
+            "results": [result.to_dict() for result in results],
+            "passed_tests_ratio": passed_tests_ratio,
+        }
+    )
 
 
 def main(argv: list = ()):
+
+    argument_parser = Parser()
+    args = argument_parser.parse_args(argv)
+    # check if config file is provided
+    if args.config_file:
+        path = args.config_file
+        parser = ConfigParser()
+        test_suite_config = parser.parse_from_path(path)
+        execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
+            test_suite_config, PATH_TO_PROGRAM
+        )
+        update_execution_manager_data(execution_manager_data)
+
     app.run()
 
 
 if __name__ == "__main__":
-    main()
+    argv = sys.argv[1]
+    # if argv is not list make it list
+    if not isinstance(argv, list):
+        argv = [argv]
+    main(argv)
