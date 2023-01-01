@@ -135,7 +135,7 @@ There are a few planned features and known issues that are being worked on for T
 
 - [x] Change the timeout parameter from regex based to array.
 - [x] Add frontend generated with Flask templates.
-- [-] Create a desktop app with a browser that can run the Flask app using the QT framework. 
+- [ ] Create a desktop app with a browser that can run the Flask app using the QT framework. 
 
 ## Contributing
 We welcome contributions to Testio! If you would like to contribute, please follow these guidelines:
