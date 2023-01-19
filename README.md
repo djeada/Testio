@@ -6,9 +6,9 @@
 <a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 
-<img src="https://github.com/djeada/Testio/blob/main/resources/logo.png" alt="Testio" width="200"/>
-
 Testio is a simple and efficient testing framework that uses multiprocessing to verify the standard output of applications. With Testio, you can quickly and easily write tests to ensure that your applications are functioning as expected. Whether you are a software developer looking to improve the quality of your code or a student learning about testing techniques, Testio is a valuable tool for your toolkit.
+
+![testio](https://user-images.githubusercontent.com/37275728/213443606-a996d565-5e33-4139-ba0a-61027fe1bdb9.png)
 
 ## Overview
 
