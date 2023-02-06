@@ -29,12 +29,12 @@ class ExecutionManager:
         """
 
         # convert input from list to string separated by newlines
-        data.input = "\n".join(data.input)
-        data.output = "\n".join(data.output)
+        data_input = "\n".join(data.input)
+        data_output = "\n".join(data.output)
 
         runner_input_data = ExecutionInputData(
             command=data.command,
-            input=data.input,
+            input=data_input,
             timeout=data.timeout,
         )
 
@@ -42,8 +42,8 @@ class ExecutionManager:
         execution_output = runner.run(runner_input_data)
 
         comparison_input_data = ComparisonInputData(
-            input=data.input,
-            expected_output=data.output,
+            input=data_input,
+            expected_output=data_output,
             execution_output=execution_output,
         )
 
