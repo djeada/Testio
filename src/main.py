@@ -1,27 +1,27 @@
 import argparse
-import sys
-from apps.cli.main import main as cli_main
 
 
 def main():
-    # Parse the first argument to determine which script to run
-    script = sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "script", type=str, choices=["cli", "flask", "gui"], help="Script to run"
+    )
+    args, extra_args = parser.parse_known_args()
 
-    # Pass the remaining arguments to the selected script
-    if script == "--cli":
+    if args.script == "cli":
         from apps.cli.main import main as cli_main
 
-        cli_main(sys.argv[2:])
+        cli_main(extra_args)
 
-    elif script == "--flask":
+    elif args.script == "flask":
         from apps.server.main import main as flask_main
 
-        flask_main(sys.argv[2:])
+        flask_main(extra_args)
 
-    elif script == "--gui":
-        from src.gui.main import main as gui_main
+    elif args.script == "gui":
+        from apps.gui.main import main as gui_main
 
-        gui_main(sys.argv[2:])
+        gui_main(extra_args)
 
 
 if __name__ == "__main__":
