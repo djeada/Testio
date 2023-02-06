@@ -41,24 +41,23 @@ Testio provides three different interfaces for running tests: a command-line int
 
 ### Command-line interface
 
-To use the CLI, run the main_command_line.py script and pass the path to the config file as an argument:
+To use the CLI, run the main.py script with the cli argument and pass the path to the config file as an argument:
 
-    $ src/main_command_line.py path/to/config_file.json
+    $ python src/main.py cli path/to/config_file.json
 
 The CLI will run the tests specified in the config file and display the results on the command line. You can also generate a PDF report containing the results by passing the --report flag:
 
-    $ src/main_command_line.py path/to/config_file.json --report
+    $ python src/main.py cli path/to/config_file.json --report
 
 ### Flask server
 
-To use the web interface, run the flask_app.py script:
+To use the web interface, run the main.py script with the flask argument:
 
-    $ src/flask_app/flask_app.py
+    $ python src/main.py flask
 
 This will start the Flask server and serve the web interface at http://localhost:5000. You can specify the path to the config file using the --config flag:
 
-    $ src/flask_app/flask_app.py --config path/to/config_file.json
-
+    $ python src/main.py flask --config path/to/config_file.json
 
 To update the test suite, use the following API endpoint:
 
@@ -67,16 +66,15 @@ To update the test suite, use the following API endpoint:
     -d @/path/to/file.json \
     http://localhost:5000/update_test_suite
 
-
 ### Desktop GUI
 
-To use the desktop GUI, run the qt_app.py script:
+To use the desktop GUI, run the main.py script with the gui argument:
 
-    $ src/qt_app/qt_app.py
+    $ python src/main.py gui
 
 This will start the Qt application and display the GUI. You can specify the path to the config file using the --config flag:
 
-    $ src/qt_app/qt_app.py --config path/to/config_file.json
+    $ python src/main.py gui --config path/to/config_file.json
 
 ## Configuration
 
