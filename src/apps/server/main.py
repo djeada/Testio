@@ -9,7 +9,6 @@ import argparse
 from src.core.config_parser.parsers import ConfigParser
 from src.core.execution.data import ComparisonResult, ExecutionManagerFactory
 from src.core.execution.manager import ExecutionManager
-from src.core.utils.misc import ensure_correct_newlines
 
 app = Flask(__name__)
 
