@@ -65,6 +65,8 @@ class ComparisonResult(Enum):
     TIMEOUT = auto()
 
 
+
+
 @dataclass
 class ComparisonOutputData:
     """
@@ -94,8 +96,8 @@ class ComparisonOutputData:
 class ExecutionManagerFactory:
     @staticmethod
     def _create_execution_manager_data(
-        test_suite_config: TestSuiteConfig,
-        path: str,
+            test_suite_config: TestSuiteConfig,
+            path: str,
     ) -> List[ExecutionManagerInputData]:
         """
         Helper function that creates a list of ExecutionManagerInputData objects
@@ -116,7 +118,7 @@ class ExecutionManagerFactory:
 
     @staticmethod
     def from_test_suite_config_local(
-        test_suite_config: TestSuiteConfig, config_path: str
+            test_suite_config: TestSuiteConfig, config_path: str
     ) -> Dict[str, List[ExecutionManagerInputData]]:
         """
         Creates a dictionary where the keys are paths to the tested files and the
@@ -136,10 +138,10 @@ class ExecutionManagerFactory:
             for file in Path(path).glob("*"):
                 execution_manager_data_list = (
                     ExecutionManagerFactory._create_execution_manager_data(
-                        test_suite_config, file
+                        test_suite_config, str(file)
                     )
                 )
-                file_data_dict[file] = execution_manager_data_list
+                file_data_dict[str(file)] = execution_manager_data_list
             return file_data_dict
         else:
             # path points to a file
@@ -150,10 +152,11 @@ class ExecutionManagerFactory:
             )
             return {path: execution_manager_data_list}
 
+    # TODO: This method is unnecessary. We could use from_test_suite_config_local() for server as well.
+    #  Leaving in for now.
     @staticmethod
     def from_test_suite_config_server(
-        test_suite_config: TestSuiteConfig, path_to_program: Path
-    ) -> List[ExecutionManagerInputData]:
+            test_suite_config: TestSuiteConfig) -> Dict[str, List[ExecutionManagerInputData]]:
         """
         Creates a list of ExecutionManagerInputData objects based on the provided
         TestSuiteConfig object and the path to the file being tested.
@@ -164,9 +167,24 @@ class ExecutionManagerFactory:
         :return: A list of ExecutionManagerInputData objects.
         """
 
-        execution_manager_data_list = (
-            ExecutionManagerFactory._create_execution_manager_data(
-                test_suite_config, path_to_program
+        path = test_suite_config.path
+
+        if Path(path).is_dir():
+            # path points to a folder
+            file_data_dict = {}
+            for file in Path(path).glob("*"):
+                execution_manager_data_list = (
+                    ExecutionManagerFactory._create_execution_manager_data(
+                        test_suite_config, str(file)
+                    )
+                )
+                file_data_dict[str(file)] = execution_manager_data_list
+            return file_data_dict
+        else:
+            # path points to a file
+            execution_manager_data_list = (
+                ExecutionManagerFactory._create_execution_manager_data(
+                    test_suite_config, path
+                )
             )
-        )
-        return execution_manager_data_list
+            return {path: execution_manager_data_list}

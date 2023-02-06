@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 
 from flask import Flask, request, jsonify, render_template
@@ -13,7 +14,7 @@ from src.core.execution.manager import ExecutionManager
 app = Flask(__name__)
 
 global_config = None
-PATH_TO_PROGRAM = "pogram.out"
+PATH_TO_PROGRAM = "program.out"
 
 
 class Parser(argparse.ArgumentParser):
@@ -43,9 +44,7 @@ def api_tests():
     test_suite_config = parser.parse_from_json(json_data)
 
     # Update the execution manager data
-    execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
-        test_suite_config, PATH_TO_PROGRAM
-    )
+    execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(test_suite_config)
     update_execution_manager_data(execution_manager_data)
 
     # Return a success message
@@ -61,33 +60,35 @@ def execute():
     script_text = request.form["script_text"]
 
     # create a file in PATH_TO_PROGRAM and write script_text to it
-    Path(PATH_TO_PROGRAM).write_text(script_text)
+    #Path(PATH_TO_PROGRAM).write_text(script_text)
     manager = ExecutionManager()
 
     # Initialize the result list and the passed test count
-    results = []
-    passed_test_count = 0
+    json_response = {"total_tests": 0, "total_passed_tests": 0, "results": []}
 
     # Iterate through the execution_manager_data and run the tests
-    for data in execution_manager_data:
-        result = manager.run(data)
-        results.append(result)
+    for path, execution_manager_data in execution_manager_data.items():
+        print(path)
+        test_num = 1
+        results = []
 
-        # If the test passed, increase the passed test count
-        if result.result == ComparisonResult.MATCH:
-            passed_test_count += 1
+        for data in execution_manager_data:
+            result = manager.run(data)
+            results.append(result)
+            json_response["total_tests"] += 1
+            if result.result == ComparisonResult.MATCH:
+                json_response["total_passed_tests"] += 1
+            test_num += 1
 
-    # Calculate the passed tests ratio
-    total_test = len(results)
-    passed_tests_ratio = passed_test_count / total_test * 100
+        num_tests = len(results)
+        passed_tests = len([result for result in results if result.result == ComparisonResult.MATCH])
+        ratio = passed_tests / num_tests * 100
+        json_response["results"].append({"tests": [result.to_dict() for result in results],
+                                         "passed_tests_ratio": ratio, "name": Path(path).name})
 
-    # Return the results in JSON format, results are list of ComparisonOutputData objects which can be transformed to dict
-    return jsonify(
-        {
-            "results": [result.to_dict() for result in results],
-            "passed_tests_ratio": passed_tests_ratio,
-        }
-    )
+    # Return the results in JSON format, results are list of ComparisonOutputData objects which can be transformed to
+    # dict
+    return jsonify(json_response)
 
 
 def main(argv: list = ()):
@@ -99,9 +100,7 @@ def main(argv: list = ()):
         path = args.config_file
         parser = ConfigParser()
         test_suite_config = parser.parse_from_path(path)
-        execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
-            test_suite_config, PATH_TO_PROGRAM
-        )
+        execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(test_suite_config)
         update_execution_manager_data(execution_manager_data)
 
     app.run()

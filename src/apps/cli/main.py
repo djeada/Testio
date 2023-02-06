@@ -40,7 +40,7 @@ def main(argv: list) -> None:
     parser = ConfigParser()
     test_suite_config = parser.parse_from_path(path)
     path_to_execution_manager_data = (
-        ExecutionManagerFactory.from_test_suite_config_local(test_suite_config, path)
+        ExecutionManagerFactory.from_test_suite_config_local(test_suite_config, str(path))
     )
     renderer = ResultRenderer()
     manager = ExecutionManager()
