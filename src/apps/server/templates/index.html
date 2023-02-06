@@ -7,7 +7,7 @@
   document.getElementById('form').addEventListener('submit', function(event) {
     event.preventDefault();
     const formData = new FormData(this);
-    fetch('/execute', {
+    fetch('/execute_tests', {
       method: 'POST',
       body: formData
     })
