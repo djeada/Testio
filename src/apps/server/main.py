@@ -2,6 +2,9 @@ from pathlib import Path
 
 from flask import Flask, request, jsonify, render_template
 import sys
+
+sys.path.append(".")
+
 import argparse
 from src.core.config_parser.parsers import ConfigParser
 from src.core.execution.data import ComparisonResult, ExecutionManagerFactory
