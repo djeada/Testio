@@ -1,25 +1,30 @@
-import copy
-from pathlib import Path
 
+import copy
+import argparse
+import dataclasses
+from pathlib import Path
 from flask import Flask, request, jsonify, render_template
 import sys
 
 sys.path.append(".")
 
-import argparse
 from src.core.config_parser.parsers import ConfigParser
 from src.core.execution.data import ComparisonResult, ExecutionManagerFactory
 from src.core.execution.manager import ExecutionManager
 
-app = Flask(__name__)
+@dataclasses.dataclass
+class GlobalConfiguration:
+    execution_manager_data = None
 
-global_config = None
+
+app = Flask(__name__)
+global_config = GlobalConfiguration()
 PATH_TO_PROGRAM = "program.out"
 
 
-class Parser(argparse.ArgumentParser):
+class ArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
-        super(Parser, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.add_argument(
             "config_file", type=str, help="Path to config file", nargs="?"
         )
@@ -27,16 +32,16 @@ class Parser(argparse.ArgumentParser):
 
 def update_execution_manager_data(execution_manager_data):
     global global_config
-    global_config = execution_manager_data
+    global_config.execution_manager_data = execution_manager_data
 
 
 @app.route("/")
-def index():
+def index_page():
     return render_template("index.html")
 
 
 @app.route("/update_test_suite", methods=["POST"])
-def api_tests():
+def update_test_suite():
     # Get the test data from the request body
     json_data = request.get_json()
 
@@ -51,11 +56,10 @@ def api_tests():
     return {"message": "Tests updated successfully"}, 200
 
 
-@app.route("/execute", methods=["POST"])
-def execute():
-    # Get the script text from the request body
+@app.route("/execute_tests", methods=["POST"])
+def execute_tests():
     global global_config
-    execution_manager_data = global_config
+    execution_manager_data = global_config.execution_manager_data
 
     script_text = request.form["script_text"]
 
@@ -89,13 +93,14 @@ def execute():
     # Return the results in JSON format, results are list of ComparisonOutputData objects which can be transformed to
     # dict
     return jsonify(json_response)
+    
 
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
 
-def main(argv: list = ()):
-
-    argument_parser = Parser()
+    argument_parser = ArgumentParser()
     args = argument_parser.parse_args(argv)
-    # check if config file is provided
     if args.config_file:
         path = args.config_file
         parser = ConfigParser()
@@ -107,8 +112,4 @@ def main(argv: list = ()):
 
 
 if __name__ == "__main__":
-    argv = sys.argv[1]
-    # if argv is not list make it list
-    if not isinstance(argv, list):
-        argv = [argv]
-    main(argv)
+    main()
