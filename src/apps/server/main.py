@@ -51,30 +51,9 @@ def update_execution_manager_data(execution_manager_data):
     parse_config_data()
 
 
-# TODO Used to parse the config data from execution manager to pass it to the template during render.
-#  It's kind of a mess. If there's an easier way to do this, try and fix it.
 def parse_config_data():
-    global global_test_suite_data
-    config_data = {}
-    if len(global_config.execution_manager_data.keys()) == 1:
-        # It's just one file, so the path is the file. USer iter to get the first (and only) key
-        config_data["path"] = str(
-            Path(next(iter(global_config.execution_manager_data)))
-        )
-    else:
-        # It's a directory, so we need to get rid of the filename.
-        config_data["path"] = str(
-            Path(next(iter(global_config.execution_manager_data))).parent
-        )
-    input_data = [x for x in global_config.execution_manager_data.values()][0][0]
-    config_data["command"] = input_data.command.split(" ")[0]
-    config_data["timeout"] = input_data.timeout
-    config_data["tests"] = []
-    for test in global_test_suite_data.tests:
-        config_data["tests"].append(
-            {"input": test.input, "output": test.output, "timeout": test.timeout}
-        )
-    return config_data
+    global global_config
+    return global_config.execution_manager_data
 
 
 @app.route("/")
@@ -101,14 +80,13 @@ def update_test_suite():
     return {"message": "Tests updated successfully"}, 200
 
 
-@app.route("/execute_tests", methods=["GET"])
+@app.route("/execute_tests", methods=["POST"])
 def execute_tests():
     global global_config
     execution_manager_data = global_config.execution_manager_data
 
     # create a file in PATH_TO_PROGRAM and write script_text to it.
-    # We probably don't need this? We'll just use whatever was initially set or updated via update_test_suite.
-    # Path(PATH_TO_PROGRAM).write_text(script_text)
+    script_text = request.json["script_text"]
     manager = ExecutionManager()
 
     # Initialize the result list and the passed test count
@@ -117,6 +95,8 @@ def execute_tests():
     # Iterate through the execution_manager_data and run the tests
     for path, execution_manager_data in execution_manager_data.items():
         print(path)
+        Path(path).write_text(script_text)
+
         test_num = 1
         results = []
 

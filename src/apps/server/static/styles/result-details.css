@@ -5,4 +5,20 @@
     margin-left: 0.1em;
     border-radius: 20px;
     background-color: var(--color-primary-dark);
+    padding: 1em;
+}
+
+textarea[name="script_text"] {
+    padding: 5em;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    padding: 12px;
+    color: white;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
