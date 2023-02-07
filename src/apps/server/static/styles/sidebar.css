@@ -1,0 +1,224 @@
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-primary-dark);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.sidebar__header {
+    display: flex;
+    flex-direction: row;
+    padding: 0 1em;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-primary);
+}
+
+.sidebar__header:hover {
+    cursor: pointer;
+    opacity: 80%;
+}
+
+.sidebar__popup-menu {
+    position: relative;
+    display: flex;
+    width: 90%;
+    margin: 0.7em auto;
+    z-index: 1000;
+}
+
+.sidebar__menu-items {
+    display: none;
+    position: absolute;
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/*Show the menu when popup menu has --show class*/
+.sidebar__popup-menu--show .sidebar__menu-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar__menu-item {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 1em;
+    font-weight: bold;
+    font-size: 0.9em;
+    background-color: var(--color-secondary);
+}
+
+
+.sidebar__menu-item:hover {
+    background-color: var(--color-accent);
+    cursor: pointer;
+}
+
+.arrow-down{
+    border: solid var(--text-primary);
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+
+.sidebar__config-info-container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-primary);
+    margin: 0 0.5em;
+    border-radius: 10px;
+}
+
+.config-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0.4em 0.7em;
+}
+
+.config-info__header {
+    font-size: 0.75em;
+    opacity: 80%;
+}
+
+.config-info__value {
+    font-size: 1em;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar__tests-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5em;
+}
+
+.sidebar__tests-accordian {
+    font-weight: bold;
+    padding: 0.5em;
+    border-radius: 10px;
+}
+
+.sidebar__tests-accordian:hover {
+    cursor: pointer;
+    background-color: var(--color-primary-dark);
+}
+
+.tests-accordian_panel {
+    padding: 0.5em;
+    display: none;
+    overflow: hidden;
+    background-color: var(--color-primary-dark);
+    border-radius: 10px;
+}
+
+.sidebar__tests-accordian-active .tests-accordian_panel {
+    display: block;
+}
+
+.sidebar__test-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+}
+
+.sidebar__run-tests-button {
+    width: 95%;
+    margin: 1em auto;
+    padding: 0.4em;
+    font-size: 1.2em;
+    border-radius: 50px;
+    border: 1px solid white;
+    overflow: hidden;
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.sidebar__run-tests-button:hover:enabled {
+    background-color: var(--color-primary-light);
+    cursor: pointer;
+}
+
+.sidebar__run-tests-button:disabled {
+    opacity: 20%;
+}
+
+.sidebar__loading-container {
+    position: relative;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.sidebar__run-loading-spinner {
+  /* Spinner size and color */
+  width: 1.5rem;
+  height: 1.5rem;
+  border-top-color: white;
+  border-left-color: white;
+
+  /* Additional spinner styles */
+  animation: spinner 400ms linear infinite;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@keyframes spinner {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.sidebar__test-results-container {
+    display: none;
+    flex-direction: column;
+    width: 95%;
+    margin: 0 auto;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-radius: 20px;
+    background-color: var(--color-primary);
+    align-items: center;
+}
+
+.sidebar__test-result {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    font-size: 0.9em;
+    font-weight: bold;
+    padding: 0.5em;
+    width: 90%;
+    border-radius: 10px;
+}
+
+.sidebar__success-fail-img {
+    width: 1.5em;
+}
+
+.sidebar__test-result:hover {
+    background-color: var(--color-primary-dark);
+    cursor: pointer;
+}
+
+.sidebar__test-result--failed {
+    color: red;
+}

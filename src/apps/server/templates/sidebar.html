@@ -1,0 +1,70 @@
+<div class="sidebar">
+    <div class="sidebar__header">
+        <h4>config.json</h4>
+        <div class="arrow-down"></div>
+    </div>
+
+    <div class="sidebar__popup-menu">
+        <div class="sidebar__menu-items">
+            <div class="sidebar__menu-item sidebar__change-config-file">Change config file</div>
+            <div class="sidebar__menu-item sidebar__edit-config">Edit config</div>
+        </div>
+    </div>
+
+    <div class="sidebar__config-info-container">
+        <div class="config-info config-info__command">
+            <div class="config-info__header">Command</div>
+            <div class="config-info__value">{{config_data.command}}</div>
+        </div>
+
+        <div class="config-info config-info__path">
+            <div class="config-info__header">Path</div>
+            <div class="config-info__value" title="{{config_data.path}}">
+                {{ config_data.path }}
+            </div>
+        </div>
+
+        <div class="config-info config-info__tests">
+            <div class="config-info__header">Tests</div>
+            <div class="sidebar__tests-container">
+                {% for test in config_data.tests %}
+                <div class="sidebar__tests-accordian">
+                    Test{{ loop.index }}
+                    <div class="tests-accordian_panel">
+                        <div class="sidebar__test_info">
+                            <div class="config-info">
+                                <div class="config-info__header">Input</div>
+                                <div class="config-info__value">{{ test.input }}</div>
+                            </div>
+
+                            <div class="config-info">
+                                <div class="config-info__header">Expected Output</div>
+                                <div class="config-info__value">{{ test.output }}</div>
+                            </div>
+
+                            <div class="config-info">
+                                <div class="config-info__header">Timeout</div>
+                                <div class="config-info__value">{{ test.timeout }} second(s)</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <button class="sidebar__run-tests-button">
+        Run Tests
+    </button>
+    <div class="sidebar__loading-container">
+        Running
+        <span class="sidebar__run-loading-spinner"></span>
+    </div>
+
+    <div class="sidebar__test-results-container">
+
+    </div>
+
+</div>
