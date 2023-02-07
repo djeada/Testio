@@ -1,0 +1,77 @@
+
+:root {
+    --color-primary: #197bbd;
+    --color-primary-dark: #125E8A;
+    --color-primary-light: #21a2f9;
+    --color-secondary: #3d3b3c;
+    --color-secondary-dark: #323031;
+    --color-accent: #204b57;
+    --text-primary: white;
+}
+
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75%;
+    height: 100vh;
+    margin: 0 auto;
+    padding: 0;
+    font-family: Ariel, Helvetica, sans-serif;
+    color: var(--text-primary);
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+.content {
+    display: grid;
+    height: 99%;
+    width: 100%;
+    grid-template-columns: 3fr 9fr;
+}
+
+
+.tests-table {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+}
+
+.table-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    border: 1px solid black;
+    padding:10px;
+}
+
+.table-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    min-width: 15%;
+}
+
+.table-item p {
+    padding: 0;
+    margin: 0;
+}
+
+.passed {
+    color: green;
+}
+
+.failed {
+    color: red;
+}
