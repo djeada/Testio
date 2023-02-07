@@ -1,7 +1,14 @@
 import argparse
 import dataclasses
 from pathlib import Path
-from flask import Flask, request, jsonify, render_template, Response, stream_with_context
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    render_template,
+    Response,
+    stream_with_context,
+)
 import sys
 
 sys.path.append(".")
@@ -19,7 +26,9 @@ class GlobalConfiguration:
 app = Flask(__name__)
 app.debug = True
 global_config = GlobalConfiguration()
-global_test_suite_data = None  # TODO: This is just a quick and dirty fix to get the information I need.
+global_test_suite_data = (
+    None  # TODO: This is just a quick and dirty fix to get the information I need.
+)
 PATH_TO_PROGRAM = "program.out"
 
 
@@ -49,16 +58,22 @@ def parse_config_data():
     config_data = {}
     if len(global_config.execution_manager_data.keys()) == 1:
         # It's just one file, so the path is the file. USer iter to get the first (and only) key
-        config_data["path"] = str(Path(next(iter(global_config.execution_manager_data))))
+        config_data["path"] = str(
+            Path(next(iter(global_config.execution_manager_data)))
+        )
     else:
         # It's a directory, so we need to get rid of the filename.
-        config_data["path"] = str(Path(next(iter(global_config.execution_manager_data))).parent)
+        config_data["path"] = str(
+            Path(next(iter(global_config.execution_manager_data))).parent
+        )
     input_data = [x for x in global_config.execution_manager_data.values()][0][0]
     config_data["command"] = input_data.command.split(" ")[0]
     config_data["timeout"] = input_data.timeout
     config_data["tests"] = []
     for test in global_test_suite_data.tests:
-        config_data["tests"].append({"input": test.input, "output": test.output, "timeout": test.timeout})
+        config_data["tests"].append(
+            {"input": test.input, "output": test.output, "timeout": test.timeout}
+        )
     return config_data
 
 
@@ -77,7 +92,9 @@ def update_test_suite():
     test_suite_config = parser.parse_from_json(json_data)
 
     # Update the execution manager data
-    execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(test_suite_config)
+    execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
+        test_suite_config
+    )
     update_execution_manager_data(execution_manager_data)
 
     # Return a success message
@@ -112,10 +129,17 @@ def execute_tests():
             test_num += 1
 
         num_tests = len(results)
-        passed_tests = len([result for result in results if result.result == ComparisonResult.MATCH])
+        passed_tests = len(
+            [result for result in results if result.result == ComparisonResult.MATCH]
+        )
         ratio = passed_tests / num_tests * 100
-        json_response["results"].append({"tests": [result.to_dict() for result in results],
-                                         "passed_tests_ratio": ratio, "name": Path(path).name})
+        json_response["results"].append(
+            {
+                "tests": [result.to_dict() for result in results],
+                "passed_tests_ratio": ratio,
+                "name": Path(path).name,
+            }
+        )
 
     # Return the results in JSON format, results are list of ComparisonOutputData objects which can be transformed to
     # dict
@@ -133,7 +157,9 @@ def main(argv=None):
         parser = ConfigParser()
         test_suite_config = parser.parse_from_path(path)
         set_global_test_suite_data(test_suite_config)
-        execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(test_suite_config)
+        execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
+            test_suite_config
+        )
         update_execution_manager_data(execution_manager_data)
 
     app.run()

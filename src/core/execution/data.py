@@ -65,8 +65,6 @@ class ComparisonResult(Enum):
     TIMEOUT = auto()
 
 
-
-
 @dataclass
 class ComparisonOutputData:
     """
@@ -96,8 +94,8 @@ class ComparisonOutputData:
 class ExecutionManagerFactory:
     @staticmethod
     def _create_execution_manager_data(
-            test_suite_config: TestSuiteConfig,
-            path: str,
+        test_suite_config: TestSuiteConfig,
+        path: str,
     ) -> List[ExecutionManagerInputData]:
         """
         Helper function that creates a list of ExecutionManagerInputData objects
@@ -118,7 +116,7 @@ class ExecutionManagerFactory:
 
     @staticmethod
     def from_test_suite_config_local(
-            test_suite_config: TestSuiteConfig, config_path: str
+        test_suite_config: TestSuiteConfig, config_path: str
     ) -> Dict[str, List[ExecutionManagerInputData]]:
         """
         Creates a dictionary where the keys are paths to the tested files and the
@@ -156,7 +154,8 @@ class ExecutionManagerFactory:
     #  Leaving in for now.
     @staticmethod
     def from_test_suite_config_server(
-            test_suite_config: TestSuiteConfig) -> Dict[str, List[ExecutionManagerInputData]]:
+        test_suite_config: TestSuiteConfig,
+    ) -> Dict[str, List[ExecutionManagerInputData]]:
         """
         Creates a list of ExecutionManagerInputData objects based on the provided
         TestSuiteConfig object and the path to the file being tested.
