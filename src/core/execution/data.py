@@ -4,7 +4,7 @@ Data classes for execution module.
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import List, Union, Dict
+from typing import Dict, List, Union
 
 from src.core.config_parser.data import TestSuiteConfig
 

@@ -1,38 +1,31 @@
+"""
+This module is the entry point of the application.
+It sets up the `TestioServer` application, parses the command-line arguments, and updates the execution manager data if
+a config file is provided.
+"""
 import argparse
-import dataclasses
-from pathlib import Path
-from flask import (
-    Flask,
-    request,
-    jsonify,
-    render_template,
-    Response,
-    stream_with_context,
-)
 import sys
+from typing import Optional, List
 
 sys.path.append(".")
 
+from src.apps.server.app.testio_server import TestioServer
+from src.apps.server.database.configuration_data import update_execution_manager_data
 from src.core.config_parser.parsers import ConfigParser
-from src.core.execution.data import ComparisonResult, ExecutionManagerFactory
-from src.core.execution.manager import ExecutionManager
+from src.core.execution.data import ExecutionManagerFactory
 
-
-@dataclasses.dataclass
-class GlobalConfiguration:
-    execution_manager_data = None
-
-
-app = Flask(__name__)
+app = TestioServer(__name__)
 app.debug = True
-global_config = GlobalConfiguration()
-global_test_suite_data = (
-    None  # TODO: This is just a quick and dirty fix to get the information I need.
-)
+
 PATH_TO_PROGRAM = "program.out"
+global_test_suite_data = None
 
 
 class ArgumentParser(argparse.ArgumentParser):
+    """
+    Custom argument parser class that adds the `config_file` argument.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_argument(
@@ -41,92 +34,19 @@ class ArgumentParser(argparse.ArgumentParser):
 
 
 def set_global_test_suite_data(test_suite_data):
+    """
+    Set the global variable `global_test_suite_data` with the given `test_suite_data`.
+    """
     global global_test_suite_data
     global_test_suite_data = test_suite_data
 
 
-def update_execution_manager_data(execution_manager_data):
-    global global_config
-    global_config.execution_manager_data = execution_manager_data
-    parse_config_data()
+def main(argv: Optional[List[str]] = None):
+    """
+    The main function of the script.
 
-
-def parse_config_data():
-    global global_config
-    return global_config.execution_manager_data
-
-
-@app.route("/")
-def index_page():
-    # Pass the config data to the template, so the web page has access to it.
-    return render_template("index.html", config_data=parse_config_data())
-
-
-@app.route("/update_test_suite", methods=["POST"])
-def update_test_suite():
-    # Get the test data from the request body
-    json_data = request.get_json()
-
-    parser = ConfigParser()
-    test_suite_config = parser.parse_from_json(json_data)
-
-    # Update the execution manager data
-    execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
-        test_suite_config
-    )
-    update_execution_manager_data(execution_manager_data)
-
-    # Return a success message
-    return {"message": "Tests updated successfully"}, 200
-
-
-@app.route("/execute_tests", methods=["POST"])
-def execute_tests():
-    global global_config
-    execution_manager_data = global_config.execution_manager_data
-
-    # create a file in PATH_TO_PROGRAM and write script_text to it.
-    script_text = request.json["script_text"]
-    manager = ExecutionManager()
-
-    # Initialize the result list and the passed test count
-    json_response = {"total_tests": 0, "total_passed_tests": 0, "results": []}
-
-    # Iterate through the execution_manager_data and run the tests
-    for path, execution_manager_data in execution_manager_data.items():
-        print(path)
-        Path(path).write_text(script_text)
-
-        test_num = 1
-        results = []
-
-        for data in execution_manager_data:
-            result = manager.run(data)
-            results.append(result)
-            json_response["total_tests"] += 1
-            if result.result == ComparisonResult.MATCH:
-                json_response["total_passed_tests"] += 1
-            test_num += 1
-
-        num_tests = len(results)
-        passed_tests = len(
-            [result for result in results if result.result == ComparisonResult.MATCH]
-        )
-        ratio = passed_tests / num_tests * 100
-        json_response["results"].append(
-            {
-                "tests": [result.to_dict() for result in results],
-                "passed_tests_ratio": ratio,
-                "name": Path(path).name,
-            }
-        )
-
-    # Return the results in JSON format, results are list of ComparisonOutputData objects which can be transformed to
-    # dict
-    return jsonify(json_response)
-
-
-def main(argv=None):
+    :param argv: List of command-line arguments. Defaults to `sys.argv[1:]`.
+    """
     if argv is None:
         argv = sys.argv[1:]
 

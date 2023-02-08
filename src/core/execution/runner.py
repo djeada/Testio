@@ -2,11 +2,12 @@
 Defines the Runner class for executing an external program.
 """
 
-import subprocess
 import multiprocessing
-from .data import ExecutionInputData, ExecutionOutputData
+import subprocess
 
 from src.core.utils.misc import strip_carriage_return
+
+from .data import ExecutionInputData, ExecutionOutputData
 
 
 class Runner:

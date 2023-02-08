@@ -4,9 +4,9 @@ Defines the result renderer.
 The result renderer is responsible for rendering the result of a comparison between
 the expected output and the actual output of a tested program.
 """
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 
-from src.apps.cli.string_consts import REPORT_MESSAGES, COLOR_CODES
+from src.apps.cli.string_consts import COLOR_CODES, REPORT_MESSAGES
 from src.core.execution.data import ComparisonOutputData, ComparisonResult
 
 
@@ -22,7 +22,6 @@ class ResultRendererStrategy(ABC):
         :param comparison_output_data: The data to render.
         :return: The rendered result.
         """
-        pass
 
 
 class ResultRendererStrategyMatch(ResultRendererStrategy):

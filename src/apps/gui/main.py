@@ -1,8 +1,9 @@
-import requests
-from PyQt6.QtWidgets import QMainWindow, QWidget, QLabel, QVBoxLayout, QApplication
-from flask import Flask, render_template
-from threading import Thread
 import sys
+from threading import Thread
+
+import requests
+from flask import Flask, render_template
+from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget
 
 TEMPLATE_FOLDER = "../server/templates/"
 

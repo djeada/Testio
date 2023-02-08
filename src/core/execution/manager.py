@@ -4,14 +4,14 @@ ExecutionManager is responsible for creating and using appropriate
 objects in order to run the specified program and compare its output
 with the expected output.
 """
-from .runner import Runner
 from .comparator import OutputComparator
 from .data import (
-    ExecutionManagerInputData,
-    ExecutionInputData,
     ComparisonInputData,
     ComparisonOutputData,
+    ExecutionInputData,
+    ExecutionManagerInputData,
 )
+from .runner import Runner
 
 
 class ExecutionManager:

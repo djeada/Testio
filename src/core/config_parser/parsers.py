@@ -54,11 +54,12 @@ TestSuiteConfig(
     ]
 )
 """
-from dataclasses import dataclass
-from typing import Optional
 import json
+from dataclasses import dataclass
 from pathlib import Path
-from .data import TestSuiteConfig, TestData
+from typing import Optional
+
+from .data import TestData, TestSuiteConfig
 
 
 class ConfigNotParsable(Exception):

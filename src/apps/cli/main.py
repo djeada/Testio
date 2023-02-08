@@ -7,17 +7,12 @@ import sys
 
 sys.path.append(".")
 
-from src.apps.cli.result_renderer import ResultRenderer
-from src.core.execution.data import (
-    ExecutionManagerFactory,
-    ComparisonResult,
-)
-
-
-from pathlib import Path
 import argparse
+from pathlib import Path
 
+from src.apps.cli.result_renderer import ResultRenderer
 from src.core.config_parser.parsers import ConfigParser
+from src.core.execution.data import ComparisonResult, ExecutionManagerFactory
 from src.core.execution.manager import ExecutionManager
 
 
