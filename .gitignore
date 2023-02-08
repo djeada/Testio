@@ -2,6 +2,7 @@
 *cache*
 *.pyc
 .idea
+*.db
 
 # Distribution / packaging
 .Python

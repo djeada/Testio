@@ -1,26 +1,33 @@
+import sys
+
+sys.path.append(".")
+
 import json
 from dataclasses import asdict
 
 import pytest
 
-from src.apps.server.database.configuration_data import global_config
+from src.apps.server.database.configuration_data import \
+    update_execution_manager_data
 from src.apps.server.main import app
-from src.core.config_parser.data import TestSuiteConfig, TestData
+from src.core.config_parser.data import TestData, TestSuiteConfig
 from src.core.execution.data import ExecutionManagerInputData
 
 
 @pytest.fixture
 def client():
-    global_config.execution_manager_data = {
-        "program.out": [
-            ExecutionManagerInputData(
-                command='python3 "program.out"',
-                input=[],
-                output=["Hello World"],
-                timeout=1,
-            )
-        ]
-    }
+    update_execution_manager_data(
+        {
+            "program.py": [
+                ExecutionManagerInputData(
+                    command='python3 "program.py"',
+                    input=[],
+                    output=["Hello World"],
+                    timeout=1,
+                )
+            ]
+        }
+    )
     app.testing = True
     with app.test_client() as client:
         yield client
@@ -60,7 +67,7 @@ def test_execute_endpoint(client):
     assert response.get_json() == {
         "results": [
             {
-                "name": "program.out",
+                "name": "program.py",
                 "passed_tests_ratio": 100.0,
                 "tests": [
                     {

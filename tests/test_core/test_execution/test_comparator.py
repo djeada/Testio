@@ -1,13 +1,10 @@
-import pytest
 from typing import Dict, Union
 
+import pytest
+
 from src.core.execution.comparator import OutputComparator
-from src.core.execution.data import (
-    ComparisonInputData,
-    ExecutionOutputData,
-    ComparisonOutputData,
-    ComparisonResult,
-)
+from src.core.execution.data import (ComparisonInputData, ComparisonOutputData,
+                                     ComparisonResult, ExecutionOutputData)
 
 
 def test_compare_timeout():
