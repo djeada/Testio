@@ -5,6 +5,7 @@ sys.path.append(".")
 
 import sqlite3
 from typing import Dict, List, Optional
+import json
 
 from src.core.execution.data import ExecutionManagerInputData
 
@@ -65,15 +66,12 @@ class Database:
         return Database._instance
 
 
-import json
-
-
 class ExecutionManagerDataTable:
     def __init__(self, db_path):
-        self.conn = sqlite3.connect(db_path)
-        self.cursor = self.conn.cursor()
+        self.db = Database.get_instance(db_path)
+        self.db.__enter__()
 
-        self.cursor.execute(
+        self.db.execute(
             """
             CREATE TABLE IF NOT EXISTS test_data (
                 filename TEXT PRIMARY KEY,
@@ -89,7 +87,7 @@ class ExecutionManagerDataTable:
                 [asdict(input_data) for input_data in test_data]
             )
 
-            self.cursor.execute(
+            self.db.execute(
                 """
                 INSERT OR REPLACE INTO test_data (filename, data)
                 VALUES (?, ?)
@@ -97,22 +95,21 @@ class ExecutionManagerDataTable:
                 (filename, serialized_data),
             )
 
-        self.conn.commit()
-
     def retrieve_table(self) -> Optional[Dict[str, List[ExecutionManagerInputData]]]:
         """
         Retrieve all the test data.
 
-        :return: A dictionary where filenames are keys and values are lists of `ExecutionManagerInputData` objects, or None if no data is found.
+        :return: A dictionary where filenames are keys and values are lists of `ExecutionManagerInputData` objects,
+        or None if no data is found.
         """
-        self.cursor.execute(
+        self.db.execute(
             """
             SELECT filename, data
             FROM test_data
         """
         )
 
-        result = self.cursor.fetchall()
+        result = self.db.cursor.fetchall()
         if result:
             # Deserialize the test data from a string
             test_data_dict = {}
@@ -134,7 +131,7 @@ class ExecutionManagerDataTable:
         :param filename: The file name to retrieve test data for.
         :return: A list of `ExecutionManagerInputData` objects for the file, or None if no data is found.
         """
-        self.cursor.execute(
+        self.db.execute(
             """
             SELECT data
             FROM test_data
@@ -143,7 +140,7 @@ class ExecutionManagerDataTable:
             (filename,),
         )
 
-        result = self.cursor.fetchone()
+        result = self.db.cursor.fetchone()
         if result:
             # Deserialize the test data from a string
             serialized_data = result[0]
@@ -153,4 +150,4 @@ class ExecutionManagerDataTable:
             return None
 
     def close(self):
-        self.conn.close()
+        self.db.__exit__(None, None, None)
