@@ -3,7 +3,8 @@ from dataclasses import asdict
 
 import pytest
 
-from src.apps.server.main import app, global_config
+from src.apps.server.database.configuration_data import global_config
+from src.apps.server.main import app
 from src.core.config_parser.data import TestSuiteConfig, TestData
 from src.core.execution.data import ExecutionManagerInputData
 
