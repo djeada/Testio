@@ -5,7 +5,7 @@ a config file is provided.
 """
 import argparse
 import sys
-from typing import Optional, List
+from typing import List, Optional
 
 sys.path.append(".")
 
@@ -16,9 +16,6 @@ from src.core.execution.data import ExecutionManagerFactory
 
 app = TestioServer(__name__)
 app.debug = True
-
-PATH_TO_PROGRAM = "program.out"
-global_test_suite_data = None
 
 
 class ArgumentParser(argparse.ArgumentParser):
