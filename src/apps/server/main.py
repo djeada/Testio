@@ -30,14 +30,6 @@ class ArgumentParser(argparse.ArgumentParser):
         )
 
 
-def set_global_test_suite_data(test_suite_data):
-    """
-    Set the global variable `global_test_suite_data` with the given `test_suite_data`.
-    """
-    global global_test_suite_data
-    global_test_suite_data = test_suite_data
-
-
 def main(argv: Optional[List[str]] = None):
     """
     The main function of the script.
@@ -53,7 +45,6 @@ def main(argv: Optional[List[str]] = None):
         path = args.config_file
         parser = ConfigParser()
         test_suite_config = parser.parse_from_path(path)
-        set_global_test_suite_data(test_suite_config)
         execution_manager_data = ExecutionManagerFactory.from_test_suite_config_server(
             test_suite_config
         )
