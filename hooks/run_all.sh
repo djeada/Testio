@@ -4,4 +4,5 @@ paths=(src tests examples)  # If you wish to check more directories, you may add
 
 for path in "${paths[@]}"; do
   python hooks/remove_carriage_return.py "$path"
+  hooks/linters.sh "$path"
 done
