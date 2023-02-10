@@ -6,17 +6,25 @@
 <a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 
-Testio is a simple and efficient testing framework that uses multiprocessing to verify the standard output of applications. With Testio, you can quickly and easily write tests to ensure that your applications are functioning as expected. Whether you are a software developer looking to improve the quality of your code or a student learning about testing techniques, Testio is a valuable tool for your toolkit.
+Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its three convenient interfaces: CLI, web server, and GUI, you can test applications with a variety of configurations and inputs on a large scale.
 
 ![testio](https://user-images.githubusercontent.com/37275728/213671290-98a831ab-3999-4246-ba54-3ccd476d57b5.png)
 
 ## Overview
+Testio is a tool that was created to make testing the standard output of applications effortless and efficient. Its user-friendly design makes it a valuable tool for teachers, who can use it to assess the programs submitted by their students and ensure they meet the intended requirements.
 
-Testio was designed to provide an easy and efficient way to test the standard output of applications. It is particularly useful for teachers, who can use it to check programs submitted by their students and make sure they are working as intended.
+As a teacher, you can utilize Testio to automate the evaluation process of homework tasks and exams. By providing a set of inputs, the tool will execute the programs or scripts submitted by students and compare the results to the expected output. Testio will then generate a report for the teacher, providing a clear and concise assessment of each program's functionality.
 
-To use the tool for this purpose, teachers can specify a directory with all the programs to be tested, along with a set of inputs and expected outputs for each program. The tool will then run each program and compare the output to the expected output. If the output is correct, it will print a green checkmark. If the output is incorrect, it will print a red X. Additionally, for each program, the tool can generate a PDF report with the test results.
+In addition to its educational benefits, Testio is also a useful tool for industry professionals in CI/CD pipelines. By running end-to-end tests on an application, you can use Testio to verify that it operates as intended. Whether you are testing scripts or compiling executables, the tool can help you validate the output of your program for a given set of inputs. If a test fails, Testio will exit with a non-zero exit code, signaling that the application needs attention. If all tests pass, the tool will exit with a zero exit code, indicating that the application is working as expected.
 
-In addition to being helpful for teachers, Testio can also be used in the industry in CI/CD pipelines. In this context, it can be used to perform end-to-end tests on an application to ensure it behaves as expected. For example, if you are using scripts or compiling executables, you can use the tool to test the output of your program for a given set of inputs. If a single test fails, the tool will exit with a non-zero exit code. If all tests pass, it will exit with a zero exit code, indicating that the application is functioning as expected.
+## Key Features
+- Easy and efficient testing of application outputs
+- Three user-friendly interfaces: CLI, WEB SERVER, and GUI
+- Ideal for teachers to check student programs and homework assignments
+- Can be integrated into CI/CD pipelines in the industry
+- Compares application output against expected output
+- Option to generate a PDF report of results
+- Flask API for easy integration with other tools
 
 ## Requirements
 
@@ -37,7 +45,7 @@ The easiest way to install Testio is to use virtualenv:
 
 ## Usage
 
-Testio provides three different interfaces for running tests: a command-line interface (CLI), a web interface using a Flask server, and a desktop graphical user interface (GUI) using Qt. All three interfaces provide the same functionality, but allow you to interact with Testio in different ways.
+Testio provides three different interfaces for running tests: a command-line interface (CLI), a web interface using a Flask server, and a desktop graphical user interface (GUI) using Qt. All three interfaces provide the similar functionality, but allow you to interact with Testio in different ways.
 
 ### Command-line interface
 
