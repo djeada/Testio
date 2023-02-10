@@ -139,10 +139,11 @@ The program_runner module runs the programs and captures their standard output. 
 
 There are a few planned features and known issues that are being worked on for Testio:
 
-- [x] Change the timeout parameter from regex based to array.
-- [x] Add frontend generated with Flask templates.
-- [x] Create a desktop app with a browser that can run the Flask app using the QT framework. 
-
+- [x] Enhanced Timeout Management: The timeout parameter will be changed from a regex-based approach to an array-based approach, providing a more flexible and intuitive way of managing timeouts.
+- [x] Improved User Interface: A frontend generated with Flask templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
+- [x] Desktop App: A desktop app will be created using the QT framework, which will allow users to run the Flask app in a browser-like environment. 
+- [ ] Add support for testing applications written in multiple programming languages.
+ 
 ## Contributing
 We welcome contributions to Testio! If you would like to contribute, please follow these guidelines:
 
