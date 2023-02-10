@@ -138,3 +138,4 @@ cython_debug/
 
 *.pdf
 *.out
+**/mockups/

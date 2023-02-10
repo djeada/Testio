@@ -2,16 +2,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Testio</title>
+    <!-- List any stylesheet in styles.html (in the templates folder), which will be included here. 
+        The actual stylesheet should be in the static/styles directory. That's where flask searches. -->
     {% include 'styles.html' %}
 </head>
 <body>
 <div class="content">
+    {% include 'menubar.html' %}
+    <!-- Put the main content here -->
 
-    {% include 'sidebar.html' %}
-    {% include 'result-details.html' %}
-
-    {% include 'scripts.html' %}
 </div>
+
+<!-- If you write a script for a file, list it in templates/scripts.html, which will be included here. 
+    All script files should be in static/js.-->
+{% include 'scripts.html' %} 
 </body>
 </html>
-

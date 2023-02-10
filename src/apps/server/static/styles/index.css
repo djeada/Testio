@@ -1,0 +1,35 @@
+
+:root {
+    --color-primary: #666666;
+    --color-primary-dark: black;
+    --color-secondary: #ebeff7;
+    --color-accent: #aaabad;
+    --color-btn: #4169e1;
+    --color-panel: white;
+    
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html, body {
+    background-color: var(--color-secondary);
+    font-family: 'Roboto', sans-serif;
+}
+
+
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+.content {
+    /* height: 100vh; */
+    display: grid;
+    grid-template-rows: 1fr 9fr;
+    /* width: 80%;
+    margin: 0 auto; */
+}
