@@ -19,7 +19,7 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 
 ## Key Features
 - Easy and efficient testing of application outputs
-- Three user-friendly interfaces: CLI, WEB SERVER, and GUI
+- Three user-friendly interfaces: CLI, web server, and GUI
 - Ideal for teachers to check student programs and homework assignments
 - Can be integrated into CI/CD pipelines in the industry
 - Compares application output against expected output
