@@ -17,6 +17,8 @@
 html, body {
     background-color: var(--color-secondary);
     font-family: 'Roboto', sans-serif;
+    /*default font color*/
+    color: #313131;
 }
 
 
@@ -28,8 +30,9 @@ p {
 
 .content {
     /* height: 100vh; */
-    display: grid;
-    grid-template-rows: 1fr 9fr;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     /* width: 80%;
     margin: 0 auto; */
 }
