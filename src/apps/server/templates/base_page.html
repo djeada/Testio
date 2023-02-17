@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Testio{% endblock %}</title>
+    {% include 'styles.html' %}
+    {% block additional_styles %}{% endblock %}
+</head>
+<body>
+<div class="content">
+    {% include 'menubar.html' %}
+    {% block body %}{% endblock %}
+</div>
+{% include 'scripts.html' %}
+{% block additional_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,6 +1,9 @@
 """A custom Flask application for the TestioServer."""
 import sys
 
+from src.apps.server.routes.exam_mode import exam_mode_page_blueprint
+from src.apps.server.routes.homework_mode import homework_mode_page_blueprint
+
 sys.path.append(".")
 
 from flask import Flask
@@ -30,6 +33,8 @@ class TestioServer(Flask):
             index_page_blueprint,
             update_test_suite_blueprint,
             execute_tests_blueprint,
+            homework_mode_page_blueprint,
+            exam_mode_page_blueprint,
         ]
 
         for route in routes:

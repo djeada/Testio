@@ -1,12 +1,7 @@
-
-
 .home {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    width:60%;
-    height: 100%;
-    margin: 10vh auto auto auto;
     gap: 2rem;
 }
 
@@ -14,14 +9,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height:45%;
-    width: 25%;
     padding: 2vw;
     gap: 2vw;
     border: 2px solid var(--color-accent);
     border-radius: 10px;
     overflow: hidden;
     background-color: var(--color-panel);
+    width: 300px;
 }
 
 .home__option-panel:hover {
@@ -38,9 +32,9 @@
 
 .option-panel__select-btn {
     display: flex;
-    width:100%;
-    height:2vh;
-    margin: 0 2vh;
+    width: 80%;
+    height: 10%;
+    margin: 2vh 0;
     padding: 2.5vh 0;
     justify-content: center;
     align-items: center;
