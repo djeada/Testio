@@ -8,7 +8,7 @@
 
 Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its three convenient interfaces: CLI, web server, and GUI, you can test applications with a variety of configurations and inputs on a large scale.
 
-![testio](https://user-images.githubusercontent.com/37275728/213671290-98a831ab-3999-4246-ba54-3ccd476d57b5.png)
+![testio](https://github.com/djeada/Testio/assets/37275728/fdce4a8e-76d7-4d87-98ec-e07e9ae4d853)
 
 ## Overview
 Testio is a tool that was created to make testing the standard output of applications effortless and efficient. Its user-friendly design makes it a valuable tool for teachers, who can use it to assess the programs submitted by their students and ensure they meet the intended requirements.
