@@ -1,6 +1,5 @@
 # Testio
 
-[![Build Status](https://travis-ci.org/djeada/testio.svg?branch=main)](https://travis-ci.org/djeada/testio)
 <a href="https://github.com/djeada/testio/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/djeada/testio"></a>
 <a href="https://github.com/djeada/testio/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/djeada/testio"></a>
 <a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
@@ -8,7 +7,7 @@
 
 Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its three convenient interfaces: CLI, web server, and GUI, you can test applications with a variety of configurations and inputs on a large scale.
 
-![testio](https://github.com/djeada/Testio/assets/37275728/fdce4a8e-76d7-4d87-98ec-e07e9ae4d853)
+![testio](https://github.com/djeada/Testio/assets/37275728/ab799306-e5b3-457c-bb69-0a4322ee6ad2)
 
 ## Overview
 Testio is a tool that was created to make testing the standard output of applications effortless and efficient. Its user-friendly design makes it a valuable tool for teachers, who can use it to assess the programs submitted by their students and ensure they meet the intended requirements.
