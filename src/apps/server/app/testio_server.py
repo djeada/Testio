@@ -14,6 +14,7 @@ from src.apps.server.routes.index_page import index_page_router
 from src.apps.server.routes.update_test_suite import update_test_suite_router
 from src.apps.server.routes.exam_mode import exam_mode_page_router
 from src.apps.server.routes.homework_mode import homework_mode_page_router
+from src.apps.server.routes.homework_submission import homework_submission_router
 
 
 def create_app() -> FastAPI:
@@ -44,6 +45,7 @@ def create_app() -> FastAPI:
         update_test_suite_router,
         execute_tests_router,
         homework_mode_page_router,
+        homework_submission_router,
         exam_mode_page_router,
     ]
 

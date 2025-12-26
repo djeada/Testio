@@ -8,61 +8,54 @@
 <div class="homework-container">
     <div class="page-header">
         <h1 class="page-title">Homework Mode</h1>
-        <p class="page-subtitle">Practice and perfect your code with instant feedback</p>
+        <p class="page-subtitle">Upload student programs and test configurations for automated grading</p>
     </div>
 
     <div class="homework-content">
-        <div class="config-section">
-            <label for="config-select" class="form-label">Select Configuration File:</label>
-            <select id="config-select" class="form-select">
-                <option value="">-- Choose a configuration --</option>
-                <option value="config1.json">Config 1 - Basic Tests</option>
-                <option value="config2.json">Config 2 - Advanced Tests</option>
-                <option value="config3.json">Config 3 - Expert Level</option>
-            </select>
-        </div>
+        <div class="upload-section">
+            <div class="config-upload">
+                <label for="config-file" class="form-label">📋 Configuration File:</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="config-file" class="file-input" accept=".json" />
+                    <label for="config-file" class="file-input-label">
+                        <span class="file-icon">📄</span>
+                        <span id="config-filename">Choose config file (JSON)</span>
+                    </label>
+                </div>
+            </div>
 
-        <div class="code-section">
-            <label for="code-editor" class="form-label">Your Code:</label>
-            <textarea id="code-editor" class="code-editor" placeholder="# Write your Python code here...&#10;&#10;def solution():&#10;    pass"></textarea>
-            <button id="run-tests-btn" class="btn btn-primary">
-                <span class="btn-icon">▶</span>
-                Run Tests
+            <div class="students-upload">
+                <label for="student-files" class="form-label">👨‍🎓 Student Programs:</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="student-files" class="file-input" multiple accept=".py,.js,.java,.cpp,.c" />
+                    <label for="student-files" class="file-input-label">
+                        <span class="file-icon">📁</span>
+                        <span id="students-filename">Choose student files (multiple)</span>
+                    </label>
+                </div>
+                <div id="file-list" class="file-list"></div>
+            </div>
+
+            <button id="run-homework-btn" class="btn btn-primary" disabled>
+                <span class="btn-icon">🚀</span>
+                Test All Submissions
             </button>
         </div>
 
         <div class="results-section">
-            <h2 class="section-title">Results</h2>
+            <h2 class="section-title">📊 Results</h2>
             <div id="results-summary" class="results-summary hidden">
-                <div class="summary-card passed">
-                    <span class="summary-value" id="passed-count">0</span>
-                    <span class="summary-label">Passed</span>
-                </div>
-                <div class="summary-card failed">
-                    <span class="summary-value" id="failed-count">0</span>
-                    <span class="summary-label">Failed</span>
-                </div>
                 <div class="summary-card total">
-                    <span class="summary-value" id="total-count">0</span>
-                    <span class="summary-label">Total</span>
+                    <span class="summary-value" id="total-students">0</span>
+                    <span class="summary-label">Students</span>
+                </div>
+                <div class="summary-card passed">
+                    <span class="summary-value" id="avg-score">0%</span>
+                    <span class="summary-label">Avg Score</span>
                 </div>
             </div>
-            <table id="results-table" class="results-table">
-                <thead>
-                    <tr>
-                        <th>Test #</th>
-                        <th>Status</th>
-                        <th>Input</th>
-                        <th>Expected</th>
-                        <th>Actual</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="empty-row">
-                        <td colspan="5">Run tests to see results</td>
-                    </tr>
-                </tbody>
-            </table>
+            
+            <div id="student-results" class="student-results"></div>
         </div>
     </div>
 </div>
