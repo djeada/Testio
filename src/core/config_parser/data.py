@@ -16,6 +16,7 @@ class TestData:
     output: Union[str, List[str]]
     timeout: int
     use_regex: bool = False
+    interleaved: bool = False
 
 
 @dataclass

@@ -5,7 +5,7 @@
 <a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 
-Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its three convenient interfaces: CLI, web server, and GUI, you can test applications with a variety of configurations and inputs on a large scale.
+Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its two convenient interfaces: CLI and web server, you can test applications with a variety of configurations and inputs on a large scale.
 
 ![testio](https://github.com/djeada/Testio/assets/37275728/ab799306-e5b3-457c-bb69-0a4322ee6ad2)
 
@@ -18,10 +18,11 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 
 ## Key Features
 - Easy and efficient testing of application outputs
-- Three user-friendly interfaces: CLI, web server, and GUI
+- Two user-friendly interfaces: CLI and web server
 - Ideal for teachers to check student programs and homework assignments
 - Can be integrated into CI/CD pipelines in the industry
 - Compares application output against expected output
+- **Support for interleaved input/output testing** for interactive programs
 - Option to generate a PDF report of results
 - FastAPI-based REST API for easy integration with other tools
 
@@ -30,7 +31,6 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 * Python 3.8+
 * fastapi
 * uvicorn
-* pyqt6
 
 ## Installation
 
@@ -45,7 +45,7 @@ The easiest way to install Testio is to use virtualenv:
 
 ## Usage
 
-Testio provides three different interfaces for running tests: a command-line interface (CLI), a web interface using a FastAPI server, and a desktop graphical user interface (GUI) using Qt. All three interfaces provide the similar functionality, but allow you to interact with Testio in different ways.
+Testio provides two different interfaces for running tests: a command-line interface (CLI) and a web interface using a FastAPI server. Both interfaces provide similar functionality but allow you to interact with Testio in different ways.
 
 ### Command-line interface
 
@@ -82,16 +82,6 @@ The FastAPI server also provides automatic API documentation at:
 - Swagger UI: http://localhost:5000/docs
 - ReDoc: http://localhost:5000/redoc
 
-### Desktop GUI
-
-To use the desktop GUI, run the main.py script with the gui argument:
-
-    $ python src/main.py gui
-
-This will start the Qt application and display the GUI. You can specify the path to the config file using the --config flag:
-
-    $ python src/main.py gui --config path/to/config_file.json
-
 ## Configuration
 
 To configure the script, you need to create a JSON file with the following structure:
@@ -115,6 +105,20 @@ To configure the script, you need to create a JSON file with the following struc
                     "output line 2"
                 ],
                 "timeout": 15
+            },
+            {
+                "input": [
+                    "Alice",
+                    "25"
+                ],
+                "output": [
+                    "What is your name?",
+                    "Hello, Alice!",
+                    "What is your age?",
+                    "You are 25 years old."
+                ],
+                "timeout": 10,
+                "interleaved": true
             }
         ]
     }
@@ -125,8 +129,45 @@ To configure the script, you need to create a JSON file with the following struc
   - `input`: The input data for the test. It can be empty, a single entry, or an array of entries.
   - `output`: The expected output data for the test. It can be empty, a single entry, or an array of entries.
   - `timeout`: The timeout for the test in seconds.
+  - `interleaved` (optional): Set to `true` for interactive programs that alternate between prompting and waiting for input. Default is `false` for backward compatibility.
 
-Note that input and output can be either empty, a single entry, or an array of entries. 
+Note that input and output can be either empty, a single entry, or an array of entries.
+
+### Interleaved Input/Output Testing
+
+Testio now supports testing interactive programs that alternate between producing output and waiting for input. This is useful for testing:
+- Interactive CLI applications
+- Programs that prompt users for information
+- Applications that simulate conversations or dialogues
+- Any scenario where input/output alternates in a back-and-forth manner
+
+To enable interleaved testing, add `"interleaved": true` to your test configuration. When this flag is set:
+- The test runner handles interactive prompts properly
+- Inputs are provided in response to program prompts
+- All output (including prompts) is captured and compared against expected output
+
+Example of an interactive program test:
+
+    {
+        "command": "python3",
+        "path": "interactive_program.py",
+        "tests": [
+            {
+                "input": ["Alice", "25", "London"],
+                "output": [
+                    "What is your name?",
+                    "Hello, Alice!",
+                    "What is your age?",
+                    "You are 25 years old.",
+                    "Where are you from?",
+                    "Nice to meet you from London!"
+                ],
+                "timeout": 5,
+                "interleaved": true
+            }
+        ]
+    }
+
 
 
 ## Architecture
@@ -149,7 +190,6 @@ There are a few planned features and known issues that are being worked on for T
 
 - [x] Enhanced Timeout Management: The timeout parameter will be changed from a regex-based approach to an array-based approach, providing a more flexible and intuitive way of managing timeouts.
 - [x] Improved User Interface: A frontend generated with Flask templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
-- [x] Desktop App: A desktop app will be created using the QT framework, which will allow users to run the Flask app in a browser-like environment. 
 - [ ] Add support for testing applications written in multiple programming languages.
  
 ## Contributing
