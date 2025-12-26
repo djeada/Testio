@@ -8,49 +8,55 @@ const passedCount = document.getElementById('passed-count');
 const failedCount = document.getElementById('failed-count');
 const totalCount = document.getElementById('total-count');
 
-// Run tests when button is clicked
-runTestsBtn.addEventListener('click', async function() {
-    const scriptText = codeEditor.value.trim();
-    
-    if (!scriptText) {
-        alert('Please enter some code to test.');
-        return;
-    }
-    
-    // Show loading state
-    runTestsBtn.disabled = true;
-    runTestsBtn.innerHTML = '<span class="btn-icon">⏳</span> Running...';
-    
-    try {
-        const response = await fetch('/execute_tests', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ script_text: scriptText }),
-        });
+// Null checks for DOM elements
+if (runTestsBtn) {
+    // Run tests when button is clicked
+    runTestsBtn.addEventListener('click', async function() {
+        const scriptText = codeEditor ? codeEditor.value.trim() : '';
         
-        const data = await response.json();
-        displayResults(data);
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while running tests. Please try again.');
-    } finally {
-        // Reset button state
-        runTestsBtn.disabled = false;
-        runTestsBtn.innerHTML = '<span class="btn-icon">▶</span> Run Tests';
-    }
-});
+        if (!scriptText) {
+            alert('Please enter some code to test.');
+            return;
+        }
+        
+        // Show loading state
+        runTestsBtn.disabled = true;
+        runTestsBtn.innerHTML = '<span class="btn-icon">⏳</span> Running...';
+        
+        try {
+            const response = await fetch('/execute_tests', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ script_text: scriptText }),
+            });
+            
+            const data = await response.json();
+            displayResults(data);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while running tests. Please try again.');
+        } finally {
+            // Reset button state
+            runTestsBtn.disabled = false;
+            runTestsBtn.innerHTML = '<span class="btn-icon">▶</span> Run Tests';
+        }
+    });
+}
 
 // Display test results
 function displayResults(data) {
     // Show summary
-    resultsSummary.classList.remove('hidden');
-    passedCount.textContent = data.total_passed_tests || 0;
-    failedCount.textContent = (data.total_tests - data.total_passed_tests) || 0;
-    totalCount.textContent = data.total_tests || 0;
+    if (resultsSummary) {
+        resultsSummary.classList.remove('hidden');
+    }
+    if (passedCount) passedCount.textContent = data.total_passed_tests || 0;
+    if (failedCount) failedCount.textContent = (data.total_tests - data.total_passed_tests) || 0;
+    if (totalCount) totalCount.textContent = data.total_tests || 0;
     
     // Clear existing results
+    if (!resultsTable) return;
     resultsTable.innerHTML = '';
     
     if (!data.results || data.results.length === 0) {
@@ -106,11 +112,12 @@ function getStatusText(result) {
     return 'Failed';
 }
 
-// Listen for config changes (future enhancement)
-configSelect.addEventListener('change', function() {
-    const selectedValue = configSelect.value;
-    if (selectedValue) {
-        console.log('Selected config:', selectedValue);
-        // Future: Load config-specific settings
-    }
-});
+// Listen for config changes
+if (configSelect) {
+    configSelect.addEventListener('change', function() {
+        const selectedValue = configSelect.value;
+        if (selectedValue) {
+            console.log('Selected config:', selectedValue);
+        }
+    });
+}
