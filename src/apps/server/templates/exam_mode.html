@@ -1,36 +1,88 @@
 {% extends 'base_page.html' %}
 
+{% block additional_styles %}
+<link rel="stylesheet" type="text/css" href="/static/styles/exam.css">
+{% endblock %}
+
 {% block body %}
-      <h1>Examination Mode</h1>
+<div class="exam-container">
+    <div class="page-header">
+        <h1 class="page-title">Examination Mode</h1>
+        <p class="page-subtitle">Manage and monitor student assessments in real-time</p>
+    </div>
 
-  <!-- Dropdown for selecting config files -->
-  <label for="config-select">Select a configuration file:</label>
-  <select id="config-select">
-    <option value="">-- Select a file --</option>
-    <option value="config1.json">Config 1</option>
-    <option value="config2.json">Config 2</option>
-    <option value="config3.json">Config 3</option>
-  </select>
+    <div class="exam-content">
+        <div class="exam-setup">
+            <div class="setup-card">
+                <h3 class="card-title">📋 Exam Configuration</h3>
+                <div class="form-group">
+                    <label for="config-select" class="form-label">Select Test Configuration:</label>
+                    <select id="config-select" class="form-select">
+                        <option value="">-- Choose a configuration --</option>
+                        <option value="config1.json">Config 1 - Basic Assessment</option>
+                        <option value="config2.json">Config 2 - Intermediate Level</option>
+                        <option value="config3.json">Config 3 - Advanced Challenge</option>
+                    </select>
+                </div>
+                <button id="start-exam-btn" class="btn btn-primary">
+                    <span class="btn-icon">🚀</span>
+                    Start New Exam Session
+                </button>
+            </div>
 
-  <!-- Button for starting a new exam session -->
-  <button id="start-exam-btn">Start New Exam Session</button>
+            <div class="session-info" id="session-info">
+                <h3 class="card-title">🔗 Exam Session</h3>
+                <div class="session-url-container">
+                    <label class="form-label">Share this URL with students:</label>
+                    <div class="url-display">
+                        <span id="exam-url-text" class="url-text">No active session</span>
+                        <button id="copy-url-btn" class="btn-copy" title="Copy URL">📋</button>
+                    </div>
+                </div>
+                <div class="session-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="active-students">0</span>
+                        <span class="stat-label">Active Students</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="submissions-count">0</span>
+                        <span class="stat-label">Submissions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <!-- Text indicating the URL for the exam -->
-  <p id="exam-url-text"></p>
+        <div class="results-section">
+            <h2 class="section-title">📊 Live Results</h2>
+            <div class="results-controls">
+                <button id="refresh-btn" class="btn btn-secondary">
+                    <span class="btn-icon">🔄</span>
+                    Refresh
+                </button>
+                <button id="export-btn" class="btn btn-secondary">
+                    <span class="btn-icon">📥</span>
+                    Export Results
+                </button>
+            </div>
+            <table id="results-table" class="results-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Passed / Total</th>
+                        <th>Submitted At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="empty-row">
+                        <td colspan="5">Start an exam session to see results</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-  <!-- Dynamic table for displaying results -->
-  <h2>Results:</h2>
-  <table id="results-table">
-    <thead>
-      <tr>
-        <th>Student ID</th>
-        <th>Score</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-
-  <!-- JavaScript code in a separate file, e.g. examination.js -->
-  <script src="examination.js"></script>
+<script src="/static/js/exam.js"></script>
 {% endblock %}

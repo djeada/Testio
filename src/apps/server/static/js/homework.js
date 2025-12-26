@@ -1,27 +1,116 @@
-// Get the select element and table body
+// Get DOM elements
 const configSelect = document.getElementById('config-select');
+const codeEditor = document.getElementById('code-editor');
+const runTestsBtn = document.getElementById('run-tests-btn');
 const resultsTable = document.getElementById('results-table').getElementsByTagName('tbody')[0];
+const resultsSummary = document.getElementById('results-summary');
+const passedCount = document.getElementById('passed-count');
+const failedCount = document.getElementById('failed-count');
+const totalCount = document.getElementById('total-count');
 
-// Listen for changes to the select element
+// Run tests when button is clicked
+runTestsBtn.addEventListener('click', async function() {
+    const scriptText = codeEditor.value.trim();
+    
+    if (!scriptText) {
+        alert('Please enter some code to test.');
+        return;
+    }
+    
+    // Show loading state
+    runTestsBtn.disabled = true;
+    runTestsBtn.innerHTML = '<span class="btn-icon">⏳</span> Running...';
+    
+    try {
+        const response = await fetch('/execute_tests', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ script_text: scriptText }),
+        });
+        
+        const data = await response.json();
+        displayResults(data);
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while running tests. Please try again.');
+    } finally {
+        // Reset button state
+        runTestsBtn.disabled = false;
+        runTestsBtn.innerHTML = '<span class="btn-icon">▶</span> Run Tests';
+    }
+});
+
+// Display test results
+function displayResults(data) {
+    // Show summary
+    resultsSummary.classList.remove('hidden');
+    passedCount.textContent = data.total_passed_tests || 0;
+    failedCount.textContent = (data.total_tests - data.total_passed_tests) || 0;
+    totalCount.textContent = data.total_tests || 0;
+    
+    // Clear existing results
+    resultsTable.innerHTML = '';
+    
+    if (!data.results || data.results.length === 0) {
+        resultsTable.innerHTML = '<tr class="empty-row"><td colspan="5">No test results available</td></tr>';
+        return;
+    }
+    
+    // Populate table with results
+    let testNum = 1;
+    data.results.forEach(fileResult => {
+        fileResult.tests.forEach(test => {
+            const row = resultsTable.insertRow();
+            
+            // Test number
+            const cellNum = row.insertCell(0);
+            cellNum.textContent = testNum++;
+            
+            // Status
+            const cellStatus = row.insertCell(1);
+            const statusBadge = document.createElement('span');
+            statusBadge.className = 'status-badge ' + getStatusClass(test.result);
+            statusBadge.textContent = getStatusText(test.result);
+            cellStatus.appendChild(statusBadge);
+            
+            // Input
+            const cellInput = row.insertCell(2);
+            cellInput.textContent = test.input || '(none)';
+            
+            // Expected
+            const cellExpected = row.insertCell(3);
+            cellExpected.textContent = test.expected_output || '(none)';
+            
+            // Actual
+            const cellActual = row.insertCell(4);
+            cellActual.textContent = test.output || test.error || '(none)';
+        });
+    });
+}
+
+// Get status class for badge styling
+function getStatusClass(result) {
+    if (result.includes('MATCH')) return 'passed';
+    if (result.includes('TIMEOUT')) return 'timeout';
+    if (result.includes('ERROR')) return 'error';
+    return 'failed';
+}
+
+// Get human-readable status text
+function getStatusText(result) {
+    if (result.includes('MATCH')) return 'Passed';
+    if (result.includes('TIMEOUT')) return 'Timeout';
+    if (result.includes('ERROR')) return 'Error';
+    return 'Failed';
+}
+
+// Listen for config changes (future enhancement)
 configSelect.addEventListener('change', function() {
-  // Get the selected option value
-  const selectedValue = configSelect.value;
-
-  // Fetch data from the server based on the selected value
-  fetch(`/data/${selectedValue}`)
-    .then(response => response.json())
-    .then(data => {
-      // Clear the table body
-      resultsTable.innerHTML = '';
-
-      // Populate the table with the data
-      data.forEach(result => {
-        const row = resultsTable.insertRow();
-        const cell1 = row.insertCell(0);
-        const cell2 = row.insertCell(1);
-        cell1.innerHTML = result.student_id;
-        cell2.innerHTML = result.score;
-      });
-    })
-    .catch(error => console.error(error));
+    const selectedValue = configSelect.value;
+    if (selectedValue) {
+        console.log('Selected config:', selectedValue);
+        // Future: Load config-specific settings
+    }
 });
