@@ -17,6 +17,8 @@ from src.apps.server.routes.homework_mode import homework_mode_page_router
 from src.apps.server.routes.homework_submission import homework_submission_router
 from src.apps.server.routes.exam_session import exam_session_router
 from src.apps.server.routes.student_exam import student_exam_router
+from src.apps.server.routes.student_page import student_page_router
+from src.apps.server.routes.student_submission import student_submission_router
 
 
 def create_app() -> FastAPI:
@@ -51,6 +53,8 @@ def create_app() -> FastAPI:
         exam_mode_page_router,
         exam_session_router,
         student_exam_router,
+        student_page_router,
+        student_submission_router,
     ]
 
     for router in routers:
