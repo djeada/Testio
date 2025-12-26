@@ -1,0 +1,12 @@
+{
+	"command": "python3",
+	"path": "program.py",
+	"tests": [
+		{
+			"input": ["Alice", "25", "London"],
+			"output": ["What is your name?", "Hello, Alice!", "What is your age?", "You are 25 years old.", "Where are you from?", "Nice to meet you from London!"],
+			"timeout": 5,
+			"interleaved": true
+		}
+	]
+}

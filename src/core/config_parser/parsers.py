@@ -79,6 +79,7 @@ class CONFIG_SCHEMA:
     TEST_INPUT: str = "input"
     TEST_OUTPUT: str = "output"
     TIMEOUT: str = "timeout"
+    INTERLEAVED: str = "interleaved"
 
 
 class ConfigParser:
@@ -104,10 +105,11 @@ class ConfigParser:
             input_data = test_data.get(CONFIG_SCHEMA.TEST_INPUT)
             output_data = test_data.get(CONFIG_SCHEMA.TEST_OUTPUT)
             timeout = test_data.get(CONFIG_SCHEMA.TIMEOUT)
+            interleaved = test_data.get(CONFIG_SCHEMA.INTERLEAVED, False)
             if input_data is None or output_data is None or timeout is None:
                 return None
 
-            tests.append(TestData(input_data, output_data, timeout))
+            tests.append(TestData(input_data, output_data, timeout, interleaved))
 
         return TestSuiteConfig(command=command, path=path, tests=tests)
 

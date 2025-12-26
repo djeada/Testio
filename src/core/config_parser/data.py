@@ -15,6 +15,7 @@ class TestData:
     input: Union[str, List[str]]
     output: Union[str, List[str]]
     timeout: int
+    interleaved: bool = False
 
 
 @dataclass
