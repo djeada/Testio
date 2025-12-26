@@ -1,6 +1,6 @@
 {
 	"command": "python3",
-	"path": "program.py",
+	"path": "example_program.py",
 	"tests": [
 		{
 			"input": [],
