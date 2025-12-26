@@ -19,6 +19,7 @@ class ExecutionManagerInputData:
     input: List[str] = field(default_factory=list)
     output: List[str] = field(default_factory=list)
     timeout: int = 0
+    use_regex: bool = False
     interleaved: bool = False
 
 
@@ -53,6 +54,7 @@ class ComparisonInputData:
     input: str = ""
     expected_output: str = ""
     execution_output: ExecutionOutputData = field(default_factory=ExecutionOutputData)
+    use_regex: bool = False
 
 
 class ComparisonResult(Enum):
@@ -111,6 +113,7 @@ class ExecutionManagerFactory:
                 input=test_data.input,
                 output=test_data.output,
                 timeout=test_data.timeout,
+                use_regex=test_data.use_regex,
                 interleaved=test_data.interleaved,
             )
             execution_manager_data_list.append(execution_manager_data)

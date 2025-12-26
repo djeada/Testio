@@ -15,6 +15,7 @@ class TestData:
     input: Union[str, List[str]]
     output: Union[str, List[str]]
     timeout: int
+    use_regex: bool = False
     interleaved: bool = False
 
 
