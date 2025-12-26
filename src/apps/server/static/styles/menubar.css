@@ -1,93 +1,188 @@
 
 .menu-bar {
-    width: 60%;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 1rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: var(--shadow-md);
+}
+
+.app-name-link {
+    text-decoration: none;
 }
 
 .app-name {
     font-size: 1.8rem;
-    /*font-weight: bold;*/
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: opacity var(--transition-fast);
+}
+
+.app-name:hover {
+    opacity: 0.9;
+}
+
+.app-name::before {
+    content: '🧪';
+    font-size: 1.5rem;
+}
+
+.menu-bar__nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .menu-bar__dropdown {
     position: relative;
     display: inline-block;
-    color: var(--color-primary);
 }
 
 .dropdown__button {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0.7rem 0.6rem;
-    gap: 0.7rem;
-    background-color: var(--color-panel);
+    padding: 0.6rem 1rem;
+    gap: 0.6rem;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all var(--transition-fast);
 }
 
 .dropdown__button:hover {
-    background-color: var(--color-secondary);
-    cursor: pointer;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .dropdown--round-border {
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
 }
 
 .dropdown--border {
-    border: 2px solid var(--color-accent);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .button__icon {
-    width: 1.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    filter: brightness(0) invert(1);
 }
 
 .button__text {
     font-size: 0.9rem;
-    font-weight: 400;
+    font-weight: 500;
+    color: white;
 }
 
 .button__arrow-down {
-    margin-left: 0.5rem;
-    width: 2rem;
+    width: 1.2rem;
+    filter: brightness(0) invert(1);
+    transition: transform var(--transition-fast);
+}
+
+.dropdown__button:hover .button__arrow-down {
+    transform: rotate(180deg);
 }
 
 .dropdown__content {
     display: none;
     position: absolute;
-    left: 0;
     right: 0;
-    margin-top: 0.5rem;
-    background-color: var(--color-panel);
+    top: calc(100% + 0.5rem);
+    min-width: 180px;
+    background: var(--color-panel);
+    border-radius: var(--radius-lg);
     overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    animation: fadeIn 0.2s ease-out;
 }
 
 .dropdown__content--show {
-    display: inherit;
+    display: block;
 }
 
 .dropdown__menu-item {
     display: flex;
     flex-direction: row;
-    gap: 0.3rem;
+    gap: 0.75rem;
     align-items: center;
-    padding: 0.8rem;
+    padding: 0.875rem 1rem;
+    color: var(--color-primary);
+    transition: all var(--transition-fast);
 }
 
 .dropdown__menu-item:hover {
-    background-color: var(--color-secondary);
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
     cursor: pointer;
 }
 
 .menu-item__icon {
-    width: 1rem;
+    width: 1.1rem;
+    opacity: 0.7;
 }
 
 .menu-item__text {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
 
+@media screen and (max-width: 768px) {
+    .menu-bar {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .app-name {
+        font-size: 1.4rem;
+    }
+    
+    .menu-bar__nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    
+    .nav-link {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .button__text {
+        display: none;
+    }
 }

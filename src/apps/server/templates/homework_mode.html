@@ -1,32 +1,71 @@
 {% extends 'base_page.html' %}
 
-{% block body %}
-  <h1>Homework Mode</h1>
-
-  <!-- Dropdown for selecting config files -->
-  <label for="config-select">Select a configuration file:</label>
-  <select id="config-select">
-    <option value="">-- Select a file --</option>
-    <option value="config1.json">Config 1</option>
-    <option value="config2.json">Config 2</option>
-    <option value="config3.json">Config 3</option>
-  </select>
-
-  <!-- Dynamic table for displaying results -->
-  <h2>Results:</h2>
-  <table id="results-table">
-    <thead>
-      <tr>
-        <th>Student ID</th>
-        <th>Score</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-
-  <!-- JavaScript code in a separate file, e.g. homework.js -->
-  <script src="homework.js"></script>
+{% block additional_styles %}
+<link rel="stylesheet" type="text/css" href="/static/styles/homework.css">
 {% endblock %}
 
+{% block body %}
+<div class="homework-container">
+    <div class="page-header">
+        <h1 class="page-title">Homework Mode</h1>
+        <p class="page-subtitle">Practice and perfect your code with instant feedback</p>
+    </div>
 
+    <div class="homework-content">
+        <div class="config-section">
+            <label for="config-select" class="form-label">Select Configuration File:</label>
+            <select id="config-select" class="form-select">
+                <option value="">-- Choose a configuration --</option>
+                <option value="config1.json">Config 1 - Basic Tests</option>
+                <option value="config2.json">Config 2 - Advanced Tests</option>
+                <option value="config3.json">Config 3 - Expert Level</option>
+            </select>
+        </div>
+
+        <div class="code-section">
+            <label for="code-editor" class="form-label">Your Code:</label>
+            <textarea id="code-editor" class="code-editor" placeholder="# Write your Python code here...&#10;&#10;def solution():&#10;    pass"></textarea>
+            <button id="run-tests-btn" class="btn btn-primary">
+                <span class="btn-icon">▶</span>
+                Run Tests
+            </button>
+        </div>
+
+        <div class="results-section">
+            <h2 class="section-title">Results</h2>
+            <div id="results-summary" class="results-summary hidden">
+                <div class="summary-card passed">
+                    <span class="summary-value" id="passed-count">0</span>
+                    <span class="summary-label">Passed</span>
+                </div>
+                <div class="summary-card failed">
+                    <span class="summary-value" id="failed-count">0</span>
+                    <span class="summary-label">Failed</span>
+                </div>
+                <div class="summary-card total">
+                    <span class="summary-value" id="total-count">0</span>
+                    <span class="summary-label">Total</span>
+                </div>
+            </div>
+            <table id="results-table" class="results-table">
+                <thead>
+                    <tr>
+                        <th>Test #</th>
+                        <th>Status</th>
+                        <th>Input</th>
+                        <th>Expected</th>
+                        <th>Actual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="empty-row">
+                        <td colspan="5">Run tests to see results</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/homework.js"></script>
+{% endblock %}

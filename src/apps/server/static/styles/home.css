@@ -2,49 +2,144 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    gap: 2rem;
+    align-items: stretch;
+    gap: 2.5rem;
+    padding: 3rem 2rem;
+    flex: 1;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.home__header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.home__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.home__subtitle {
+    color: var(--color-accent);
+    font-size: 1.1rem;
+    font-weight: 400;
 }
 
 .home__option-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2vw;
-    gap: 2vw;
-    border: 2px solid var(--color-accent);
-    border-radius: 10px;
+    padding: 2.5rem 2rem;
+    gap: 1.5rem;
+    border: 1px solid rgba(100, 102, 241, 0.2);
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    background-color: var(--color-panel);
-    width: 300px;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    width: 320px;
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.home__option-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
 }
 
 .home__option-panel:hover {
-    border: 2px solid var(--color-btn);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-btn);
+}
+
+.home__option-panel:hover::before {
+    opacity: 1;
 }
 
 .option-panel__icon {
-    max-height: 48%;
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    transition: transform var(--transition-normal);
+}
+
+.home__option-panel:hover .option-panel__icon {
+    transform: scale(1.1);
 }
 
 .option-panel__text {
-    font-size: 1.5vw;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-align: center;
+}
+
+.option-panel__description {
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    text-align: center;
+    line-height: 1.5;
 }
 
 .option-panel__select-btn {
     display: flex;
-    width: 80%;
-    height: 10%;
-    margin: 2vh 0;
-    padding: 2.5vh 0;
+    width: 100%;
+    padding: 1rem 2rem;
     justify-content: center;
     align-items: center;
-    background-color: var(--color-btn);
-    border-radius: 10px;
-    font-size: 1.5vw;
-    color: var(--color-secondary);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius-lg);
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 15px rgba(102, 102, 241, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .option-panel__select-btn:hover {
-    opacity: 80%;
-    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 102, 241, 0.5);
+}
+
+.option-panel__select-btn:active {
+    transform: translateY(0);
+}
+
+@media screen and (max-width: 768px) {
+    .home {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem 1rem;
+    }
+    
+    .home__option-panel {
+        width: 100%;
+        max-width: 320px;
+    }
+    
+    .option-panel__icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .option-panel__text {
+        font-size: 1.2rem;
+    }
 }
