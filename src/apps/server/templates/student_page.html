@@ -1,0 +1,76 @@
+{% extends 'base_page.html' %}
+
+{% block additional_styles %}
+<link rel="stylesheet" type="text/css" href="/static/styles/student.css">
+<!-- Include CodeMirror for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+{% endblock %}
+
+{% block body %}
+<div class="student-container">
+    <div class="page-header">
+        <h1 class="page-title">🎓 Student Workspace</h1>
+        <p class="page-subtitle">Write your code, test it, and submit for review</p>
+    </div>
+
+    <div class="student-content">
+        <!-- Left Panel: Code Editor and Problem Description -->
+        <div class="editor-panel">
+            <div class="panel-section">
+                <label for="student-name" class="form-label">👤 Your Name:</label>
+                <input type="text" id="student-name" class="form-input" placeholder="Enter your name" />
+            </div>
+
+            <div class="panel-section">
+                <label for="problem-description" class="form-label">📝 Problem Description:</label>
+                <textarea id="problem-description" class="form-textarea" 
+                    placeholder="Describe the problem your code solves (e.g., 'Write a program that calculates the sum of two numbers')"></textarea>
+            </div>
+
+            <div class="panel-section">
+                <label for="code-editor" class="form-label">💻 Your Code:</label>
+                <div class="code-editor-wrapper">
+                    <textarea id="code-editor"></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="test-code-btn" class="btn btn-secondary">
+                    <span class="btn-icon">🧪</span>
+                    Test Code
+                </button>
+                <button id="submit-code-btn" class="btn btn-primary">
+                    <span class="btn-icon">📤</span>
+                    Submit to Teacher
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Panel: Test Results and Feedback -->
+        <div class="results-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">📊 Test Results & Feedback</h2>
+            </div>
+            
+            <div id="feedback-area" class="feedback-area">
+                <div class="empty-state">
+                    <span class="empty-icon">🚀</span>
+                    <p>Click "Test Code" to see your results here</p>
+                </div>
+            </div>
+
+            <div id="submission-status" class="submission-status hidden">
+                <div class="status-message"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include CodeMirror JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+<script src="/static/js/student.js"></script>
+{% endblock %}
