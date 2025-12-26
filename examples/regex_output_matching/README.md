@@ -72,6 +72,7 @@ The pattern `\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\]` matches:
 
 ## Running the Example
 
+### Successful Match
 ```bash
 python src/main.py cli examples/regex_output_matching/config.json
 ```
@@ -81,6 +82,18 @@ Expected output:
 Starting tests for examples/regex_output_matching/example_program.py
 Correct tests: 1/1 (100.00%)
 #1 Test passed!
+```
+
+### Failed Match (for testing)
+```bash
+python src/main.py cli examples/regex_output_matching/config_mismatch.json
+```
+
+This example demonstrates what happens when the output doesn't match the regex pattern (missing timestamps):
+```
+Starting tests for examples/regex_output_matching/example_mismatch.py
+Correct tests: 0/1 (0.00%)
+#1 Test failed :(
 ```
 
 ## More Examples
