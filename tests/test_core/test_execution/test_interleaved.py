@@ -17,7 +17,7 @@ def test_test_data_with_interleaved_flag():
         timeout=10,
         interleaved=True
     )
-    assert test_data.interleaved == True
+    assert test_data.interleaved is True
 
 
 def test_test_data_default_interleaved_is_false():
@@ -27,7 +27,7 @@ def test_test_data_default_interleaved_is_false():
         output=["output1"],
         timeout=10
     )
-    assert test_data.interleaved == False
+    assert test_data.interleaved is False
 
 
 def test_execution_manager_input_data_with_interleaved():
@@ -39,7 +39,7 @@ def test_execution_manager_input_data_with_interleaved():
         timeout=10,
         interleaved=True
     )
-    assert data.interleaved == True
+    assert data.interleaved is True
 
 
 def test_interactive_runner_simple_echo():
@@ -51,7 +51,7 @@ def test_interactive_runner_simple_echo():
         timeout=5
     )
     
-    assert result.timeout == False
+    assert not result.timeout
     assert result.stderr == ""
     assert "Hello Alice" in result.stdout
 
@@ -73,7 +73,7 @@ print(f'You are {age} years old.')
         timeout=5
     )
     
-    assert result.timeout == False
+    assert not result.timeout
     assert result.stderr == ""
     assert "Hello Bob!" in result.stdout
     assert "You are 30 years old." in result.stdout
@@ -129,4 +129,4 @@ def test_interactive_runner_timeout():
         timeout=1
     )
     
-    assert result.timeout == True
+    assert result.timeout is True

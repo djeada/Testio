@@ -30,7 +30,7 @@ def test_parse_config_with_interleaved_flag():
     
     assert result is not None
     assert len(result.tests) == 1
-    assert result.tests[0].interleaved == True
+    assert result.tests[0].interleaved is True
 
 
 def test_parse_config_without_interleaved_flag():
@@ -52,7 +52,7 @@ def test_parse_config_without_interleaved_flag():
     
     assert result is not None
     assert len(result.tests) == 1
-    assert result.tests[0].interleaved == False
+    assert not result.tests[0].interleaved
 
 
 def test_parse_config_with_interleaved_false():
@@ -75,7 +75,7 @@ def test_parse_config_with_interleaved_false():
     
     assert result is not None
     assert len(result.tests) == 1
-    assert result.tests[0].interleaved == False
+    assert not result.tests[0].interleaved
 
 
 def test_parse_config_mixed_interleaved():
@@ -109,9 +109,9 @@ def test_parse_config_mixed_interleaved():
     
     assert result is not None
     assert len(result.tests) == 3
-    assert result.tests[0].interleaved == True
-    assert result.tests[1].interleaved == False
-    assert result.tests[2].interleaved == False  # Default
+    assert result.tests[0].interleaved
+    assert not result.tests[1].interleaved
+    assert not result.tests[2].interleaved  # Default
 
 
 def test_parse_config_file_with_interleaved():
@@ -139,7 +139,7 @@ def test_parse_config_file_with_interleaved():
         result = parser.parse_from_path(Path(temp_path))
         
         assert result is not None
-        assert result.tests[0].interleaved == True
+        assert result.tests[0].interleaved is True
     finally:
         Path(temp_path).unlink()
 
@@ -168,6 +168,6 @@ def test_validate_config_with_interleaved():
         parser = ConfigParser()
         is_valid = parser.validate(Path(temp_path))
         
-        assert is_valid == True
+        assert is_valid
     finally:
         Path(temp_path).unlink()
