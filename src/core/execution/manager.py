@@ -12,6 +12,7 @@ from .data import (
     ExecutionManagerInputData,
 )
 from .runner import Runner
+from .interactive_runner import InteractiveRunner
 
 
 class ExecutionManager:
@@ -32,14 +33,24 @@ class ExecutionManager:
         data_input = "\n".join(data.input)
         data_output = "\n".join(data.output)
 
-        runner_input_data = ExecutionInputData(
-            command=data.command,
-            input=data_input,
-            timeout=data.timeout,
-        )
+        if data.interleaved:
+            # Use InteractiveRunner for interleaved I/O
+            interactive_runner = InteractiveRunner()
+            execution_output = interactive_runner.run_interleaved(
+                command=data.command,
+                inputs=data.input,
+                timeout=data.timeout,
+            )
+        else:
+            # Use standard Runner for sequential I/O
+            runner_input_data = ExecutionInputData(
+                command=data.command,
+                input=data_input,
+                timeout=data.timeout,
+            )
 
-        runner = Runner()
-        execution_output = runner.run(runner_input_data)
+            runner = Runner()
+            execution_output = runner.run(runner_input_data)
 
         comparison_input_data = ComparisonInputData(
             input=data_input,

@@ -22,6 +22,7 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 - Ideal for teachers to check student programs and homework assignments
 - Can be integrated into CI/CD pipelines in the industry
 - Compares application output against expected output
+- **Support for interleaved input/output testing** for interactive programs
 - Option to generate a PDF report of results
 - FastAPI-based REST API for easy integration with other tools
 
@@ -104,6 +105,20 @@ To configure the script, you need to create a JSON file with the following struc
                     "output line 2"
                 ],
                 "timeout": 15
+            },
+            {
+                "input": [
+                    "Alice",
+                    "25"
+                ],
+                "output": [
+                    "What is your name?",
+                    "Hello, Alice!",
+                    "What is your age?",
+                    "You are 25 years old."
+                ],
+                "timeout": 10,
+                "interleaved": true
             }
         ]
     }
@@ -114,8 +129,45 @@ To configure the script, you need to create a JSON file with the following struc
   - `input`: The input data for the test. It can be empty, a single entry, or an array of entries.
   - `output`: The expected output data for the test. It can be empty, a single entry, or an array of entries.
   - `timeout`: The timeout for the test in seconds.
+  - `interleaved` (optional): Set to `true` for interactive programs that alternate between prompting and waiting for input. Default is `false` for backward compatibility.
 
-Note that input and output can be either empty, a single entry, or an array of entries. 
+Note that input and output can be either empty, a single entry, or an array of entries.
+
+### Interleaved Input/Output Testing
+
+Testio now supports testing interactive programs that alternate between producing output and waiting for input. This is useful for testing:
+- Interactive CLI applications
+- Programs that prompt users for information
+- Applications that simulate conversations or dialogues
+- Any scenario where input/output alternates in a back-and-forth manner
+
+To enable interleaved testing, add `"interleaved": true` to your test configuration. When this flag is set:
+- The test runner handles interactive prompts properly
+- Inputs are provided in response to program prompts
+- All output (including prompts) is captured and compared against expected output
+
+Example of an interactive program test:
+
+    {
+        "command": "python3",
+        "path": "interactive_program.py",
+        "tests": [
+            {
+                "input": ["Alice", "25", "London"],
+                "output": [
+                    "What is your name?",
+                    "Hello, Alice!",
+                    "What is your age?",
+                    "You are 25 years old.",
+                    "Where are you from?",
+                    "Nice to meet you from London!"
+                ],
+                "timeout": 5,
+                "interleaved": true
+            }
+        ]
+    }
+
 
 
 ## Architecture

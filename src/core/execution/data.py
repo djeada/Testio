@@ -19,6 +19,7 @@ class ExecutionManagerInputData:
     input: List[str] = field(default_factory=list)
     output: List[str] = field(default_factory=list)
     timeout: int = 0
+    interleaved: bool = False
 
 
 @dataclass
@@ -110,6 +111,7 @@ class ExecutionManagerFactory:
                 input=test_data.input,
                 output=test_data.output,
                 timeout=test_data.timeout,
+                interleaved=test_data.interleaved,
             )
             execution_manager_data_list.append(execution_manager_data)
         return execution_manager_data_list
