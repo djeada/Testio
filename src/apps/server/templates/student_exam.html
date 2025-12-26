@@ -1,0 +1,95 @@
+{% extends 'base_page.html' %}
+
+{% block additional_styles %}
+<link rel="stylesheet" type="text/css" href="/static/styles/student_exam.css">
+{% endblock %}
+
+{% block body %}
+<div class="student-exam-container">
+    <div class="exam-header">
+        <h1 class="exam-title">📝 Programming Exam</h1>
+        <p class="exam-subtitle">Session ID: <strong>{{ session_id }}</strong></p>
+    </div>
+
+    <div class="student-info-section">
+        <div class="info-card">
+            <label for="student-id-input" class="form-label">Student ID:</label>
+            <input 
+                type="text" 
+                id="student-id-input" 
+                class="form-input" 
+                placeholder="Enter your student ID"
+                required
+            />
+        </div>
+    </div>
+
+    <div class="exam-content">
+        <div class="problem-section">
+            <h2 class="section-title">📋 Problem Statement</h2>
+            <div class="problem-description">
+                <p>Write a program that meets the following requirements:</p>
+                <ul>
+                    <li>Read input as specified in the test cases</li>
+                    <li>Produce the exact output as shown in the examples</li>
+                    <li>Your code will be tested against multiple test cases</li>
+                </ul>
+                <div class="test-info">
+                    <strong>Number of test cases:</strong> {{ config_data.tests|length }}
+                </div>
+            </div>
+        </div>
+
+        <div class="code-section">
+            <div class="section-header">
+                <h2 class="section-title">💻 Your Code</h2>
+                <div class="code-actions">
+                    <button id="test-code-btn" class="btn btn-secondary">
+                        <span class="btn-icon">🧪</span>
+                        Test Code
+                    </button>
+                    <button id="submit-code-btn" class="btn btn-primary">
+                        <span class="btn-icon">✅</span>
+                        Submit Final Answer
+                    </button>
+                </div>
+            </div>
+            <textarea 
+                id="code-editor" 
+                class="code-editor" 
+                placeholder="# Write your Python code here...
+
+# Example:
+# a = int(input())
+# b = int(input())
+# print(a + b)
+"
+            ></textarea>
+        </div>
+
+        <div class="results-section" id="results-section" style="display: none;">
+            <h2 class="section-title">📊 Test Results</h2>
+            <div id="test-results-container" class="test-results-container"></div>
+        </div>
+    </div>
+</div>
+
+<div id="submission-modal" class="modal">
+    <div class="modal-content">
+        <h2 class="modal-title">⚠️ Confirm Submission</h2>
+        <p class="modal-message">
+            Are you sure you want to submit your code? 
+            <strong>You can only submit once!</strong>
+        </p>
+        <div class="modal-actions">
+            <button id="cancel-submit-btn" class="btn btn-secondary">Cancel</button>
+            <button id="confirm-submit-btn" class="btn btn-danger">Submit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SESSION_ID = "{{ session_id }}";
+</script>
+<script src="/static/js/student_exam.js"></script>
+{% endblock %}
