@@ -5,7 +5,7 @@
 <a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 
-Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its three convenient interfaces: CLI, web server, and GUI, you can test applications with a variety of configurations and inputs on a large scale.
+Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its two convenient interfaces: CLI and web server, you can test applications with a variety of configurations and inputs on a large scale.
 
 ![testio](https://github.com/djeada/Testio/assets/37275728/ab799306-e5b3-457c-bb69-0a4322ee6ad2)
 
@@ -18,7 +18,7 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 
 ## Key Features
 - Easy and efficient testing of application outputs
-- Three user-friendly interfaces: CLI, web server, and GUI
+- Two user-friendly interfaces: CLI and web server
 - Ideal for teachers to check student programs and homework assignments
 - Can be integrated into CI/CD pipelines in the industry
 - Compares application output against expected output
@@ -30,7 +30,6 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 * Python 3.8+
 * fastapi
 * uvicorn
-* pyqt6
 
 ## Installation
 
@@ -45,7 +44,7 @@ The easiest way to install Testio is to use virtualenv:
 
 ## Usage
 
-Testio provides three different interfaces for running tests: a command-line interface (CLI), a web interface using a FastAPI server, and a desktop graphical user interface (GUI) using Qt. All three interfaces provide the similar functionality, but allow you to interact with Testio in different ways.
+Testio provides two different interfaces for running tests: a command-line interface (CLI) and a web interface using a FastAPI server. Both interfaces provide similar functionality but allow you to interact with Testio in different ways.
 
 ### Command-line interface
 
@@ -81,16 +80,6 @@ To update the test suite, use the following API endpoint:
 The FastAPI server also provides automatic API documentation at:
 - Swagger UI: http://localhost:5000/docs
 - ReDoc: http://localhost:5000/redoc
-
-### Desktop GUI
-
-To use the desktop GUI, run the main.py script with the gui argument:
-
-    $ python src/main.py gui
-
-This will start the Qt application and display the GUI. You can specify the path to the config file using the --config flag:
-
-    $ python src/main.py gui --config path/to/config_file.json
 
 ## Configuration
 
@@ -149,7 +138,6 @@ There are a few planned features and known issues that are being worked on for T
 
 - [x] Enhanced Timeout Management: The timeout parameter will be changed from a regex-based approach to an array-based approach, providing a more flexible and intuitive way of managing timeouts.
 - [x] Improved User Interface: A frontend generated with Flask templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
-- [x] Desktop App: A desktop app will be created using the QT framework, which will allow users to run the Flask app in a browser-like environment. 
 - [ ] Add support for testing applications written in multiple programming languages.
  
 ## Contributing

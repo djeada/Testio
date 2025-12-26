@@ -4,7 +4,7 @@ import argparse
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "script", type=str, choices=["cli", "fastapi", "gui"], help="Script to run"
+        "script", type=str, choices=["cli", "fastapi"], help="Script to run"
     )
     args, extra_args = parser.parse_known_args()
 
@@ -17,11 +17,6 @@ def main():
         from apps.server.main import main as fastapi_main
 
         fastapi_main(extra_args)
-
-    elif args.script == "gui":
-        from apps.gui.main import main as gui_main
-
-        gui_main(extra_args)
 
 
 if __name__ == "__main__":
