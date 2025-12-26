@@ -51,7 +51,7 @@ class ComparisonInputData:
 
     input: str = ""
     expected_output: str = ""
-    execution_output: ExecutionOutputData = ExecutionOutputData()
+    execution_output: ExecutionOutputData = field(default_factory=ExecutionOutputData)
 
 
 class ComparisonResult(Enum):

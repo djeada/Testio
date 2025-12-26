@@ -1,16 +1,18 @@
-"""This module defines a Flask blueprint for the exam mode page."""
+"""This module defines a FastAPI router for the exam mode page."""
 import sys
 
 sys.path.append(".")
-from flask import Blueprint, render_template
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse
 
-exam_mode_page_blueprint = Blueprint("exam_mode_page", __name__)
+exam_mode_page_router = APIRouter()
 
 
-@exam_mode_page_blueprint.route("/exam")
-def exam_mode_page() -> str:
+@exam_mode_page_router.get("/exam", response_class=HTMLResponse)
+def exam_mode_page(request: Request) -> HTMLResponse:
     """Renders the exam mode page.
 
     :return: The rendered HTML for the exam mode page.
     """
-    return render_template("exam_mode.html")
+    templates = request.app.state.templates
+    return templates.TemplateResponse(request, "exam_mode.html", {})

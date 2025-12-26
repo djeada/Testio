@@ -9,13 +9,10 @@ from typing import List, Optional
 
 sys.path.append(".")
 
-from src.apps.server.app.testio_server import TestioServer
+from src.apps.server.app.testio_server import app
 from src.apps.server.database.configuration_data import update_execution_manager_data
 from src.core.config_parser.parsers import ConfigParser
 from src.core.execution.data import ExecutionManagerFactory
-
-app = TestioServer(__name__)
-app.debug = True
 
 
 class ArgumentParser(argparse.ArgumentParser):
@@ -27,6 +24,12 @@ class ArgumentParser(argparse.ArgumentParser):
         super().__init__(*args, **kwargs)
         self.add_argument(
             "config_file", type=str, help="Path to config file", nargs="?"
+        )
+        self.add_argument(
+            "--host", type=str, default="127.0.0.1", help="Host to bind the server to"
+        )
+        self.add_argument(
+            "--port", type=int, default=5000, help="Port to bind the server to"
         )
 
 
@@ -50,7 +53,8 @@ def main(argv: Optional[List[str]] = None):
         )
         update_execution_manager_data(execution_manager_data)
 
-    app.run()
+    import uvicorn
+    uvicorn.run(app, host=args.host, port=args.port)
 
 
 if __name__ == "__main__":

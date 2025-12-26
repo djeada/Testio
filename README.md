@@ -23,12 +23,13 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 - Can be integrated into CI/CD pipelines in the industry
 - Compares application output against expected output
 - Option to generate a PDF report of results
-- Flask API for easy integration with other tools
+- FastAPI-based REST API for easy integration with other tools
 
 ## Requirements
 
 * Python 3.8+
-* flask
+* fastapi
+* uvicorn
 * pyqt6
 
 ## Installation
@@ -44,7 +45,7 @@ The easiest way to install Testio is to use virtualenv:
 
 ## Usage
 
-Testio provides three different interfaces for running tests: a command-line interface (CLI), a web interface using a Flask server, and a desktop graphical user interface (GUI) using Qt. All three interfaces provide the similar functionality, but allow you to interact with Testio in different ways.
+Testio provides three different interfaces for running tests: a command-line interface (CLI), a web interface using a FastAPI server, and a desktop graphical user interface (GUI) using Qt. All three interfaces provide the similar functionality, but allow you to interact with Testio in different ways.
 
 ### Command-line interface
 
@@ -56,15 +57,19 @@ The CLI will run the tests specified in the config file and display the results 
 
     $ python src/main.py cli path/to/config_file.json --report
 
-### Flask server
+### FastAPI server
 
-To use the web interface, run the main.py script with the flask argument:
+To use the web interface, run the main.py script with the fastapi argument:
 
-    $ python src/main.py flask
+    $ python src/main.py fastapi
 
-This will start the Flask server and serve the web interface at http://localhost:5000. You can specify the path to the config file using the --config flag:
+This will start the FastAPI server and serve the web interface at http://localhost:5000. You can specify the path to the config file as an argument:
 
-    $ python src/main.py flask --config path/to/config_file.json
+    $ python src/main.py fastapi path/to/config_file.json
+
+You can also customize the host and port:
+
+    $ python src/main.py fastapi --host 0.0.0.0 --port 8000
 
 To update the test suite, use the following API endpoint:
 
@@ -72,6 +77,10 @@ To update the test suite, use the following API endpoint:
     --header "Content-Type: application/json" \
     -d @/path/to/file.json \
     http://localhost:5000/update_test_suite
+
+The FastAPI server also provides automatic API documentation at:
+- Swagger UI: http://localhost:5000/docs
+- ReDoc: http://localhost:5000/redoc
 
 ### Desktop GUI
 

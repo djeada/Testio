@@ -6,10 +6,11 @@ import json
 from dataclasses import asdict
 
 import pytest
+from fastapi.testclient import TestClient
 
 from src.apps.server.database.configuration_data import \
     update_execution_manager_data
-from src.apps.server.main import app
+from src.apps.server.app.testio_server import app
 from src.core.config_parser.data import TestData, TestSuiteConfig
 from src.core.execution.data import ExecutionManagerInputData
 
@@ -28,8 +29,7 @@ def client():
             ]
         }
     )
-    app.testing = True
-    with app.test_client() as client:
+    with TestClient(app) as client:
         yield client
 
 
@@ -46,11 +46,10 @@ def test_update_test_suite_endpoint(client):
     )
     response = client.post(
         "/update_test_suite",
-        data=json.dumps(asdict(test_data)),
-        content_type="application/json",
+        json=asdict(test_data),
     )
     assert response.status_code == 200
-    assert response.get_json() == {"message": "Tests updated successfully"}
+    assert response.json() == {"message": "Tests updated successfully"}
 
 
 def test_execute_endpoint(client):
@@ -59,12 +58,11 @@ def test_execute_endpoint(client):
     data = {"script_text": script_text}
     response = client.post(
         "/execute_tests",
-        data=json.dumps(data),
-        content_type="application/json",
+        json=data,
     )
 
     assert response.status_code == 200
-    assert response.get_json() == {
+    assert response.json() == {
         "results": [
             {
                 "name": "program.py",

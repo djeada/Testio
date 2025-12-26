@@ -1,41 +1,57 @@
-"""A custom Flask application for the TestioServer."""
+"""A custom FastAPI application for the TestioServer."""
 import sys
-
-from src.apps.server.routes.exam_mode import exam_mode_page_blueprint
-from src.apps.server.routes.homework_mode import homework_mode_page_blueprint
+from pathlib import Path
 
 sys.path.append(".")
 
-from flask import Flask
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from src.apps.server.database.database import Database
-from src.apps.server.routes.execute_tests import execute_tests_blueprint
-from src.apps.server.routes.index_page import index_page_blueprint
-from src.apps.server.routes.update_test_suite import update_test_suite_blueprint
+from src.apps.server.routes.execute_tests import execute_tests_router
+from src.apps.server.routes.index_page import index_page_router
+from src.apps.server.routes.update_test_suite import update_test_suite_router
+from src.apps.server.routes.exam_mode import exam_mode_page_router
+from src.apps.server.routes.homework_mode import homework_mode_page_router
 
 
-class TestioServer(Flask):
-    """A custom Flask application for the TestioServer."""
+def create_app() -> FastAPI:
+    """
+    Create and configure the FastAPI application.
 
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the TestioServer and its routes.
+    :return: Configured FastAPI application instance.
+    """
+    app = FastAPI(title="Testio", description="A flexible and powerful testing framework")
 
-        :param args: Positional arguments to pass to the parent class.
-        :param kwargs: Keyword arguments to pass to the parent class.
-        """
-        super().__init__(*args, **kwargs)
-        # Reference to the custom database class
-        self.db = Database("testio.db")
+    # Reference to the custom database class
+    app.state.db = Database("testio.db")
 
-        # create all the routes
-        routes = [
-            index_page_blueprint,
-            update_test_suite_blueprint,
-            execute_tests_blueprint,
-            homework_mode_page_blueprint,
-            exam_mode_page_blueprint,
-        ]
+    # Get the path to static and templates directories
+    server_dir = Path(__file__).parent.parent
+    static_dir = server_dir / "static"
+    templates_dir = server_dir / "templates"
 
-        for route in routes:
-            self.register_blueprint(route)
+    # Mount static files
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+    # Store templates in app state for access in routes
+    app.state.templates = Jinja2Templates(directory=str(templates_dir))
+
+    # Register all routers
+    routers = [
+        index_page_router,
+        update_test_suite_router,
+        execute_tests_router,
+        homework_mode_page_router,
+        exam_mode_page_router,
+    ]
+
+    for router in routers:
+        app.include_router(router)
+
+    return app
+
+
+# Create the app instance
+app = create_app()

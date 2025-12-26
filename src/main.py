@@ -4,7 +4,7 @@ import argparse
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "script", type=str, choices=["cli", "flask", "gui"], help="Script to run"
+        "script", type=str, choices=["cli", "fastapi", "gui"], help="Script to run"
     )
     args, extra_args = parser.parse_known_args()
 
@@ -13,10 +13,10 @@ def main():
 
         cli_main(extra_args)
 
-    elif args.script == "flask":
-        from apps.server.main import main as flask_main
+    elif args.script == "fastapi":
+        from apps.server.main import main as fastapi_main
 
-        flask_main(extra_args)
+        fastapi_main(extra_args)
 
     elif args.script == "gui":
         from apps.gui.main import main as gui_main
