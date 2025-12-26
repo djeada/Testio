@@ -2,6 +2,8 @@
 Implementation of the OutputComparator class.
 """
 
+import re
+
 from .data import ComparisonInputData, ComparisonOutputData, ComparisonResult
 
 
@@ -31,14 +33,30 @@ class OutputComparator:
 
         if comparison_input_data.execution_output.timeout:
             output_data.result = ComparisonResult.TIMEOUT
+            return output_data
 
         if comparison_input_data.execution_output.stderr:
             output_data.result = ComparisonResult.EXECUTION_ERROR
+            return output_data
 
-        if (
-            comparison_input_data.expected_output
-            == comparison_input_data.execution_output.stdout
-        ):
-            output_data.result = ComparisonResult.MATCH
+        # Perform comparison: regex match or exact string match
+        if comparison_input_data.use_regex:
+            # Use regex matching
+            try:
+                if re.fullmatch(
+                    comparison_input_data.expected_output,
+                    comparison_input_data.execution_output.stdout,
+                ):
+                    output_data.result = ComparisonResult.MATCH
+            except re.error:
+                # Invalid regex pattern - treat as mismatch
+                output_data.result = ComparisonResult.MISMATCH
+        else:
+            # Use exact string matching
+            if (
+                comparison_input_data.expected_output
+                == comparison_input_data.execution_output.stdout
+            ):
+                output_data.result = ComparisonResult.MATCH
 
         return output_data

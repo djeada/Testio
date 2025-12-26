@@ -1,0 +1,16 @@
+{
+	"command": "python3",
+	"path": "program.py",
+	"tests": [
+		{
+			"input": [],
+			"output": [
+				"\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\] Application started",
+				"\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\] Processing user request",
+				"\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\] Request completed successfully"
+			],
+			"timeout": 5,
+			"use_regex": true
+		}
+	]
+}

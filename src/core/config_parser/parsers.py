@@ -79,6 +79,7 @@ class CONFIG_SCHEMA:
     TEST_INPUT: str = "input"
     TEST_OUTPUT: str = "output"
     TIMEOUT: str = "timeout"
+    USE_REGEX: str = "use_regex"
 
 
 class ConfigParser:
@@ -104,10 +105,11 @@ class ConfigParser:
             input_data = test_data.get(CONFIG_SCHEMA.TEST_INPUT)
             output_data = test_data.get(CONFIG_SCHEMA.TEST_OUTPUT)
             timeout = test_data.get(CONFIG_SCHEMA.TIMEOUT)
+            use_regex = test_data.get(CONFIG_SCHEMA.USE_REGEX, False)
             if input_data is None or output_data is None or timeout is None:
                 return None
 
-            tests.append(TestData(input_data, output_data, timeout))
+            tests.append(TestData(input_data, output_data, timeout, use_regex))
 
         return TestSuiteConfig(command=command, path=path, tests=tests)
 
