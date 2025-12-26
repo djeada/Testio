@@ -272,6 +272,11 @@ function getStatusText(result) {
 
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
+    // Ensure text is a string
+    if (text == null) {
+        return '';
+    }
+    text = String(text);
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;

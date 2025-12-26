@@ -71,6 +71,7 @@ async def homework_submission(
             
             # Calculate statistics
             total_tests = len(test_results)
+            # Note: result string is "ComparisonResult.MATCH" from enum str() conversion
             passed_tests = len([r for r in test_results if r['result'] == 'ComparisonResult.MATCH'])
             score = (passed_tests / total_tests * 100) if total_tests > 0 else 0
             
