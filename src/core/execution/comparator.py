@@ -48,9 +48,10 @@ class OutputComparator:
                     comparison_input_data.execution_output.stdout,
                 ):
                     output_data.result = ComparisonResult.MATCH
+                # If no match, result remains MISMATCH (default)
             except re.error:
-                # Invalid regex pattern - treat as mismatch
-                output_data.result = ComparisonResult.MISMATCH
+                # Invalid regex pattern - result remains MISMATCH (default)
+                pass
         else:
             # Use exact string matching
             if (
