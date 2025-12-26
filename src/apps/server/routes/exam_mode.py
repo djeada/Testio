@@ -15,4 +15,4 @@ def exam_mode_page(request: Request) -> HTMLResponse:
     :return: The rendered HTML for the exam mode page.
     """
     templates = request.app.state.templates
-    return templates.TemplateResponse(request, "exam_mode.html")
+    return templates.TemplateResponse(request, "exam_mode.html", {})
