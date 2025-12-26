@@ -1,7 +1,7 @@
 """This module defines a FastAPI router for handling student code submissions to teachers."""
 import sys
 from datetime import datetime
-from typing import Dict, Any
+import uuid
 
 sys.path.append(".")
 
@@ -34,8 +34,8 @@ async def student_submission(request_data: StudentSubmissionRequest) -> StudentS
     :param request_data: Student submission data including name, problem description, and code
     :return: Confirmation of submission
     """
-    # Generate a submission ID (in a real system, this would be stored in a database)
-    submission_id = f"SUB-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    # Generate a unique submission ID using UUID
+    submission_id = f"SUB-{uuid.uuid4().hex[:12].upper()}"
     submitted_at = datetime.now().isoformat()
     
     # In a real implementation, this would:

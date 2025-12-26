@@ -2,7 +2,8 @@
 
 {% block additional_styles %}
 <link rel="stylesheet" type="text/css" href="/static/styles/student.css">
-<!-- Include CodeMirror for syntax highlighting -->
+<!-- CodeMirror for syntax highlighting - Note: For production use, consider hosting these files locally 
+     or adding integrity attributes for security. CDN resources should include SRI (Subresource Integrity) checks. -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
 {% endblock %}
@@ -67,7 +68,8 @@
     </div>
 </div>
 
-<!-- Include CodeMirror JavaScript -->
+<!-- CodeMirror JavaScript - Note: For production use, consider hosting these files locally 
+     or adding integrity attributes for security. The code includes fallback to plain textarea if CDN is blocked. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>

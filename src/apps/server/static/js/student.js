@@ -2,6 +2,9 @@
 let codeEditor;
 let useCodeMirror = false;
 
+// Default code template constant
+const DEFAULT_CODE_TEMPLATE = '# Write your code here\n# Example:\n# print("Hello, World!")\n\n';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize CodeMirror with Python mode (can be changed based on user preference)
     const textarea = document.getElementById('code-editor');
@@ -21,10 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Set default code template
-        codeEditor.setValue('# Write your code here\n# Example:\n# print("Hello, World!")\n\n');
+        codeEditor.setValue(DEFAULT_CODE_TEMPLATE);
     } else {
         // Fallback to plain textarea
-        textarea.value = '# Write your code here\n# Example:\n# print("Hello, World!")\n\n';
+        textarea.value = DEFAULT_CODE_TEMPLATE;
         textarea.style.display = 'block';
         textarea.style.width = '100%';
         textarea.style.height = '400px';
@@ -52,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get code from CodeMirror or plain textarea
         const code = useCodeMirror ? codeEditor.getValue().trim() : textarea.value.trim();
         
-        if (!code || code === '# Write your code here\n# Example:\n# print("Hello, World!")\n\n') {
+        if (!code || code === DEFAULT_CODE_TEMPLATE.trim()) {
             showError('Please write some code before testing!');
             return;
         }
@@ -108,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (!code || code === '# Write your code here\n# Example:\n# print("Hello, World!")\n\n') {
+        if (!code || code === DEFAULT_CODE_TEMPLATE.trim()) {
             showError('Please write some code before submitting!');
             return;
         }
