@@ -1,0 +1,42 @@
+{
+	"command": "python3",
+	"path": "calculator.py",
+	"tests": [
+		{
+			"input": ["10", "+", "5"],
+			"output": [
+				"Simple Calculator",
+				"Enter first number:",
+				"Enter operation (+, -, *, /):",
+				"Enter second number:",
+				"Result: 15.0"
+			],
+			"timeout": 5,
+			"interleaved": true
+		},
+		{
+			"input": ["20", "*", "3"],
+			"output": [
+				"Simple Calculator",
+				"Enter first number:",
+				"Enter operation (+, -, *, /):",
+				"Enter second number:",
+				"Result: 60.0"
+			],
+			"timeout": 5,
+			"interleaved": true
+		},
+		{
+			"input": ["100", "/", "4"],
+			"output": [
+				"Simple Calculator",
+				"Enter first number:",
+				"Enter operation (+, -, *, /):",
+				"Enter second number:",
+				"Result: 25.0"
+			],
+			"timeout": 5,
+			"interleaved": true
+		}
+	]
+}
