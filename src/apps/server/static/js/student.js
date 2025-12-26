@@ -1,22 +1,37 @@
 // Initialize CodeMirror editor
 let codeEditor;
+let useCodeMirror = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize CodeMirror with Python mode (can be changed based on user preference)
     const textarea = document.getElementById('code-editor');
-    codeEditor = CodeMirror.fromTextArea(textarea, {
-        mode: 'python',
-        theme: 'dracula',
-        lineNumbers: true,
-        indentUnit: 4,
-        indentWithTabs: false,
-        lineWrapping: true,
-        matchBrackets: true,
-        autoCloseBrackets: true,
-    });
-
-    // Set default code template
-    codeEditor.setValue('# Write your code here\n# Example:\n# print("Hello, World!")\n\n');
+    
+    // Check if CodeMirror is available (may not load if CDN is blocked)
+    if (typeof CodeMirror !== 'undefined') {
+        useCodeMirror = true;
+        codeEditor = CodeMirror.fromTextArea(textarea, {
+            mode: 'python',
+            theme: 'dracula',
+            lineNumbers: true,
+            indentUnit: 4,
+            indentWithTabs: false,
+            lineWrapping: true,
+            matchBrackets: true,
+            autoCloseBrackets: true,
+        });
+        
+        // Set default code template
+        codeEditor.setValue('# Write your code here\n# Example:\n# print("Hello, World!")\n\n');
+    } else {
+        // Fallback to plain textarea
+        textarea.value = '# Write your code here\n# Example:\n# print("Hello, World!")\n\n';
+        textarea.style.display = 'block';
+        textarea.style.width = '100%';
+        textarea.style.height = '400px';
+        textarea.style.fontFamily = 'monospace';
+        textarea.style.fontSize = '14px';
+        textarea.style.padding = '10px';
+    }
 
     // Get DOM elements
     const studentNameInput = document.getElementById('student-name');
@@ -26,9 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const feedbackArea = document.getElementById('feedback-area');
     const submissionStatus = document.getElementById('submission-status');
 
+    // Check if elements exist before adding event listeners
+    if (!testCodeBtn || !submitCodeBtn || !feedbackArea) {
+        console.error('Required elements not found');
+        return;
+    }
+
     // Test Code Button Handler
     testCodeBtn.addEventListener('click', async function() {
-        const code = codeEditor.getValue().trim();
+        // Get code from CodeMirror or plain textarea
+        const code = useCodeMirror ? codeEditor.getValue().trim() : textarea.value.trim();
         
         if (!code || code === '# Write your code here\n# Example:\n# print("Hello, World!")\n\n') {
             showError('Please write some code before testing!');
@@ -70,7 +92,8 @@ document.addEventListener('DOMContentLoaded', function() {
     submitCodeBtn.addEventListener('click', async function() {
         const studentName = studentNameInput.value.trim();
         const problemDescription = problemDescInput.value.trim();
-        const code = codeEditor.getValue().trim();
+        // Get code from CodeMirror or plain textarea
+        const code = useCodeMirror ? codeEditor.getValue().trim() : textarea.value.trim();
 
         // Validation
         if (!studentName) {
