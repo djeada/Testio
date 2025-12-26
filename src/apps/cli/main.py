@@ -27,7 +27,7 @@ class Parser(argparse.ArgumentParser):
 def process_file(args: Tuple[str, List[ExecutionManagerInputData]]) -> Tuple[str, List[ComparisonOutputData], int, int, float]:
     """
     Process a single file's tests and return the results.
-    This function is designed to be used with multiprocessing.Pool.
+    This function is designed to be used with ProcessPoolExecutor.
     
     :param args: A tuple containing (path, execution_manager_data)
     :return: A tuple containing (path, results, total_test, passed_test, passed_tests_ratio)
