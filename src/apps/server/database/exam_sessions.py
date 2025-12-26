@@ -1,12 +1,15 @@
 """Database management for exam sessions and student submissions."""
 import sys
 import json
+import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 sys.path.append(".")
 
 from src.apps.server.database.database import Database
+
+logger = logging.getLogger(__name__)
 
 
 class ExamSessionsTable:
@@ -66,7 +69,7 @@ class ExamSessionsTable:
             )
             return True
         except Exception as e:
-            print(f"Error creating session: {e}")
+            logger.error(f"Error creating session: {e}")
             return False
 
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
@@ -111,7 +114,7 @@ class ExamSessionsTable:
             )
             return True
         except Exception as e:
-            print(f"Error ending session: {e}")
+            logger.error(f"Error ending session: {e}")
             return False
 
     def submit_student_work(
@@ -149,7 +152,7 @@ class ExamSessionsTable:
             )
             return True
         except Exception as e:
-            print(f"Error submitting work: {e}")
+            logger.error(f"Error submitting work: {e}")
             return False
 
     def get_session_submissions(self, session_id: str) -> List[Dict[str, Any]]:
