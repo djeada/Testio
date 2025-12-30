@@ -2,14 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Testio - A flexible and powerful testing framework for verifying application outputs">
     <title>{% block title %}Testio{% endblock %}</title>
     {% include 'styles.html' %}
     {% block additional_styles %}{% endblock %}
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="content">
     {% include 'menubar.html' %}
-    {% block body %}{% endblock %}
+    <main id="main-content" role="main">
+        {% block body %}{% endblock %}
+    </main>
 </div>
 {% include 'scripts.html' %}
 {% block additional_scripts %}{% endblock %}

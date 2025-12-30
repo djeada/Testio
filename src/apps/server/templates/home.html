@@ -1,28 +1,75 @@
 <!-- HTML code for the home page -->
 <div class="home">
-    <div class="home__option-panel">
-        <div class="option-panel__icon" style="font-size: 80px;">🎓</div>
-        <h4 class="option-panel__text">Student Mode</h4>
-        <p class="option-panel__description">
-            Submit your code, test it, and get instant feedback. Perfect for learning and practicing programming.
-        </p>
-        <div class="option-panel__select-btn" id="student-btn">Start Coding</div>
+    <div class="home__header">
+        <h1 class="home__title">Welcome to Testio</h1>
+        <p class="home__subtitle">The powerful testing framework for verifying application outputs</p>
     </div>
-    <div class="home__option-panel">
-        <img class="option-panel__icon" src="/static/img/homework.png" alt="Homework Mode">
-        <h4 class="option-panel__text">Homework Mode</h4>
-        <p class="option-panel__description">
-            Perfect for practice and self-paced learning. Students can submit and test their solutions multiple times.
-        </p>
-        <div class="option-panel__select-btn" id="homework-btn">Start Practice</div>
+    
+    <div class="home__cards">
+        <div class="home__option-panel" tabindex="0" role="button" aria-label="Start Student Mode">
+            <div class="option-panel__badge">New</div>
+            <div class="option-panel__icon" style="font-size: 80px;">🎓</div>
+            <h4 class="option-panel__text">Student Mode</h4>
+            <p class="option-panel__description">
+                Submit your code, test it, and get instant feedback. Perfect for learning and practicing programming.
+            </p>
+            <ul class="option-panel__features">
+                <li>✓ Real-time code testing</li>
+                <li>✓ Instant feedback</li>
+                <li>✓ Multiple language support</li>
+            </ul>
+            <div class="option-panel__select-btn" id="student-btn">
+                <span>Start Coding</span>
+                <span class="btn-arrow">→</span>
+            </div>
+        </div>
+        <div class="home__option-panel" tabindex="0" role="button" aria-label="Start Homework Mode">
+            <img class="option-panel__icon" src="/static/img/homework.png" alt="">
+            <h4 class="option-panel__text">Homework Mode</h4>
+            <p class="option-panel__description">
+                Perfect for practice and self-paced learning. Students can submit and test their solutions multiple times.
+            </p>
+            <ul class="option-panel__features">
+                <li>✓ Batch testing</li>
+                <li>✓ Detailed reports</li>
+                <li>✓ Progress tracking</li>
+            </ul>
+            <div class="option-panel__select-btn" id="homework-btn">
+                <span>Start Practice</span>
+                <span class="btn-arrow">→</span>
+            </div>
+        </div>
+        <div class="home__option-panel" tabindex="0" role="button" aria-label="Start Examination Mode">
+            <img class="option-panel__icon" src="/static/img/exam.png" alt="">
+            <h4 class="option-panel__text">Examination Mode</h4>
+            <p class="option-panel__description">
+                Secure testing environment for assessments and exams. Monitor student progress in real-time.
+            </p>
+            <ul class="option-panel__features">
+                <li>✓ Secure environment</li>
+                <li>✓ Live monitoring</li>
+                <li>✓ Export results</li>
+            </ul>
+            <div class="option-panel__select-btn" id="exam-btn">
+                <span>Start Exam</span>
+                <span class="btn-arrow">→</span>
+            </div>
+        </div>
     </div>
-    <div class="home__option-panel">
-        <img class="option-panel__icon" src="/static/img/exam.png" alt="Examination Mode">
-        <h4 class="option-panel__text">Examination Mode</h4>
-        <p class="option-panel__description">
-            Secure testing environment for assessments and exams. Monitor student progress in real-time.
-        </p>
-        <div class="option-panel__select-btn" id="exam-btn">Start Exam</div>
+    
+    <div class="home__stats">
+        <div class="stats__item">
+            <span class="stats__value" id="total-tests-run">1000+</span>
+            <span class="stats__label">Tests Run</span>
+        </div>
+        <div class="stats__item">
+            <span class="stats__value" id="total-students">500+</span>
+            <span class="stats__label">Students</span>
+        </div>
+        <div class="stats__item">
+            <span class="stats__value" id="success-rate">95%</span>
+            <span class="stats__label">Success Rate</span>
+        </div>
     </div>
 </div>
 

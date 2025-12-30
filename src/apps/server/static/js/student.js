@@ -21,6 +21,14 @@ document.addEventListener('DOMContentLoaded', function() {
             lineWrapping: true,
             matchBrackets: true,
             autoCloseBrackets: true,
+            extraKeys: {
+                'Ctrl-Enter': function() { runTests(); },
+                'Cmd-Enter': function() { runTests(); },
+                'Ctrl-S': function(cm) { 
+                    // Prevent default save dialog
+                    return false;
+                },
+            }
         });
         
         // Set default code template
@@ -34,6 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
         textarea.style.fontFamily = 'monospace';
         textarea.style.fontSize = '14px';
         textarea.style.padding = '10px';
+        textarea.style.backgroundColor = 'var(--color-bg-secondary)';
+        textarea.style.color = 'var(--color-primary)';
+        textarea.style.border = '1px solid var(--color-border)';
+        textarea.style.borderRadius = 'var(--radius-md)';
     }
 
     // Get DOM elements
@@ -50,8 +62,21 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // Keyboard shortcuts display
+    addKeyboardShortcutHints();
+
     // Test Code Button Handler
-    testCodeBtn.addEventListener('click', async function() {
+    testCodeBtn.addEventListener('click', runTests);
+    
+    // Global keyboard shortcut for running tests (Ctrl+Enter)
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            runTests();
+        }
+    });
+    
+    async function runTests() {
         // Get code from CodeMirror or plain textarea
         const code = useCodeMirror ? codeEditor.getValue().trim() : textarea.value.trim();
         
@@ -89,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             testCodeBtn.disabled = false;
             testCodeBtn.innerHTML = '<span class="btn-icon">🧪</span> Test Code';
         }
-    });
+    }
 
     // Submit Code Button Handler
     submitCodeBtn.addEventListener('click', async function() {
@@ -279,4 +304,42 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Add keyboard shortcut hints to buttons
+function addKeyboardShortcutHints() {
+    const testCodeBtn = document.getElementById('test-code-btn');
+    if (testCodeBtn) {
+        testCodeBtn.setAttribute('title', 'Test your code (Ctrl+Enter)');
+    }
+    
+    const submitCodeBtn = document.getElementById('submit-code-btn');
+    if (submitCodeBtn) {
+        submitCodeBtn.setAttribute('title', 'Submit your code to your teacher');
+    }
+}
+
+// Toast notification helper
+function showToast(message, type = 'info') {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span class="toast-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+        <span class="toast-message">${escapeHtml(message)}</span>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease-out forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
 }
