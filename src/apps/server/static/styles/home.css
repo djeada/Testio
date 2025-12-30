@@ -1,8 +1,7 @@
 .home {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: stretch;
+    flex-direction: column;
+    align-items: center;
     gap: 2.5rem;
     padding: 3rem 2rem;
     flex: 1;
@@ -11,7 +10,7 @@
 
 .home__header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .home__title {
@@ -30,20 +29,30 @@
     font-weight: 400;
 }
 
+.home__cards {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
 .home__option-panel {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 2.5rem 2rem;
-    gap: 1.5rem;
-    border: 1px solid rgba(100, 102, 241, 0.2);
+    gap: 1rem;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    background: var(--color-panel);
     width: 320px;
     box-shadow: var(--shadow-lg);
     transition: all var(--transition-normal);
     position: relative;
+    cursor: pointer;
 }
 
 .home__option-panel::before {
@@ -58,14 +67,30 @@
     transition: opacity var(--transition-normal);
 }
 
-.home__option-panel:hover {
+.home__option-panel:hover,
+.home__option-panel:focus-visible {
     transform: translateY(-8px);
     box-shadow: var(--shadow-xl);
     border-color: var(--color-btn);
 }
 
-.home__option-panel:hover::before {
+.home__option-panel:hover::before,
+.home__option-panel:focus-visible::before {
     opacity: 1;
+}
+
+.option-panel__badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gradient-secondary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    animation: pulse 2s infinite;
 }
 
 .option-panel__icon {
@@ -76,7 +101,8 @@
     transition: transform var(--transition-normal);
 }
 
-.home__option-panel:hover .option-panel__icon {
+.home__option-panel:hover .option-panel__icon,
+.home__option-panel:focus-visible .option-panel__icon {
     transform: scale(1.1);
 }
 
@@ -94,12 +120,29 @@
     line-height: 1.5;
 }
 
+.option-panel__features {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
+    width: 100%;
+}
+
+.option-panel__features li {
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    padding: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .option-panel__select-btn {
     display: flex;
     width: 100%;
     padding: 1rem 2rem;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: var(--radius-lg);
     font-size: 1rem;
@@ -110,6 +153,7 @@
     box-shadow: 0 4px 15px rgba(102, 102, 241, 0.4);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    margin-top: auto;
 }
 
 .option-panel__select-btn:hover {
@@ -121,12 +165,65 @@
     transform: translateY(0);
 }
 
-@media screen and (max-width: 768px) {
-    .home {
+.btn-arrow {
+    transition: transform var(--transition-fast);
+}
+
+.option-panel__select-btn:hover .btn-arrow {
+    transform: translateX(4px);
+}
+
+/* Stats Section */
+.home__stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem;
+    background: var(--color-panel);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    margin-top: 1rem;
+}
+
+.stats__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stats__value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stats__label {
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+@media screen and (max-width: 1024px) {
+    .home__cards {
         flex-direction: column;
         align-items: center;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .home {
         gap: 1.5rem;
         padding: 2rem 1rem;
+    }
+    
+    .home__title {
+        font-size: 1.75rem;
     }
     
     .home__option-panel {
@@ -141,5 +238,14 @@
     
     .option-panel__text {
         font-size: 1.2rem;
+    }
+    
+    .home__stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .stats__value {
+        font-size: 2rem;
     }
 }

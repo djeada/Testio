@@ -13,6 +13,9 @@
     <div class="page-header">
         <h1 class="page-title">🎓 Student Workspace</h1>
         <p class="page-subtitle">Write your code, test it, and submit for review</p>
+        <p class="keyboard-hints" style="font-size: 0.85rem; color: var(--color-accent); margin-top: 0.5rem;">
+            <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to run tests
+        </p>
     </div>
 
     <div class="student-content">
@@ -20,32 +23,38 @@
         <div class="editor-panel">
             <div class="panel-section">
                 <label for="student-name" class="form-label">👤 Your Name:</label>
-                <input type="text" id="student-name" class="form-input" placeholder="Enter your name" />
+                <input type="text" id="student-name" class="form-input" placeholder="Enter your name" autocomplete="name" aria-required="true" />
             </div>
 
             <div class="panel-section">
                 <label for="problem-description" class="form-label">📝 Problem Description:</label>
                 <textarea id="problem-description" class="form-textarea" 
-                    placeholder="Describe the problem your code solves (e.g., 'Write a program that calculates the sum of two numbers')"></textarea>
+                    placeholder="Describe the problem your code solves (e.g., 'Write a program that calculates the sum of two numbers')"
+                    aria-describedby="problem-desc-help"></textarea>
+                <small id="problem-desc-help" class="form-help" style="color: var(--color-accent); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                    Briefly explain what your program does
+                </small>
             </div>
 
             <div class="panel-section">
                 <label for="code-editor" class="form-label">💻 Your Code:</label>
                 <div class="code-editor-wrapper">
-                    <textarea id="code-editor"></textarea>
+                    <textarea id="code-editor" aria-label="Code editor"></textarea>
                 </div>
             </div>
 
             <div class="button-group">
-                <button id="test-code-btn" class="btn btn-secondary">
+                <button id="test-code-btn" class="btn btn-secondary" aria-describedby="test-code-desc">
                     <span class="btn-icon">🧪</span>
                     Test Code
                 </button>
-                <button id="submit-code-btn" class="btn btn-primary">
+                <button id="submit-code-btn" class="btn btn-primary" aria-describedby="submit-code-desc">
                     <span class="btn-icon">📤</span>
                     Submit to Teacher
                 </button>
             </div>
+            <span id="test-code-desc" class="sr-only">Run your code against test cases</span>
+            <span id="submit-code-desc" class="sr-only">Submit your code for teacher review</span>
         </div>
 
         <!-- Right Panel: Test Results and Feedback -->
@@ -54,14 +63,14 @@
                 <h2 class="panel-title">📊 Test Results & Feedback</h2>
             </div>
             
-            <div id="feedback-area" class="feedback-area">
+            <div id="feedback-area" class="feedback-area" role="region" aria-live="polite" aria-label="Test results">
                 <div class="empty-state">
                     <span class="empty-icon">🚀</span>
                     <p>Click "Test Code" to see your results here</p>
                 </div>
             </div>
 
-            <div id="submission-status" class="submission-status hidden">
+            <div id="submission-status" class="submission-status hidden" role="alert">
                 <div class="status-message"></div>
             </div>
         </div>
