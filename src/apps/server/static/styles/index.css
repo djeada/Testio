@@ -98,6 +98,11 @@ p {
     50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
 }
 
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
 /* Focus styles for accessibility */
 *:focus-visible {
     outline: 2px solid var(--color-btn);
