@@ -51,7 +51,7 @@ def validate_student_id(student_id: str) -> str:
         raise ValidationError("Student ID is too long", "student_id")
     
     # Allow alphanumeric, underscores, hyphens, and dots
-    if not re.match(r'^[\w\-\.]+$', student_id):
+    if not re.match(r'^[\w.\-]+$', student_id):
         raise ValidationError(
             "Student ID contains invalid characters",
             "student_id"

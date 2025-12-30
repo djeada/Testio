@@ -36,7 +36,13 @@ class Database:
         self._is_connected = False
 
     def __enter__(self):
-        """Enter the context manager and establish a database connection."""
+        """Enter the context manager and establish a database connection.
+        
+        Note: check_same_thread=False is used because FastAPI handles requests
+        in different threads. The singleton pattern with threading lock ensures
+        only one Database instance exists. For high-concurrency scenarios,
+        consider using a connection pool like SQLAlchemy.
+        """
         if not self._is_connected:
             self.conn = sqlite3.connect(self.database_file, check_same_thread=False)
             self.cursor = self.conn.cursor()
