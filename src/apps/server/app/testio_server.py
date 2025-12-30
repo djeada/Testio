@@ -7,6 +7,7 @@ sys.path.append(".")
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.apps.server.database.database import Database
 from src.apps.server.routes.execute_tests import execute_tests_router
@@ -19,6 +20,15 @@ from src.apps.server.routes.exam_session import exam_session_router
 from src.apps.server.routes.student_exam import student_exam_router
 from src.apps.server.routes.student_page import student_page_router
 from src.apps.server.routes.student_submission import student_submission_router
+from src.apps.server.routes.health import health_router
+from src.apps.server.routes.statistics import stats_router
+from src.apps.server.routes.batch_execution import batch_router
+from src.apps.server.routes.export import export_router
+from src.apps.server.middleware import RequestLoggingMiddleware, ErrorHandlingMiddleware
+
+
+# API version
+API_VERSION = "1.0.0"
 
 
 def create_app() -> FastAPI:
@@ -27,7 +37,31 @@ def create_app() -> FastAPI:
 
     :return: Configured FastAPI application instance.
     """
-    app = FastAPI(title="Testio", description="A flexible and powerful testing framework")
+    app = FastAPI(
+        title="Testio",
+        description="A flexible and powerful testing framework for verifying application outputs. "
+                    "Features include CLI and web interfaces, homework and exam modes, batch testing, "
+                    "and comprehensive statistics.",
+        version=API_VERSION,
+        docs_url="/docs",
+        redoc_url="/redoc",
+        openapi_url="/openapi.json"
+    )
+
+    # Add CORS middleware for cross-origin requests
+    # NOTE: In production, restrict allow_origins to specific domains
+    # Example: allow_origins=["https://yourdomain.com"]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # Configure for your production domains
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # Add custom middleware
+    app.add_middleware(RequestLoggingMiddleware)
+    app.add_middleware(ErrorHandlingMiddleware)
 
     # Reference to the custom database class
     app.state.db = Database("testio.db")
@@ -45,16 +79,25 @@ def create_app() -> FastAPI:
 
     # Register all routers
     routers = [
+        # Core functionality
         index_page_router,
         update_test_suite_router,
         execute_tests_router,
+        # Homework mode
         homework_mode_page_router,
         homework_submission_router,
+        # Exam mode
         exam_mode_page_router,
         exam_session_router,
         student_exam_router,
+        # Student pages
         student_page_router,
         student_submission_router,
+        # New API features
+        health_router,
+        stats_router,
+        batch_router,
+        export_router,
     ]
 
     for router in routers:
