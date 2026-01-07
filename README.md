@@ -22,7 +22,10 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 - Ideal for teachers to check student programs and homework assignments
 - Can be integrated into CI/CD pipelines in the industry
 - Compares application output against expected output
+- **Multi-language support**: Test programs written in any language (Python, C, C++, Java, JavaScript, Ruby, Go, Rust, etc.)
+- **Automatic compilation**: Compiles programs before testing for compiled languages
 - **Support for interleaved input/output testing** for interactive programs
+- **Support for non-deterministic output** where line order doesn't matter
 - Option to generate a PDF report of results
 - FastAPI-based REST API for easy integration with other tools
 
@@ -123,7 +126,9 @@ To configure the script, you need to create a JSON file with the following struc
         ]
     }
 
-* `command`: The command that will be used to execute the script. It can be a single executable (e.g. "python") or a compound command (e.g. "python path/to/script.py"). If you want to test an executable, you can leave this entry empty.
+* `command`: (Optional for compiled languages) The command that will be used to execute the script. It can be a single executable (e.g. "python") or a compound command. For backward compatibility, this is still supported, but `run_command` is preferred for clarity.
+* `run_command`: (Optional) Explicitly specifies the command to run the program. Takes precedence over `command` if both are provided.
+* `compile_command`: (Optional) Command to compile the source code before running tests. Supports `{source}` and `{output}` placeholders. Required for compiled languages like C, C++, Java, etc.
 * `path`: The path to the script file or folder. If it is a folder, all the files inside will be tested.
 * `tests`: A list of tests that will be run. There must be at least one test, but there can be many. Each test has the following properties:
   - `input`: The input data for the test. It can be empty, a single entry, or an array of entries.
@@ -133,6 +138,114 @@ To configure the script, you need to create a JSON file with the following struc
   - `unordered` (optional): Set to `true` for non-deterministic output where the order of lines doesn't matter, as long as all expected lines are present. Default is `false`.
 
 Note that input and output can be either empty, a single entry, or an array of entries.
+
+### Multi-Language Support
+
+Testio supports testing programs written in multiple programming languages. You can configure it to work with:
+- **Compiled languages** (C, C++, Rust, Go, Java, etc.)
+- **Interpreted languages** (Python, JavaScript/Node.js, Ruby, PHP, Perl, etc.)
+
+#### Examples
+
+**C Program:**
+
+    {
+        "compile_command": "gcc {source} -o {output}",
+        "path": "hello.c",
+        "tests": [
+            {
+                "input": [],
+                "output": ["Hello from C!"],
+                "timeout": 5
+            }
+        ]
+    }
+
+**C++ Program:**
+
+    {
+        "compile_command": "g++ {source} -o {output}",
+        "path": "hello.cpp",
+        "tests": [
+            {
+                "input": [],
+                "output": ["Hello from C++!"],
+                "timeout": 5
+            }
+        ]
+    }
+
+**Java Program:**
+
+    {
+        "compile_command": "javac {source}",
+        "run_command": "java",
+        "path": "Hello.java",
+        "tests": [
+            {
+                "input": [],
+                "output": ["Hello from Java!"],
+                "timeout": 5
+            }
+        ]
+    }
+
+**Node.js/JavaScript:**
+
+    {
+        "run_command": "node",
+        "path": "hello.js",
+        "tests": [
+            {
+                "input": [],
+                "output": ["Hello from Node.js!"],
+                "timeout": 5
+            }
+        ]
+    }
+
+**Ruby:**
+
+    {
+        "run_command": "ruby",
+        "path": "hello.rb",
+        "tests": [
+            {
+                "input": [],
+                "output": ["Hello from Ruby!"],
+                "timeout": 5
+            }
+        ]
+    }
+
+**Go:**
+
+    {
+        "compile_command": "go build -o {output} {source}",
+        "path": "hello.go",
+        "tests": [
+            {
+                "input": [],
+                "output": ["Hello from Go!"],
+                "timeout": 5
+            }
+        ]
+    }
+
+**Rust:**
+
+    {
+        "compile_command": "rustc {source} -o {output}",
+        "path": "hello.rs",
+        "tests": [
+            {
+                "input": [],
+                "output": ["Hello from Rust!"],
+                "timeout": 5
+            }
+        ]
+    }
+
 
 ### Interleaved Input/Output Testing
 
@@ -224,7 +337,8 @@ There are a few planned features and known issues that are being worked on for T
 
 - [x] Enhanced Timeout Management: The timeout parameter will be changed from a regex-based approach to an array-based approach, providing a more flexible and intuitive way of managing timeouts.
 - [x] Improved User Interface: A frontend generated with Flask templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
-- [ ] Add support for testing applications written in multiple programming languages.
+- [x] Add support for testing applications written in multiple programming languages.
+
  
 ## Contributing
 We welcome contributions to Testio! If you would like to contribute, please follow these guidelines:
