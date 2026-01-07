@@ -228,6 +228,40 @@ def test_compare_exact_match_when_unordered_disabled():
     assert result.result == ComparisonResult.MISMATCH
 
 
+def test_compare_unordered_match_with_trailing_newline():
+    """Test unordered matching handles trailing newlines gracefully."""
+    comparator = OutputComparator()
+
+    comparison_input_data = ComparisonInputData(
+        input="input",
+        expected_output="line1\nline2\nline3",
+        execution_output=ExecutionOutputData(
+            stdout="line3\nline1\nline2\n", stderr="", timeout=False
+        ),
+        unordered=True,
+    )
+
+    result = comparator.compare(comparison_input_data)
+    assert result.result == ComparisonResult.MATCH
+
+
+def test_compare_unordered_match_both_with_trailing_newlines():
+    """Test unordered matching when both have trailing newlines."""
+    comparator = OutputComparator()
+
+    comparison_input_data = ComparisonInputData(
+        input="input",
+        expected_output="line1\nline2\n",
+        execution_output=ExecutionOutputData(
+            stdout="line2\nline1\n", stderr="", timeout=False
+        ),
+        unordered=True,
+    )
+
+    result = comparator.compare(comparison_input_data)
+    assert result.result == ComparisonResult.MATCH
+
+
 def test_compare_unordered_numeric_lines():
     """Test unordered matching with numeric lines (non-deterministic order use case)."""
     comparator = OutputComparator()

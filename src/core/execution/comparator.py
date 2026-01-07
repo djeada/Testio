@@ -83,6 +83,12 @@ class OutputComparator:
         expected_lines = expected.split("\n")
         actual_lines = actual.split("\n")
 
+        # Remove trailing empty strings caused by trailing newlines
+        while expected_lines and expected_lines[-1] == "":
+            expected_lines.pop()
+        while actual_lines and actual_lines[-1] == "":
+            actual_lines.pop()
+
         # Both must have the same number of lines
         if len(expected_lines) != len(actual_lines):
             return False
