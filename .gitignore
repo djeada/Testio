@@ -144,7 +144,9 @@ cython_debug/
 # Compiled binaries in examples
 examples/**/hello
 examples/**/main
+examples/**/calculator
 examples/**/*.exe
 examples/**/*.class
 examples/**/*.o
+
 
