@@ -98,6 +98,30 @@ class ComparisonOutputData:
 
 class ExecutionManagerFactory:
     @staticmethod
+    def _compile_if_needed(
+        test_suite_config: TestSuiteConfig,
+        file_path: str
+    ) -> str:
+        """
+        Compiles the source file if compile_command is provided.
+        
+        :param test_suite_config: The TestSuiteConfig object containing compilation command
+        :param file_path: Path to the source file
+        :return: Path to the compiled executable or original path if no compilation
+        :raises CompilationError: If compilation fails
+        """
+        if not test_suite_config.compile_command:
+            return file_path
+            
+        from .compiler import Compiler
+        compiler = Compiler()
+        compiled_path = compiler.compile(
+            test_suite_config.compile_command,
+            file_path
+        )
+        return compiled_path if compiled_path else file_path
+    
+    @staticmethod
     def _create_execution_manager_data(
         test_suite_config: TestSuiteConfig,
         path: str,
@@ -146,16 +170,11 @@ class ExecutionManagerFactory:
         :return: A dictionary where the keys are paths to the tested files and the
                 values are lists of ExecutionManagerInputData objects.
         """
-        from .compiler import Compiler, CompilationError
+        from .compiler import CompilationError
         
         path = test_suite_config.path
         path = str(Path(config_path).parent / path)
 
-        # Handle compilation if compile_command is provided
-        compiled_paths = {}
-        if test_suite_config.compile_command:
-            compiler = Compiler()
-            
         if Path(path).is_dir():
             # path points to a folder
             file_data_dict = {}
@@ -164,20 +183,13 @@ class ExecutionManagerFactory:
                     file_path = str(file)
                     
                     # Compile if needed
-                    if test_suite_config.compile_command:
-                        try:
-                            compiled_path = compiler.compile(
-                                test_suite_config.compile_command,
-                                file_path
-                            )
-                            if compiled_path:
-                                file_path = compiled_path
-                                compiled_paths[str(file)] = compiled_path
-                        except CompilationError as e:
-                            # Store compilation error for this file
-                            # The tests will fail with the compilation error message
-                            print(f"Compilation failed for {file}: {e}")
-                            continue
+                    try:
+                        file_path = ExecutionManagerFactory._compile_if_needed(
+                            test_suite_config, file_path
+                        )
+                    except CompilationError as e:
+                        print(f"Compilation failed for {file}: {e}")
+                        continue
                     
                     execution_manager_data_list = (
                         ExecutionManagerFactory._create_execution_manager_data(
@@ -191,19 +203,13 @@ class ExecutionManagerFactory:
             file_path = path
             
             # Compile if needed
-            if test_suite_config.compile_command:
-                try:
-                    compiled_path = compiler.compile(
-                        test_suite_config.compile_command,
-                        file_path
-                    )
-                    if compiled_path:
-                        file_path = compiled_path
-                        compiled_paths[path] = compiled_path
-                except CompilationError as e:
-                    # Return empty dict if compilation fails
-                    print(f"Compilation failed: {e}")
-                    return {}
+            try:
+                file_path = ExecutionManagerFactory._compile_if_needed(
+                    test_suite_config, file_path
+                )
+            except CompilationError as e:
+                print(f"Compilation failed: {e}")
+                return {}
             
             execution_manager_data_list = (
                 ExecutionManagerFactory._create_execution_manager_data(
@@ -227,14 +233,9 @@ class ExecutionManagerFactory:
                                 tested.
         :return: A list of ExecutionManagerInputData objects.
         """
-        from .compiler import Compiler, CompilationError
+        from .compiler import CompilationError
 
         path = test_suite_config.path
-        
-        # Handle compilation if compile_command is provided
-        compiled_paths = {}
-        if test_suite_config.compile_command:
-            compiler = Compiler()
 
         if Path(path).is_dir():
             # path points to a folder
@@ -244,18 +245,13 @@ class ExecutionManagerFactory:
                     file_path = str(file)
                     
                     # Compile if needed
-                    if test_suite_config.compile_command:
-                        try:
-                            compiled_path = compiler.compile(
-                                test_suite_config.compile_command,
-                                file_path
-                            )
-                            if compiled_path:
-                                file_path = compiled_path
-                                compiled_paths[str(file)] = compiled_path
-                        except CompilationError as e:
-                            print(f"Compilation failed for {file}: {e}")
-                            continue
+                    try:
+                        file_path = ExecutionManagerFactory._compile_if_needed(
+                            test_suite_config, file_path
+                        )
+                    except CompilationError as e:
+                        print(f"Compilation failed for {file}: {e}")
+                        continue
                     
                     execution_manager_data_list = (
                         ExecutionManagerFactory._create_execution_manager_data(
@@ -269,18 +265,13 @@ class ExecutionManagerFactory:
             file_path = path
             
             # Compile if needed
-            if test_suite_config.compile_command:
-                try:
-                    compiled_path = compiler.compile(
-                        test_suite_config.compile_command,
-                        file_path
-                    )
-                    if compiled_path:
-                        file_path = compiled_path
-                        compiled_paths[path] = compiled_path
-                except CompilationError as e:
-                    print(f"Compilation failed: {e}")
-                    return {}
+            try:
+                file_path = ExecutionManagerFactory._compile_if_needed(
+                    test_suite_config, file_path
+                )
+            except CompilationError as e:
+                print(f"Compilation failed: {e}")
+                return {}
             
             execution_manager_data_list = (
                 ExecutionManagerFactory._create_execution_manager_data(
