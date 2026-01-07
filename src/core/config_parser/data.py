@@ -25,8 +25,15 @@ class TestSuiteConfig:
     """
     Complete test suite configuration.
     Consists of a multiple test cases.
+    
+    For backward compatibility:
+    - If only 'command' is provided, it's used as the run command (legacy behavior)
+    - If 'run_command' is provided, it takes precedence over 'command'
+    - If 'compile_command' is provided, compilation is performed before running tests
     """
 
     command: str
     path: str
     tests: List[TestData]
+    compile_command: str = ""
+    run_command: str = ""

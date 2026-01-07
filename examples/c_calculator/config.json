@@ -1,0 +1,21 @@
+{
+    "compile_command": "gcc {source} -o {output}",
+    "path": "calculator.c",
+    "tests": [
+        {
+            "input": ["5", "3"],
+            "output": ["8", "15"],
+            "timeout": 5
+        },
+        {
+            "input": ["10", "2"],
+            "output": ["12", "20"],
+            "timeout": 5
+        },
+        {
+            "input": ["0", "0"],
+            "output": ["0", "0"],
+            "timeout": 5
+        }
+    ]
+}

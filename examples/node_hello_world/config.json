@@ -1,0 +1,11 @@
+{
+    "run_command": "node",
+    "path": "hello.js",
+    "tests": [
+        {
+            "input": [],
+            "output": ["Hello from Node.js!"],
+            "timeout": 5
+        }
+    ]
+}

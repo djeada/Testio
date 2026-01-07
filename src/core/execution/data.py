@@ -1,12 +1,15 @@
 """
 Data classes for execution module.
 """
+import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
 from typing import Dict, List, Union
 
 from src.core.config_parser.data import TestSuiteConfig
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -98,6 +101,87 @@ class ComparisonOutputData:
 
 class ExecutionManagerFactory:
     @staticmethod
+    def _compile_if_needed(
+        test_suite_config: TestSuiteConfig,
+        file_path: str
+    ) -> str:
+        """
+        Compiles the source file if compile_command is provided.
+        
+        :param test_suite_config: The TestSuiteConfig object containing compilation command
+        :param file_path: Path to the source file
+        :return: Path to the compiled executable or original path if no compilation
+        :raises CompilationError: If compilation fails
+        """
+        if not test_suite_config.compile_command:
+            return file_path
+            
+        from .compiler import Compiler
+        compiler = Compiler()
+        compiled_path = compiler.compile(
+            test_suite_config.compile_command,
+            file_path
+        )
+        return compiled_path if compiled_path else file_path
+    
+    @staticmethod
+    def _process_files(
+        test_suite_config: TestSuiteConfig,
+        path: str
+    ) -> Dict[str, List[ExecutionManagerInputData]]:
+        """
+        Process files by compiling (if needed) and creating execution manager data.
+        
+        :param test_suite_config: The TestSuiteConfig object
+        :param path: Path to file or directory to process
+        :return: Dictionary mapping file paths to execution manager data lists
+        """
+        from .compiler import CompilationError
+        
+        if Path(path).is_dir():
+            # path points to a folder
+            file_data_dict = {}
+            for file in Path(path).glob("*"):
+                if file.is_file():
+                    file_path = str(file)
+                    
+                    # Compile if needed
+                    try:
+                        file_path = ExecutionManagerFactory._compile_if_needed(
+                            test_suite_config, file_path
+                        )
+                    except CompilationError as e:
+                        logger.error(f"Compilation failed for {file}: {e}")
+                        continue
+                    
+                    execution_manager_data_list = (
+                        ExecutionManagerFactory._create_execution_manager_data(
+                            test_suite_config, file_path
+                        )
+                    )
+                    file_data_dict[str(file)] = execution_manager_data_list
+            return file_data_dict
+        else:
+            # path points to a file
+            file_path = path
+            
+            # Compile if needed
+            try:
+                file_path = ExecutionManagerFactory._compile_if_needed(
+                    test_suite_config, file_path
+                )
+            except CompilationError as e:
+                logger.error(f"Compilation failed: {e}")
+                return {}
+            
+            execution_manager_data_list = (
+                ExecutionManagerFactory._create_execution_manager_data(
+                    test_suite_config, file_path
+                )
+            )
+            return {path: execution_manager_data_list}
+    
+    @staticmethod
     def _create_execution_manager_data(
         test_suite_config: TestSuiteConfig,
         path: str,
@@ -107,7 +191,18 @@ class ExecutionManagerFactory:
         based on the provided TestSuiteConfig object and the path to the file
         being tested.
         """
-        command = f'{test_suite_config.command} "{path}"'.strip()
+        # Determine the command to use for running tests
+        # Priority: run_command > command (for backward compatibility)
+        if test_suite_config.run_command:
+            # Use run_command if explicitly provided
+            command = f'{test_suite_config.run_command} "{path}"'.strip()
+        elif test_suite_config.command:
+            # Fall back to command for backward compatibility
+            command = f'{test_suite_config.command} "{path}"'.strip()
+        else:
+            # If neither is provided, just use the path (for compiled executables)
+            command = f'"{path}"'
+            
         execution_manager_data_list = []
         for test_data in test_suite_config.tests:
             execution_manager_data = ExecutionManagerInputData(
@@ -137,26 +232,8 @@ class ExecutionManagerFactory:
         """
         path = test_suite_config.path
         path = str(Path(config_path).parent / path)
-
-        if Path(path).is_dir():
-            # path points to a folder
-            file_data_dict = {}
-            for file in Path(path).glob("*"):
-                execution_manager_data_list = (
-                    ExecutionManagerFactory._create_execution_manager_data(
-                        test_suite_config, str(file)
-                    )
-                )
-                file_data_dict[str(file)] = execution_manager_data_list
-            return file_data_dict
-        else:
-            # path points to a file
-            execution_manager_data_list = (
-                ExecutionManagerFactory._create_execution_manager_data(
-                    test_suite_config, path
-                )
-            )
-            return {path: execution_manager_data_list}
+        
+        return ExecutionManagerFactory._process_files(test_suite_config, path)
 
     # TODO: This method is unnecessary. We could use from_test_suite_config_local() for server as well.
     #  Leaving in for now.
@@ -173,25 +250,6 @@ class ExecutionManagerFactory:
                                 tested.
         :return: A list of ExecutionManagerInputData objects.
         """
-
         path = test_suite_config.path
-
-        if Path(path).is_dir():
-            # path points to a folder
-            file_data_dict = {}
-            for file in Path(path).glob("*"):
-                execution_manager_data_list = (
-                    ExecutionManagerFactory._create_execution_manager_data(
-                        test_suite_config, str(file)
-                    )
-                )
-                file_data_dict[str(file)] = execution_manager_data_list
-            return file_data_dict
-        else:
-            # path points to a file
-            execution_manager_data_list = (
-                ExecutionManagerFactory._create_execution_manager_data(
-                    test_suite_config, path
-                )
-            )
-            return {path: execution_manager_data_list}
+        
+        return ExecutionManagerFactory._process_files(test_suite_config, path)
