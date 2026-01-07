@@ -39,8 +39,16 @@ class OutputComparator:
             output_data.result = ComparisonResult.EXECUTION_ERROR
             return output_data
 
-        # Perform comparison: regex match or exact string match
-        if comparison_input_data.use_regex:
+        # Perform comparison based on mode
+        if comparison_input_data.unordered:
+            # Use unordered comparison - all expected lines must be present
+            # regardless of order
+            if self._compare_unordered(
+                comparison_input_data.expected_output,
+                comparison_input_data.execution_output.stdout,
+            ):
+                output_data.result = ComparisonResult.MATCH
+        elif comparison_input_data.use_regex:
             # Use regex matching
             try:
                 if re.fullmatch(
@@ -61,3 +69,24 @@ class OutputComparator:
                 output_data.result = ComparisonResult.MATCH
 
         return output_data
+
+    def _compare_unordered(self, expected: str, actual: str) -> bool:
+        """
+        Compares expected and actual output in an unordered manner.
+        All expected lines must be present in the actual output,
+        and the actual output must have the same number of lines.
+
+        :param expected: The expected output as a string with newline-separated lines.
+        :param actual: The actual output as a string with newline-separated lines.
+        :return: True if all expected lines are present in actual output with same count.
+        """
+        # Strip trailing newlines before splitting to handle trailing newline differences
+        expected_lines = expected.rstrip("\n").split("\n") if expected.rstrip("\n") else []
+        actual_lines = actual.rstrip("\n").split("\n") if actual.rstrip("\n") else []
+
+        # Both must have the same number of lines
+        if len(expected_lines) != len(actual_lines):
+            return False
+
+        # Sort both lists and compare
+        return sorted(expected_lines) == sorted(actual_lines)

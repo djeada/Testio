@@ -17,6 +17,7 @@ class TestData:
     timeout: int
     use_regex: bool = False
     interleaved: bool = False
+    unordered: bool = False
 
 
 @dataclass

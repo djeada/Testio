@@ -130,6 +130,7 @@ To configure the script, you need to create a JSON file with the following struc
   - `output`: The expected output data for the test. It can be empty, a single entry, or an array of entries.
   - `timeout`: The timeout for the test in seconds.
   - `interleaved` (optional): Set to `true` for interactive programs that alternate between prompting and waiting for input. Default is `false` for backward compatibility.
+  - `unordered` (optional): Set to `true` for non-deterministic output where the order of lines doesn't matter, as long as all expected lines are present. Default is `false`.
 
 Note that input and output can be either empty, a single entry, or an array of entries.
 
@@ -168,6 +169,39 @@ Example of an interactive program test:
         ]
     }
 
+### Non-Deterministic Output Testing
+
+Testio supports testing programs with non-deterministic output where lines may appear in any order. This is useful for testing:
+- Multi-threaded applications where output order varies
+- Programs that process items in parallel
+- Any scenario where the output content is predictable but the order is not
+
+To enable unordered testing, add `"unordered": true` to your test configuration. When this flag is set:
+- All expected lines must be present in the actual output
+- The order of lines does not matter
+- Duplicate lines are handled correctly (counts must match)
+
+Example of testing non-deterministic output:
+
+    {
+        "command": "python3",
+        "path": "parallel_processor.py",
+        "tests": [
+            {
+                "input": "",
+                "output": [
+                    "Processing item A",
+                    "Processing item B",
+                    "Processing item C",
+                    "All items processed"
+                ],
+                "timeout": 10,
+                "unordered": true
+            }
+        ]
+    }
+
+In this example, the first three lines can appear in any order, as long as all of them are present.
 
 
 ## Architecture

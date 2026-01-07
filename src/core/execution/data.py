@@ -21,6 +21,7 @@ class ExecutionManagerInputData:
     timeout: int = 0
     use_regex: bool = False
     interleaved: bool = False
+    unordered: bool = False
 
 
 @dataclass
@@ -55,6 +56,7 @@ class ComparisonInputData:
     expected_output: str = ""
     execution_output: ExecutionOutputData = field(default_factory=ExecutionOutputData)
     use_regex: bool = False
+    unordered: bool = False
 
 
 class ComparisonResult(Enum):
@@ -115,6 +117,7 @@ class ExecutionManagerFactory:
                 timeout=test_data.timeout,
                 use_regex=test_data.use_regex,
                 interleaved=test_data.interleaved,
+                unordered=test_data.unordered,
             )
             execution_manager_data_list.append(execution_manager_data)
         return execution_manager_data_list

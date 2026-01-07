@@ -57,6 +57,7 @@ class ExecutionManager:
             expected_output=data_output,
             execution_output=execution_output,
             use_regex=data.use_regex,
+            unordered=data.unordered,
         )
 
         comparator = OutputComparator()
