@@ -20,9 +20,15 @@ from src.apps.cli.main import main
 if __name__ == "__main__":
     # Run the main CLI with student-focused command
     argv = sys.argv[1:]
-    # If no command is specified, default to student subcommand
-    if argv and argv[0] not in {"student", "-h", "--help"}:
-        # Prepend 'student' command for student-focused experience
+    
+    # Known top-level commands that should not be prefixed with 'student'
+    TOP_LEVEL_COMMANDS = {"student", "run", "validate", "batch", "export", 
+                          "generate", "init", "-h", "--help"}
+    
+    # If no command is specified or the first argument is not a known top-level command,
+    # prepend 'student' to provide a student-focused experience
+    if argv and argv[0] not in TOP_LEVEL_COMMANDS:
         argv = ["student"] + argv
+    
     exit_code = main(argv)
     sys.exit(exit_code)
