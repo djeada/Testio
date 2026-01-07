@@ -51,6 +51,8 @@ function addTestCase() {
     const testCaseCard = document.createElement('div');
     testCaseCard.className = 'test-case-card';
     testCaseCard.id = testCaseId;
+    testCaseCard.setAttribute('role', 'group');
+    testCaseCard.setAttribute('aria-label', `Test Case #${testCaseCounter}`);
     testCaseCard.innerHTML = `
         <div class="test-case-header">
             <h3 class="test-case-title">Test Case #${testCaseCounter}</h3>
@@ -121,7 +123,7 @@ function removeTestCase(testCaseId) {
             testCase.remove();
             updateTestCount();
         } else {
-            alert('At least one test case is required.');
+            showMessage('error', 'At least one test case is required.');
         }
     }
 }
@@ -161,9 +163,6 @@ function generateJSON() {
         // Add run_command if provided
         if (runCommand) {
             config.run_command = runCommand;
-        } else if (!compileCommand) {
-            // If no compile_command and no run_command, add 'command' for backward compatibility
-            // User should specify at least one
         }
         
         // Collect test cases
