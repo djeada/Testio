@@ -82,6 +82,8 @@ class CONFIG_SCHEMA:
     USE_REGEX: str = "use_regex"
     INTERLEAVED: str = "interleaved"
     UNORDERED: str = "unordered"
+    COMPILE_COMMAND: str = "compile_command"
+    RUN_COMMAND: str = "run_command"
 
 
 class ConfigParser:
@@ -99,8 +101,10 @@ class ConfigParser:
         return self.parse_from_json(data)
 
     def parse_from_json(self, json_data: dict) -> Optional[TestSuiteConfig]:
-        command = json_data.get(CONFIG_SCHEMA.COMMAND)
+        command = json_data.get(CONFIG_SCHEMA.COMMAND, "")
         path = json_data.get(CONFIG_SCHEMA.PATH)
+        compile_command = json_data.get(CONFIG_SCHEMA.COMPILE_COMMAND, "")
+        run_command = json_data.get(CONFIG_SCHEMA.RUN_COMMAND, "")
 
         tests = []
         for test_data in json_data.get(CONFIG_SCHEMA.TESTS, []):
@@ -115,7 +119,13 @@ class ConfigParser:
 
             tests.append(TestData(input_data, output_data, timeout, use_regex, interleaved, unordered))
 
-        return TestSuiteConfig(command=command, path=path, tests=tests)
+        return TestSuiteConfig(
+            command=command, 
+            path=path, 
+            tests=tests,
+            compile_command=compile_command,
+            run_command=run_command
+        )
 
     def validate(self, path: Path) -> bool:
 
@@ -125,9 +135,12 @@ class ConfigParser:
             except json.JSONDecodeError:
                 return False
 
-        # check if command is present and at least one test is present
+        # check if at least one of command or run_command is present, and path and tests are present
+        has_command = data.get(CONFIG_SCHEMA.COMMAND) is not None
+        has_run_command = data.get(CONFIG_SCHEMA.RUN_COMMAND) is not None
+        
         if (
-            data.get(CONFIG_SCHEMA.COMMAND) is None
+            not (has_command or has_run_command)
             or data.get(CONFIG_SCHEMA.PATH) is None
             or data.get(CONFIG_SCHEMA.TESTS) is None
         ):

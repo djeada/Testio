@@ -140,3 +140,11 @@ cython_debug/
 *.pdf
 *.out
 **/mockups/
+
+# Compiled binaries in examples
+examples/**/hello
+examples/**/main
+examples/**/*.exe
+examples/**/*.class
+examples/**/*.o
+

@@ -1,0 +1,12 @@
+{
+    "compile_command": "gcc {source} -o {output}",
+    "run_command": "",
+    "path": "hello.c",
+    "tests": [
+        {
+            "input": [],
+            "output": ["Hello from C!"],
+            "timeout": 5
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "run_command": "ruby",
+    "path": "hello.rb",
+    "tests": [
+        {
+            "input": [],
+            "output": ["Hello from Ruby!"],
+            "timeout": 5
+        }
+    ]
+}
