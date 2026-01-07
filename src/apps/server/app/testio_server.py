@@ -24,6 +24,7 @@ from src.apps.server.routes.health import health_router
 from src.apps.server.routes.statistics import stats_router
 from src.apps.server.routes.batch_execution import batch_router
 from src.apps.server.routes.export import export_router
+from src.apps.server.routes.config_generator import config_generator_page_router
 from src.apps.server.middleware import RequestLoggingMiddleware, ErrorHandlingMiddleware
 
 
@@ -83,6 +84,8 @@ def create_app() -> FastAPI:
         index_page_router,
         update_test_suite_router,
         execute_tests_router,
+        # Config generator
+        config_generator_page_router,
         # Homework mode
         homework_mode_page_router,
         homework_submission_router,

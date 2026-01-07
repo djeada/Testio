@@ -1,0 +1,153 @@
+{% extends 'base_page.html' %}
+
+{% block title %}Config Generator - Testio{% endblock %}
+
+{% block additional_styles %}
+<link rel="stylesheet" type="text/css" href="/static/styles/config_generator.css">
+{% endblock %}
+
+{% block body %}
+<div class="config-generator-container">
+    <div class="page-header">
+        <h1 class="page-title">📝 Test Configuration Generator</h1>
+        <p class="page-subtitle">Create JSON configuration files for testing student programs</p>
+    </div>
+
+    <div class="generator-content">
+        <!-- Left Panel: Form -->
+        <div class="form-panel">
+            <form id="config-form">
+                <!-- Basic Configuration Section -->
+                <section class="form-section">
+                    <h2 class="section-title">Basic Configuration</h2>
+                    
+                    <div class="form-group">
+                        <label for="path" class="form-label">
+                            Program Path <span class="required">*</span>
+                            <span class="tooltip" data-tooltip="Path to the program file or directory to test">ⓘ</span>
+                        </label>
+                        <input type="text" id="path" name="path" class="form-input" 
+                               placeholder="e.g., program.py or scripts/" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="run_command" class="form-label">
+                                Run Command
+                                <span class="tooltip" data-tooltip="Command to execute the program (e.g., python, node, java)">ⓘ</span>
+                            </label>
+                            <input type="text" id="run_command" name="run_command" class="form-input" 
+                                   placeholder="e.g., python3, node, java">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="compile_command" class="form-label">
+                            Compile Command (Optional)
+                            <span class="tooltip" data-tooltip="For compiled languages. Use {source} and {output} placeholders">ⓘ</span>
+                        </label>
+                        <input type="text" id="compile_command" name="compile_command" class="form-input" 
+                               placeholder="e.g., gcc {source} -o {output}">
+                        <small class="form-hint">Leave empty for interpreted languages</small>
+                    </div>
+                </section>
+
+                <!-- Test Cases Section -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Test Cases</h2>
+                        <button type="button" id="add-test-btn" class="btn btn-secondary">
+                            <span>➕</span> Add Test Case
+                        </button>
+                    </div>
+                    
+                    <div id="test-cases-container">
+                        <!-- Test cases will be added here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" id="generate-btn" class="btn btn-primary">
+                        <span>✨</span> Generate JSON
+                    </button>
+                    <button type="button" id="reset-btn" class="btn btn-secondary">
+                        <span>🔄</span> Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Panel: Preview and Download -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h2 class="section-title">JSON Preview</h2>
+                <div class="preview-actions">
+                    <button id="copy-btn" class="btn btn-icon" title="Copy to clipboard" disabled>
+                        <span>📋</span> Copy
+                    </button>
+                    <button id="download-btn" class="btn btn-icon" title="Download JSON" disabled>
+                        <span>💾</span> Download
+                    </button>
+                </div>
+            </div>
+            
+            <div class="preview-content">
+                <pre id="json-preview" class="json-display"><code>{
+  "path": "",
+  "tests": []
+}</code></pre>
+            </div>
+
+            <div class="preview-info">
+                <div class="info-item">
+                    <span class="info-label">Test Cases:</span>
+                    <span id="test-count" class="info-value">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Valid:</span>
+                    <span id="valid-status" class="info-value info-pending">⏳ Pending</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+        <h3>Quick Guide</h3>
+        <div class="help-cards">
+            <div class="help-card">
+                <h4>🐍 Python Example</h4>
+                <ul>
+                    <li>Run Command: <code>python3</code></li>
+                    <li>Path: <code>solution.py</code></li>
+                </ul>
+            </div>
+            <div class="help-card">
+                <h4>☕ Java Example</h4>
+                <ul>
+                    <li>Compile: <code>javac {source}</code></li>
+                    <li>Run Command: <code>java</code></li>
+                    <li>Path: <code>Main.java</code></li>
+                </ul>
+            </div>
+            <div class="help-card">
+                <h4>⚙️ C/C++ Example</h4>
+                <ul>
+                    <li>Compile: <code>gcc {source} -o {output}</code></li>
+                    <li>Path: <code>program.c</code></li>
+                </ul>
+            </div>
+            <div class="help-card">
+                <h4>🟢 Node.js Example</h4>
+                <ul>
+                    <li>Run Command: <code>node</code></li>
+                    <li>Path: <code>app.js</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/config_generator.js"></script>
+{% endblock %}
