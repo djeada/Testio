@@ -288,4 +288,3 @@ class ExecutionManagerFactory:
                 )
             )
             return {path: execution_manager_data_list}
-            return {path: execution_manager_data_list}
