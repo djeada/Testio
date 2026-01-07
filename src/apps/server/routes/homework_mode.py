@@ -18,4 +18,5 @@ def homework_mode_page(request: Request) -> HTMLResponse:
     """
     config_data = parse_config_data()
     templates = request.app.state.templates
-    return templates.TemplateResponse(request, "homework_mode.html", {"config_data": config_data})
+    mode = getattr(request.app.state, 'mode', 'teacher')
+    return templates.TemplateResponse(request, "homework_mode.html", {"config_data": config_data, "mode": mode})

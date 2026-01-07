@@ -249,3 +249,101 @@
         font-size: 2rem;
     }
 }
+
+/* Mode info text */
+.home__mode-info {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--color-accent);
+}
+
+.home__mode-info strong {
+    color: var(--color-primary);
+}
+
+/* Centered cards layout for student mode */
+.home__cards--centered {
+    justify-content: center;
+}
+
+/* Large card variant for student mode */
+.home__option-panel--large {
+    width: 400px;
+    padding: 3rem 2.5rem;
+}
+
+.home__option-panel--large .option-panel__features li {
+    font-size: 0.95rem;
+    padding: 0.4rem 0;
+}
+
+/* Tips section for student mode */
+.home__tips {
+    width: 100%;
+    max-width: 800px;
+    background: var(--color-panel);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+.tips__title {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+}
+
+.tips__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.tip__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.tip__icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.tip__text {
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.tip__text kbd {
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.1rem 0.4rem;
+    font-size: 0.8rem;
+    font-family: inherit;
+}
+
+@media screen and (max-width: 768px) {
+    .home__option-panel--large {
+        width: 100%;
+        max-width: 340px;
+        padding: 2rem 1.5rem;
+    }
+    
+    .tips__grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .home__tips {
+        padding: 1.5rem;
+    }
+}

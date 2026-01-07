@@ -1,0 +1,31 @@
+<div class="menu-bar">
+    <a href="/" class="app-name-link" style="text-decoration: none;" aria-label="Testio Home">
+        <h3 class="app-name">Testio <span class="mode-badge student">Student</span></h3>
+    </a>
+    <nav class="menu-bar__nav" aria-label="Main navigation">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/student" class="nav-link">My Workspace</a>
+    </nav>
+    <div class="menu-bar__actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme (Ctrl+Shift+T)">
+            <span class="theme-toggle__icon" id="theme-icon">🌙</span>
+        </button>
+        <div class="menu-bar__dropdown">
+            <div class="dropdown__button dropdown--border dropdown--round-border" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
+                <img class="button__icon" src="/static/img/default_user.svg" alt="">
+                <p class="button__text">Student</p>
+                <img class="button__arrow-down" src="/static/img/arrow_drop_down.svg" alt="">
+            </div>
+            <div class="dropdown__content dropdown--border dropdown--round-border" role="menu">
+                <div class="dropdown__menu-item" role="menuitem" tabindex="0">
+                    <img class="menu-item__icon" src="/static/img/gear_icon.svg" alt="">
+                    <span class="menu-item__text">Settings</span>
+                </div>
+                <div class="dropdown__menu-item" role="menuitem" tabindex="0">
+                    <img class="menu-item__icon" src="/static/img/logout.svg" alt="">
+                    <span class="menu-item__text">Logout</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

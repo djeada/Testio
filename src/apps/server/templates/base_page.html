@@ -11,7 +11,11 @@
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
 <div class="content">
-    {% include 'menubar.html' %}
+    {% if mode == 'student' %}
+        {% include 'menubar_student.html' %}
+    {% else %}
+        {% include 'menubar_teacher.html' %}
+    {% endif %}
     <main id="main-content" role="main">
         {% block body %}{% endblock %}
     </main>

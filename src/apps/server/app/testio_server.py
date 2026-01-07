@@ -1,6 +1,7 @@
 """A custom FastAPI application for the TestioServer."""
 import sys
 from pathlib import Path
+from typing import Literal
 
 sys.path.append(".")
 
@@ -31,18 +32,32 @@ from src.apps.server.middleware import RequestLoggingMiddleware, ErrorHandlingMi
 # API version
 API_VERSION = "1.0.0"
 
+# Valid application modes
+AppMode = Literal["teacher", "student"]
 
-def create_app() -> FastAPI:
+
+def create_app(mode: AppMode = "teacher") -> FastAPI:
     """
     Create and configure the FastAPI application.
 
+    :param mode: Application mode - 'teacher' (default) for full access,
+                 'student' for student-focused UI with limited features.
     :return: Configured FastAPI application instance.
     """
+    # Customize app description based on mode
+    if mode == "student":
+        description = ("Testio Student Mode - Submit your code, test it, and get instant feedback. "
+                      "Perfect for learning and practicing programming.")
+        title = "Testio - Student Mode"
+    else:
+        description = ("A flexible and powerful testing framework for verifying application outputs. "
+                      "Features include CLI and web interfaces, homework and exam modes, batch testing, "
+                      "and comprehensive statistics.")
+        title = "Testio - Teacher Mode"
+
     app = FastAPI(
-        title="Testio",
-        description="A flexible and powerful testing framework for verifying application outputs. "
-                    "Features include CLI and web interfaces, homework and exam modes, batch testing, "
-                    "and comprehensive statistics.",
+        title=title,
+        description=description,
         version=API_VERSION,
         docs_url="/docs",
         redoc_url="/redoc",
@@ -67,6 +82,9 @@ def create_app() -> FastAPI:
     # Reference to the custom database class
     app.state.db = Database("testio.db")
 
+    # Store the application mode in app state
+    app.state.mode = mode
+
     # Get the path to static and templates directories
     server_dir = Path(__file__).parent.parent
     static_dir = server_dir / "static"
@@ -78,30 +96,46 @@ def create_app() -> FastAPI:
     # Store templates in app state for access in routes
     app.state.templates = Jinja2Templates(directory=str(templates_dir))
 
-    # Register all routers
-    routers = [
-        # Core functionality
-        index_page_router,
-        update_test_suite_router,
-        execute_tests_router,
-        # Config generator
-        config_generator_page_router,
-        # Homework mode
-        homework_mode_page_router,
-        homework_submission_router,
-        # Exam mode
-        exam_mode_page_router,
-        exam_session_router,
-        student_exam_router,
-        # Student pages
-        student_page_router,
-        student_submission_router,
-        # New API features
-        health_router,
-        stats_router,
-        batch_router,
-        export_router,
-    ]
+    # Register routers based on mode
+    if mode == "student":
+        # Student mode: Limited set of routes focused on code submission and testing
+        routers = [
+            # Core functionality for students
+            index_page_router,
+            execute_tests_router,
+            # Student pages
+            student_page_router,
+            student_submission_router,
+            # Student exam access
+            student_exam_router,
+            # Health check (for monitoring)
+            health_router,
+        ]
+    else:
+        # Teacher mode: Full access to all features
+        routers = [
+            # Core functionality
+            index_page_router,
+            update_test_suite_router,
+            execute_tests_router,
+            # Config generator
+            config_generator_page_router,
+            # Homework mode
+            homework_mode_page_router,
+            homework_submission_router,
+            # Exam mode
+            exam_mode_page_router,
+            exam_session_router,
+            student_exam_router,
+            # Student pages (for teacher to preview)
+            student_page_router,
+            student_submission_router,
+            # New API features
+            health_router,
+            stats_router,
+            batch_router,
+            export_router,
+        ]
 
     for router in routers:
         app.include_router(router)
@@ -109,5 +143,5 @@ def create_app() -> FastAPI:
     return app
 
 
-# Create the app instance
-app = create_app()
+# Create the default app instance (teacher mode for backward compatibility)
+app = create_app(mode="teacher")

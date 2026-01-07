@@ -74,6 +74,40 @@ You can also customize the host and port:
 
     $ python src/main.py fastapi --host 0.0.0.0 --port 8000
 
+#### Application Modes
+
+The FastAPI server supports two distinct modes for different user experiences:
+
+**Teacher Mode (default):**
+
+    $ python src/main.py fastapi --mode teacher
+
+Teacher mode provides full access to all features:
+- Config Generator for creating test configurations
+- Homework mode for batch testing student submissions
+- Exam mode for proctored assessments
+- Student preview to see the student experience
+- Statistics and export functionality
+
+**Student Mode:**
+
+    $ python src/main.py fastapi --mode student
+
+Student mode provides a focused, simplified interface for students:
+- Student workspace for code submission and testing
+- Access to assigned exams
+- No access to teacher-only features like config generation or exam management
+
+This separation allows teachers to run a dedicated student-facing server instance while maintaining a separate teacher instance for administrative tasks.
+
+**Example: Running both modes simultaneously:**
+
+    # Terminal 1: Teacher mode on port 5000
+    $ python src/main.py fastapi --mode teacher --port 5000
+    
+    # Terminal 2: Student mode on port 5001
+    $ python src/main.py fastapi --mode student --port 5001
+
 To update the test suite, use the following API endpoint:
 
     curl -X POST \
