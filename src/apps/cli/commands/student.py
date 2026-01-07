@@ -5,6 +5,7 @@ Students can use this to test their submissions before submitting.
 
 import argparse
 import json
+import os
 import tempfile
 from pathlib import Path
 from typing import Optional, List, Dict, Any
@@ -179,7 +180,7 @@ def check_syntax(file_path: Path, language: str) -> Dict[str, Any]:
 
         elif language == "go":
             proc = subprocess.run(
-                ["go", "build", "-o", "/dev/null", str(file_path)],
+                ["go", "build", "-o", os.devnull, str(file_path)],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -190,7 +191,7 @@ def check_syntax(file_path: Path, language: str) -> Dict[str, Any]:
 
         elif language == "rust":
             proc = subprocess.run(
-                ["rustc", "--emit=metadata", "-o", "/dev/null", str(file_path)],
+                ["rustc", "--emit=metadata", "-o", os.devnull, str(file_path)],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -320,15 +321,21 @@ def execute_test(args: argparse.Namespace) -> int:
         print(f"\nTest {test['index']}: {status}")
 
         if args.verbose or not test["passed"]:
-            if test["input"]:
-                print(f"  Input: {test['input'][:100]}...")
+            test_input = test.get("input", "")
+            if test_input:
+                input_str = str(test_input)[:100] if test_input else ""
+                print(f"  Input: {input_str}...")
 
-            if test["error"]:
+            if test.get("error"):
                 print(f"  Error: {test['error']}")
             elif not test["passed"]:
-                print(f"  Your output: {test['actual_output'][:100] if test['actual_output'] else '(none)'}...")
-                if args.show_expected and test["expected_output"]:
-                    print(f"  Expected: {test['expected_output'][:100]}...")
+                actual = test.get("actual_output") or "(none)"
+                actual_str = str(actual)[:100] if actual else "(none)"
+                print(f"  Your output: {actual_str}...")
+                expected = test.get("expected_output")
+                if args.show_expected and expected:
+                    expected_str = str(expected)[:100] if expected else ""
+                    print(f"  Expected: {expected_str}...")
 
     print()
     if results["passed_tests"] == results["total_tests"]:
