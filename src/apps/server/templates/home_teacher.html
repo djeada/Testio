@@ -1,92 +1,286 @@
 <!-- HTML code for the teacher home page -->
-<div class="home">
-    <div class="home__header">
-        <h1 class="home__title">Welcome to Testio</h1>
-        <p class="home__subtitle">The powerful testing framework for verifying application outputs</p>
-        <p class="home__mode-info">You are in <strong>Teacher Mode</strong> - Full access to all features</p>
-    </div>
-    
-    <div class="home__cards">
-        <div class="home__option-panel" tabindex="0" role="button" aria-label="Config Generator for Teachers">
-            <div class="option-panel__badge">Essential</div>
-            <div class="option-panel__icon" style="font-size: 80px;">📝</div>
-            <h4 class="option-panel__text">Config Generator</h4>
-            <p class="option-panel__description">
-                Create JSON configuration files for testing student programs. Easy-to-use UI for teachers to define test cases.
-            </p>
-            <ul class="option-panel__features">
-                <li>✓ Visual form builder</li>
-                <li>✓ Multiple test cases</li>
-                <li>✓ JSON preview & download</li>
-            </ul>
-            <div class="option-panel__select-btn" id="config-generator-btn">
-                <span>Create Config</span>
-                <span class="btn-arrow">→</span>
+<div class="teacher-dashboard">
+    <!-- Hero Section with animated gradient background -->
+    <div class="dashboard-hero animated-bg">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge badge--info">🎓 Teacher Mode</span>
             </div>
-        </div>
-        <div class="home__option-panel" tabindex="0" role="button" aria-label="Start Homework Mode">
-            <img class="option-panel__icon" src="/static/img/homework.png" alt="Homework icon">
-            <h4 class="option-panel__text">Homework Mode</h4>
-            <p class="option-panel__description">
-                Perfect for practice and self-paced learning. Students can submit and test their solutions multiple times.
-            </p>
-            <ul class="option-panel__features">
-                <li>✓ Batch testing</li>
-                <li>✓ Detailed reports</li>
-                <li>✓ Progress tracking</li>
-            </ul>
-            <div class="option-panel__select-btn" id="homework-btn">
-                <span>Start Practice</span>
-                <span class="btn-arrow">→</span>
-            </div>
-        </div>
-        <div class="home__option-panel" tabindex="0" role="button" aria-label="Start Examination Mode">
-            <img class="option-panel__icon" src="/static/img/exam.png" alt="Exam icon">
-            <h4 class="option-panel__text">Examination Mode</h4>
-            <p class="option-panel__description">
-                Secure testing environment for assessments and exams. Monitor student progress in real-time.
-            </p>
-            <ul class="option-panel__features">
-                <li>✓ Secure environment</li>
-                <li>✓ Live monitoring</li>
-                <li>✓ Export results</li>
-            </ul>
-            <div class="option-panel__select-btn" id="exam-btn">
-                <span>Start Exam</span>
-                <span class="btn-arrow">→</span>
-            </div>
-        </div>
-        <div class="home__option-panel" tabindex="0" role="button" aria-label="Preview Student Mode">
-            <div class="option-panel__badge">Preview</div>
-            <div class="option-panel__icon" style="font-size: 80px;">🎓</div>
-            <h4 class="option-panel__text">Student Preview</h4>
-            <p class="option-panel__description">
-                Preview the student experience. See exactly what students see when they submit their code.
-            </p>
-            <ul class="option-panel__features">
-                <li>✓ Real-time code testing</li>
-                <li>✓ Instant feedback</li>
-                <li>✓ Multiple language support</li>
-            </ul>
-            <div class="option-panel__select-btn" id="student-btn">
-                <span>Preview Student View</span>
-                <span class="btn-arrow">→</span>
+            <h1 class="hero-title">
+                <span class="gradient-text gradient-text--animated">Welcome to Testio</span>
+            </h1>
+            <p class="hero-subtitle">The powerful testing framework for verifying student applications with confidence</p>
+            
+            <!-- Quick Stats Row -->
+            <div class="hero-stats">
+                <div class="hero-stat floating">
+                    <span class="hero-stat__value" id="total-tests-run">1,247</span>
+                    <span class="hero-stat__label">Tests Run</span>
+                </div>
+                <div class="hero-stat floating floating--delay-1">
+                    <span class="hero-stat__value" id="total-students">523</span>
+                    <span class="hero-stat__label">Students</span>
+                </div>
+                <div class="hero-stat floating floating--delay-2">
+                    <span class="hero-stat__value" id="success-rate">94.2%</span>
+                    <span class="hero-stat__label">Pass Rate</span>
+                </div>
+                <div class="hero-stat floating floating--delay-3">
+                    <span class="hero-stat__value" id="active-sessions">12</span>
+                    <span class="hero-stat__label">Active Now</span>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="home__stats">
-        <div class="stats__item">
-            <span class="stats__value" id="total-tests-run">1000+</span>
-            <span class="stats__label">Tests Run</span>
+
+    <!-- Quick Actions Bar -->
+    <div class="dashboard-actions">
+        <div class="quick-actions glass-card">
+            <button class="quick-action" onclick="window.location.href='/config-generator'" title="Create a new test configuration">
+                <span class="quick-action__icon">📝</span>
+                <span class="quick-action__label">New Config</span>
+            </button>
+            <button class="quick-action" onclick="window.location.href='/homework'" title="Grade homework submissions">
+                <span class="quick-action__icon">📊</span>
+                <span class="quick-action__label">Grade Work</span>
+            </button>
+            <button class="quick-action" onclick="window.location.href='/exam'" title="Start a live exam session">
+                <span class="quick-action__icon">🚀</span>
+                <span class="quick-action__label">Start Exam</span>
+            </button>
+            <button class="quick-action" onclick="window.location.href='/student'" title="Preview student interface">
+                <span class="quick-action__icon">👁️</span>
+                <span class="quick-action__label">Preview</span>
+            </button>
+            <button class="quick-action" onclick="window.location.href='/docs'" title="View API documentation">
+                <span class="quick-action__icon">📚</span>
+                <span class="quick-action__label">API Docs</span>
+            </button>
         </div>
-        <div class="stats__item">
-            <span class="stats__value" id="total-students">500+</span>
-            <span class="stats__label">Students</span>
+    </div>
+
+    <!-- Main Feature Cards -->
+    <div class="dashboard-main">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="section-title__icon">⚡</span>
+                Quick Start
+            </h2>
+            <p class="section-hint">Use <kbd>Alt</kbd>+<kbd>1-4</kbd> for quick navigation</p>
         </div>
-        <div class="stats__item">
-            <span class="stats__value" id="success-rate">95%</span>
-            <span class="stats__label">Success Rate</span>
+        
+        <div class="feature-grid">
+            <!-- Config Generator Card -->
+            <div class="feature-card-enhanced" tabindex="0" role="button" aria-label="Config Generator">
+                <div class="card-glow"></div>
+                <div class="card-badge essential">Essential</div>
+                <div class="card-icon-wrapper">
+                    <div class="card-icon">📝</div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Config Generator</h3>
+                    <p class="card-description">Create JSON configurations for testing student programs with our intuitive visual builder.</p>
+                    <ul class="card-features">
+                        <li><span class="feature-check">✓</span> Visual form builder</li>
+                        <li><span class="feature-check">✓</span> Multiple test cases</li>
+                        <li><span class="feature-check">✓</span> JSON preview & download</li>
+                        <li><span class="feature-check">✓</span> Multi-language support</li>
+                    </ul>
+                </div>
+                <div class="card-action" id="config-generator-btn">
+                    <span>Create Config</span>
+                    <span class="action-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Homework Mode Card -->
+            <div class="feature-card-enhanced" tabindex="0" role="button" aria-label="Homework Mode">
+                <div class="card-glow"></div>
+                <div class="card-icon-wrapper homework">
+                    <img class="card-icon-img" src="/static/img/homework.png" alt="Homework icon">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Homework Mode</h3>
+                    <p class="card-description">Batch test student submissions and generate comprehensive grading reports.</p>
+                    <ul class="card-features">
+                        <li><span class="feature-check">✓</span> Batch testing</li>
+                        <li><span class="feature-check">✓</span> Detailed reports</li>
+                        <li><span class="feature-check">✓</span> Progress tracking</li>
+                        <li><span class="feature-check">✓</span> Export results</li>
+                    </ul>
+                </div>
+                <div class="card-action" id="homework-btn">
+                    <span>Start Grading</span>
+                    <span class="action-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Exam Mode Card -->
+            <div class="feature-card-enhanced" tabindex="0" role="button" aria-label="Examination Mode">
+                <div class="card-glow"></div>
+                <div class="card-badge live">Live</div>
+                <div class="card-icon-wrapper exam">
+                    <img class="card-icon-img" src="/static/img/exam.png" alt="Exam icon">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Examination Mode</h3>
+                    <p class="card-description">Run secure, timed exams with real-time monitoring and instant grading.</p>
+                    <ul class="card-features">
+                        <li><span class="feature-check">✓</span> Secure environment</li>
+                        <li><span class="feature-check">✓</span> Live monitoring</li>
+                        <li><span class="feature-check">✓</span> Real-time results</li>
+                        <li><span class="feature-check">✓</span> Shareable links</li>
+                    </ul>
+                </div>
+                <div class="card-action" id="exam-btn">
+                    <span>Start Exam</span>
+                    <span class="action-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Student Preview Card -->
+            <div class="feature-card-enhanced" tabindex="0" role="button" aria-label="Student Preview">
+                <div class="card-glow"></div>
+                <div class="card-badge preview">Preview</div>
+                <div class="card-icon-wrapper student">
+                    <div class="card-icon">🎓</div>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Student Preview</h3>
+                    <p class="card-description">Experience the student interface firsthand before deploying to your class.</p>
+                    <ul class="card-features">
+                        <li><span class="feature-check">✓</span> Real-time code testing</li>
+                        <li><span class="feature-check">✓</span> Instant feedback</li>
+                        <li><span class="feature-check">✓</span> Syntax highlighting</li>
+                        <li><span class="feature-check">✓</span> Multiple languages</li>
+                    </ul>
+                </div>
+                <div class="card-action" id="student-btn">
+                    <span>Preview</span>
+                    <span class="action-arrow">→</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Widgets Section -->
+    <div class="dashboard-widgets">
+        <div class="widget-row">
+            <!-- Recent Activity Widget -->
+            <div class="dashboard-widget widget-activity">
+                <div class="widget-header">
+                    <h3 class="widget-title">
+                        <span>📋</span> Recent Activity
+                    </h3>
+                    <span class="widget-badge">Live</span>
+                </div>
+                <div class="widget-content">
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon success">✓</div>
+                            <div class="activity-details">
+                                <span class="activity-text">15 submissions graded</span>
+                                <span class="activity-time">2 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon info">📝</div>
+                            <div class="activity-details">
+                                <span class="activity-text">New config created: "Python Basics"</span>
+                                <span class="activity-time">15 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon warning">⏱️</div>
+                            <div class="activity-details">
+                                <span class="activity-text">Exam session ended</span>
+                                <span class="activity-time">1 hour ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🎓</div>
+                            <div class="activity-details">
+                                <span class="activity-text">23 new students registered</span>
+                                <span class="activity-time">3 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Overview Widget -->
+            <div class="dashboard-widget widget-performance">
+                <div class="widget-header">
+                    <h3 class="widget-title">
+                        <span>📊</span> Performance Overview
+                    </h3>
+                </div>
+                <div class="widget-content">
+                    <div class="performance-bars">
+                        <div class="perf-item">
+                            <div class="perf-label">
+                                <span>Python</span>
+                                <span class="perf-value">89%</span>
+                            </div>
+                            <div class="perf-bar">
+                                <div class="perf-fill" style="width: 89%;" data-color="success"></div>
+                            </div>
+                        </div>
+                        <div class="perf-item">
+                            <div class="perf-label">
+                                <span>Java</span>
+                                <span class="perf-value">76%</span>
+                            </div>
+                            <div class="perf-bar">
+                                <div class="perf-fill" style="width: 76%;" data-color="success"></div>
+                            </div>
+                        </div>
+                        <div class="perf-item">
+                            <div class="perf-label">
+                                <span>C++</span>
+                                <span class="perf-value">62%</span>
+                            </div>
+                            <div class="perf-bar">
+                                <div class="perf-fill" style="width: 62%;" data-color="warning"></div>
+                            </div>
+                        </div>
+                        <div class="perf-item">
+                            <div class="perf-label">
+                                <span>JavaScript</span>
+                                <span class="perf-value">91%</span>
+                            </div>
+                            <div class="perf-bar">
+                                <div class="perf-fill" style="width: 91%;" data-color="success"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips & Shortcuts Section -->
+    <div class="dashboard-tips">
+        <div class="tips-card glass-card">
+            <h3 class="tips-title">💡 Pro Tips</h3>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <span class="tip-icon">⌨️</span>
+                    <p class="tip-text">Press <kbd>Alt</kbd>+<kbd>C</kbd> to quickly create a new config</p>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-icon">🔄</span>
+                    <p class="tip-text">Use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> to toggle dark mode</p>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-icon">📱</span>
+                    <p class="tip-text">Share exam URLs with QR codes for easy student access</p>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-icon">📤</span>
+                    <p class="tip-text">Export results as PDF or CSV for grade management systems</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

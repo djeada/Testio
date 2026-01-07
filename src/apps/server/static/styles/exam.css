@@ -1,6 +1,57 @@
 .exam-container {
-    padding: 2rem;
+    padding: 0;
     animation: fadeIn 0.5s ease-out;
+}
+
+/* Enhanced Page Header */
+.page-header-enhanced {
+    text-align: center;
+    padding: 2.5rem 2rem;
+    background: var(--gradient-primary);
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.header-badge {
+    margin-bottom: 0.75rem;
+}
+
+.header-badge .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    backdrop-filter: blur(10px);
+}
+
+.page-header-enhanced .page-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.page-header-enhanced .page-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
 }
 
 .page-header {
@@ -27,8 +78,9 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
+    padding: 0 2rem 2rem;
 }
 
 .exam-setup {
@@ -41,18 +93,108 @@
 .session-info {
     background: var(--color-panel);
     padding: 1.5rem;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+}
+
+/* Card Header */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.card-icon {
+    font-size: 1.5rem;
+}
+
+.card-header .card-title {
+    flex: 1;
+    margin: 0;
+}
+
+.session-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background: rgba(100, 116, 139, 0.15);
+    color: var(--color-accent);
+    text-transform: uppercase;
+}
+
+.session-status.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--color-success);
+    animation: pulse 2s infinite;
 }
 
 .card-title {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--color-primary);
     margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Stat items with icons */
+.stat-item .stat-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Results header */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.results-header .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.section-icon {
+    font-size: 1.5rem;
+}
+
+/* Table container */
+.table-container {
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+}
+
+/* Empty table state */
+.empty-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    color: var(--color-accent);
+}
+
+.empty-table .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+.empty-table p {
+    margin: 0;
+    font-style: italic;
 }
 
 .form-group {
@@ -305,7 +447,19 @@
 
 @media screen and (max-width: 768px) {
     .exam-container {
-        padding: 1rem;
+        padding: 0;
+    }
+    
+    .exam-content {
+        padding: 0 1rem 1.5rem;
+    }
+    
+    .page-header-enhanced {
+        padding: 1.5rem 1rem;
+    }
+    
+    .page-header-enhanced .page-title {
+        font-size: 1.75rem;
     }
     
     .page-title {
@@ -320,8 +474,19 @@
         flex-direction: column;
     }
     
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
     .results-controls {
         flex-direction: column;
+        width: 100%;
+    }
+    
+    .results-controls .btn {
+        width: 100%;
     }
     
     .results-table {

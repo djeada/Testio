@@ -6,7 +6,11 @@
 
 {% block body %}
 <div class="exam-container">
-    <div class="page-header">
+    <!-- Enhanced Page Header -->
+    <div class="page-header-enhanced">
+        <div class="header-badge">
+            <span class="badge badge--success">🎯 Live Monitoring</span>
+        </div>
         <h1 class="page-title">Examination Mode</h1>
         <p class="page-subtitle">Manage and monitor student assessments in real-time</p>
     </div>
@@ -14,7 +18,10 @@
     <div class="exam-content">
         <div class="exam-setup">
             <div class="setup-card">
-                <h3 class="card-title">📋 Exam Configuration</h3>
+                <div class="card-header">
+                    <span class="card-icon">📋</span>
+                    <h3 class="card-title">Exam Configuration</h3>
+                </div>
                 <div class="form-group">
                     <label for="config-select" class="form-label">Select Test Configuration:</label>
                     <select id="config-select" class="form-select">
@@ -31,7 +38,11 @@
             </div>
 
             <div class="session-info" id="session-info">
-                <h3 class="card-title">🔗 Exam Session</h3>
+                <div class="card-header">
+                    <span class="card-icon">🔗</span>
+                    <h3 class="card-title">Exam Session</h3>
+                    <span class="session-status" id="session-status">Inactive</span>
+                </div>
                 <div class="session-url-container">
                     <label class="form-label">Share this URL with students:</label>
                     <div class="url-display">
@@ -41,10 +52,12 @@
                 </div>
                 <div class="session-stats">
                     <div class="stat-item">
+                        <div class="stat-icon">👥</div>
                         <span class="stat-value" id="active-students">0</span>
                         <span class="stat-label">Active Students</span>
                     </div>
                     <div class="stat-item">
+                        <div class="stat-icon">📝</div>
                         <span class="stat-value" id="submissions-count">0</span>
                         <span class="stat-label">Submissions</span>
                     </div>
@@ -53,33 +66,45 @@
         </div>
 
         <div class="results-section">
-            <h2 class="section-title">📊 Live Results</h2>
-            <div class="results-controls">
-                <button id="refresh-btn" class="btn btn-secondary">
-                    <span class="btn-icon">🔄</span>
-                    Refresh
-                </button>
-                <button id="export-btn" class="btn btn-secondary">
-                    <span class="btn-icon">📥</span>
-                    Export Results
-                </button>
+            <div class="results-header">
+                <h2 class="section-title">
+                    <span class="section-icon">📊</span>
+                    Live Results
+                </h2>
+                <div class="results-controls">
+                    <button id="refresh-btn" class="btn btn-secondary">
+                        <span class="btn-icon">🔄</span>
+                        Refresh
+                    </button>
+                    <button id="export-btn" class="btn btn-secondary">
+                        <span class="btn-icon">📥</span>
+                        Export Results
+                    </button>
+                </div>
             </div>
-            <table id="results-table" class="results-table">
-                <thead>
-                    <tr>
-                        <th>Student ID</th>
-                        <th>Status</th>
-                        <th>Score</th>
-                        <th>Passed / Total</th>
-                        <th>Submitted At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="empty-row">
-                        <td colspan="5">Start an exam session to see results</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table id="results-table" class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Passed / Total</th>
+                            <th>Submitted At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="empty-row">
+                            <td colspan="5">
+                                <div class="empty-table">
+                                    <span class="empty-icon">📋</span>
+                                    <p>Start an exam session to see results</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
