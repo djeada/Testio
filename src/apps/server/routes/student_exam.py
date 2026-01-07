@@ -30,12 +30,14 @@ def student_exam_page(request: Request, session_id: str) -> HTMLResponse:
             raise HTTPException(status_code=403, detail="This exam session is no longer active")
         
         templates = request.app.state.templates
+        mode = getattr(request.app.state, 'mode', 'teacher')
         return templates.TemplateResponse(
             request, 
             "student_exam.html", 
             {
                 "session_id": session_id,
-                "config_data": session["config_data"]
+                "config_data": session["config_data"],
+                "mode": mode
             }
         )
     finally:

@@ -16,4 +16,5 @@ def config_generator_page(request: Request) -> HTMLResponse:
     :return: The HTML content of the config generator page.
     """
     templates = request.app.state.templates
-    return templates.TemplateResponse(request, "config_generator.html", {})
+    mode = getattr(request.app.state, 'mode', 'teacher')
+    return templates.TemplateResponse(request, "config_generator.html", {"mode": mode})

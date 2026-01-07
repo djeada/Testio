@@ -1,5 +1,9 @@
 {% extends 'base_page.html' %}
 
 {% block body %}
-    {% include 'home.html' %}
+    {% if mode == 'student' %}
+        {% include 'home_student.html' %}
+    {% else %}
+        {% include 'home_teacher.html' %}
+    {% endif %}
 {% endblock %}

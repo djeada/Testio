@@ -36,6 +36,30 @@
     font-size: 1.5rem;
 }
 
+/* Mode badge styles */
+.mode-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+    margin-left: 0.25rem;
+}
+
+.mode-badge.teacher {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.mode-badge.student {
+    background: rgba(255, 193, 7, 0.9);
+    color: #1a1a1a;
+    border: 1px solid rgba(255, 193, 7, 1);
+}
+
 .menu-bar__nav {
     display: flex;
     gap: 0.5rem;
