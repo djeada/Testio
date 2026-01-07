@@ -80,14 +80,9 @@ class OutputComparator:
         :param actual: The actual output as a string with newline-separated lines.
         :return: True if all expected lines are present in actual output with same count.
         """
-        expected_lines = expected.split("\n")
-        actual_lines = actual.split("\n")
-
-        # Remove trailing empty strings caused by trailing newlines
-        while expected_lines and expected_lines[-1] == "":
-            expected_lines.pop()
-        while actual_lines and actual_lines[-1] == "":
-            actual_lines.pop()
+        # Strip trailing newlines before splitting to handle trailing newline differences
+        expected_lines = expected.rstrip("\n").split("\n") if expected.rstrip("\n") else []
+        actual_lines = actual.rstrip("\n").split("\n") if actual.rstrip("\n") else []
 
         # Both must have the same number of lines
         if len(expected_lines) != len(actual_lines):
