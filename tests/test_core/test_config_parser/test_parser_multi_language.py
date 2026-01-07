@@ -129,6 +129,32 @@ def test_validate_config_with_run_command_only():
         Path(temp_path).unlink()
 
 
+def test_validate_config_with_compile_command_only():
+    """Test validation accepts config with only compile_command"""
+    config_data = {
+        "compile_command": "gcc {source} -o {output}",
+        "path": "test.c",
+        "tests": [
+            {
+                "input": [],
+                "output": ["test"],
+                "timeout": 5
+            }
+        ]
+    }
+    
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        json.dump(config_data, f)
+        temp_path = f.name
+    
+    try:
+        parser = ConfigParser()
+        is_valid = parser.validate(Path(temp_path))
+        assert is_valid
+    finally:
+        Path(temp_path).unlink()
+
+
 def test_validate_config_with_command_only():
     """Test validation accepts config with only command (backward compatibility)"""
     config_data = {

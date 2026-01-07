@@ -135,12 +135,14 @@ class ConfigParser:
             except json.JSONDecodeError:
                 return False
 
-        # check if at least one of command or run_command is present, and path and tests are present
+        # check if at least one of command, run_command, or compile_command is present
+        # and that path and tests are present
         has_command = data.get(CONFIG_SCHEMA.COMMAND) is not None
         has_run_command = data.get(CONFIG_SCHEMA.RUN_COMMAND) is not None
+        has_compile_command = data.get(CONFIG_SCHEMA.COMPILE_COMMAND) is not None
         
         if (
-            not (has_command or has_run_command)
+            not (has_command or has_run_command or has_compile_command)
             or data.get(CONFIG_SCHEMA.PATH) is None
             or data.get(CONFIG_SCHEMA.TESTS) is None
         ):
