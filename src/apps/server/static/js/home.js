@@ -1,9 +1,14 @@
 // Get the button elements
+const configGeneratorBtn = document.getElementById('config-generator-btn');
 const studentBtn = document.getElementById('student-btn');
 const homeworkBtn = document.getElementById('homework-btn');
 const examBtn = document.getElementById('exam-btn');
 
 // Navigation functions
+function navigateToConfigGenerator() {
+  window.location.href = '/config-generator';
+}
+
 function navigateToStudent() {
   window.location.href = '/student';
 }
@@ -17,6 +22,19 @@ function navigateToExam() {
 }
 
 // Add event listeners to the buttons only if they exist
+if (configGeneratorBtn) {
+  configGeneratorBtn.addEventListener('click', navigateToConfigGenerator);
+  const configPanel = configGeneratorBtn.closest('.home__option-panel');
+  if (configPanel) {
+    configPanel.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        navigateToConfigGenerator();
+      }
+    });
+  }
+}
+
 if (studentBtn) {
   studentBtn.addEventListener('click', navigateToStudent);
   // Also allow Enter key on parent panel
