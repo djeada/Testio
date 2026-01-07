@@ -6,56 +6,102 @@
 
 {% block body %}
 <div class="homework-container">
-    <div class="page-header">
+    <!-- Page Header with enhanced styling -->
+    <div class="page-header-enhanced">
+        <div class="header-badge">
+            <span class="badge badge--info">📚 Batch Grading</span>
+        </div>
         <h1 class="page-title">Homework Mode</h1>
         <p class="page-subtitle">Upload student programs and test configurations for automated grading</p>
     </div>
 
     <div class="homework-content">
-        <div class="upload-section">
-            <div class="config-upload">
-                <label for="config-file" class="form-label">📋 Configuration File:</label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="config-file" class="file-input" accept=".json" />
-                    <label for="config-file" class="file-input-label">
-                        <span class="file-icon">📄</span>
-                        <span id="config-filename">Choose config file (JSON)</span>
-                    </label>
+        <!-- Upload Section with improved UX -->
+        <div class="upload-section glass-card">
+            <div class="upload-grid">
+                <div class="upload-card">
+                    <div class="upload-icon">📋</div>
+                    <div class="upload-info">
+                        <label for="config-file" class="form-label">Configuration File</label>
+                        <p class="upload-hint">JSON file with test cases and expected outputs</p>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="config-file" class="file-input" accept=".json" />
+                        <label for="config-file" class="file-input-label">
+                            <span class="file-icon">📄</span>
+                            <span id="config-filename">Choose config file (JSON)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="upload-card">
+                    <div class="upload-icon">👨‍🎓</div>
+                    <div class="upload-info">
+                        <label for="student-files" class="form-label">Student Programs</label>
+                        <p class="upload-hint">Select multiple student files to grade</p>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="student-files" class="file-input" multiple accept=".py,.js,.java,.cpp,.c,.rb,.go,.rs" />
+                        <label for="student-files" class="file-input-label">
+                            <span class="file-icon">📁</span>
+                            <span id="students-filename">Choose student files (multiple)</span>
+                        </label>
+                    </div>
+                    <div id="file-list" class="file-list"></div>
                 </div>
             </div>
 
-            <div class="students-upload">
-                <label for="student-files" class="form-label">👨‍🎓 Student Programs:</label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="student-files" class="file-input" multiple accept=".py,.js,.java,.cpp,.c" />
-                    <label for="student-files" class="file-input-label">
-                        <span class="file-icon">📁</span>
-                        <span id="students-filename">Choose student files (multiple)</span>
-                    </label>
-                </div>
-                <div id="file-list" class="file-list"></div>
+            <div class="upload-actions">
+                <button id="run-homework-btn" class="btn btn-primary btn-lg" disabled>
+                    <span class="btn-icon">🚀</span>
+                    Test All Submissions
+                </button>
+                <p class="upload-status">Select both config and student files to begin</p>
             </div>
-
-            <button id="run-homework-btn" class="btn btn-primary" disabled>
-                <span class="btn-icon">🚀</span>
-                Test All Submissions
-            </button>
         </div>
 
+        <!-- Results Section with enhanced cards -->
         <div class="results-section">
-            <h2 class="section-title">📊 Results</h2>
+            <div class="results-header">
+                <h2 class="section-title">
+                    <span class="section-icon">📊</span>
+                    Results
+                </h2>
+                <div class="results-actions">
+                    <button class="btn btn-secondary btn-sm" id="export-csv-btn" disabled>
+                        <span>📥</span> Export CSV
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="export-pdf-btn" disabled>
+                        <span>📄</span> Export PDF
+                    </button>
+                </div>
+            </div>
+            
             <div id="results-summary" class="results-summary hidden">
                 <div class="summary-card total">
+                    <div class="summary-icon">👥</div>
                     <span class="summary-value" id="total-students">0</span>
                     <span class="summary-label">Students</span>
                 </div>
                 <div class="summary-card passed">
+                    <div class="summary-icon">📈</div>
                     <span class="summary-value" id="avg-score">0%</span>
                     <span class="summary-label">Avg Score</span>
                 </div>
+                <div class="summary-card time">
+                    <div class="summary-icon">⏱️</div>
+                    <span class="summary-value" id="total-time">0s</span>
+                    <span class="summary-label">Total Time</span>
+                </div>
             </div>
             
-            <div id="student-results" class="student-results"></div>
+            <div id="student-results" class="student-results">
+                <div class="empty-results">
+                    <div class="empty-icon">📋</div>
+                    <h3>No Results Yet</h3>
+                    <p>Upload configuration and student files, then click "Test All Submissions" to see grading results here.</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

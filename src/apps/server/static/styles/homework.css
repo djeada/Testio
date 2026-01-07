@@ -1,6 +1,57 @@
 .homework-container {
-    padding: 2rem;
+    padding: 0;
     animation: fadeIn 0.5s ease-out;
+}
+
+/* Enhanced Page Header */
+.page-header-enhanced {
+    text-align: center;
+    padding: 2.5rem 2rem;
+    background: var(--gradient-primary);
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.header-badge {
+    margin-bottom: 0.75rem;
+}
+
+.header-badge .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    backdrop-filter: blur(10px);
+}
+
+.page-header-enhanced .page-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #ffffff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.page-header-enhanced .page-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
 }
 
 .page-header {
@@ -29,8 +80,78 @@
     gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 2rem 2rem;
 }
 
+/* Glass Card Upload Section */
+.upload-section.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.upload-card {
+    background: var(--color-panel);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 2px dashed var(--color-border);
+    transition: all var(--transition-normal);
+}
+
+.upload-card:hover {
+    border-color: var(--color-btn);
+    box-shadow: var(--shadow-md);
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.upload-info {
+    margin-bottom: 1rem;
+}
+
+.upload-info .form-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+}
+
+.upload-hint {
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    margin: 0;
+}
+
+.upload-actions {
+    text-align: center;
+}
+
+.upload-status {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--color-accent);
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+}
+
+/* Original upload section styling */
 .upload-section {
     background: var(--color-panel);
     padding: 2rem;
@@ -407,9 +528,103 @@
     font-style: italic;
 }
 
+/* Enhanced Results Section */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.results-header .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.section-icon {
+    font-size: 1.5rem;
+}
+
+.results-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+/* Summary Cards */
+.summary-card .summary-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.summary-card.time {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.summary-card.time .summary-value {
+    color: var(--color-warning);
+}
+
+/* Empty Results State */
+.empty-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-xl);
+    border: 2px dashed var(--color-border);
+}
+
+.empty-results .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-results h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-results p {
+    font-size: 0.95rem;
+    color: var(--color-accent);
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
 @media screen and (max-width: 768px) {
     .homework-container {
-        padding: 1rem;
+        padding: 0;
+    }
+    
+    .homework-content {
+        padding: 0 1rem 1.5rem;
+    }
+    
+    .page-header-enhanced {
+        padding: 1.5rem 1rem;
+    }
+    
+    .page-header-enhanced .page-title {
+        font-size: 1.75rem;
+    }
+    
+    .upload-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
     
     .page-title {
@@ -418,6 +633,12 @@
     
     .results-summary {
         flex-direction: column;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
     
     .student-header {
