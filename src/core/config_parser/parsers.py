@@ -81,6 +81,7 @@ class CONFIG_SCHEMA:
     TIMEOUT: str = "timeout"
     USE_REGEX: str = "use_regex"
     INTERLEAVED: str = "interleaved"
+    UNORDERED: str = "unordered"
 
 
 class ConfigParser:
@@ -108,10 +109,11 @@ class ConfigParser:
             timeout = test_data.get(CONFIG_SCHEMA.TIMEOUT)
             use_regex = test_data.get(CONFIG_SCHEMA.USE_REGEX, False)
             interleaved = test_data.get(CONFIG_SCHEMA.INTERLEAVED, False)
+            unordered = test_data.get(CONFIG_SCHEMA.UNORDERED, False)
             if input_data is None or output_data is None or timeout is None:
                 return None
 
-            tests.append(TestData(input_data, output_data, timeout, use_regex, interleaved))
+            tests.append(TestData(input_data, output_data, timeout, use_regex, interleaved, unordered))
 
         return TestSuiteConfig(command=command, path=path, tests=tests)
 
