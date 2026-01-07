@@ -1,0 +1,113 @@
+# This workflow compiles the Testio application into standalone executables
+# using Nuitka for both CLI and UI applications in student and teacher modes.
+#
+# Nuitka is a Python compiler that produces faster-running executables.
+# For more information, see: https://nuitka.net/
+
+name: Nuitka Compilation
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        app:
+          - name: student-cli
+            script: scripts/student_cli.py
+            type: cli
+          - name: teacher-cli
+            script: scripts/teacher_cli.py
+            type: cli
+          - name: student-ui
+            script: scripts/student_ui.py
+            type: ui
+          - name: teacher-ui
+            script: scripts/teacher_ui.py
+            type: ui
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install nuitka
+
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y patchelf ccache
+
+    - name: Build with Nuitka (CLI apps)
+      if: matrix.app.type == 'cli'
+      run: |
+        python -m nuitka \
+          --standalone \
+          --onefile \
+          --output-filename=${{ matrix.app.name }}${{ runner.os == 'Windows' && '.exe' || '' }} \
+          --output-dir=dist \
+          --include-package=src \
+          --include-package-data=src \
+          --assume-yes-for-downloads \
+          ${{ matrix.app.script }}
+      shell: bash
+
+    - name: Build with Nuitka (UI apps)
+      if: matrix.app.type == 'ui'
+      run: |
+        python -m nuitka \
+          --standalone \
+          --onefile \
+          --output-filename=${{ matrix.app.name }}${{ runner.os == 'Windows' && '.exe' || '' }} \
+          --output-dir=dist \
+          --include-package=src \
+          --include-package-data=src \
+          --include-data-dir=src/apps/server/templates=src/apps/server/templates \
+          --include-data-dir=src/apps/server/static=src/apps/server/static \
+          --assume-yes-for-downloads \
+          ${{ matrix.app.script }}
+      shell: bash
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.app.name }}-${{ runner.os }}
+        path: dist/${{ matrix.app.name }}${{ runner.os == 'Windows' && '.exe' || '' }}
+        if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/**/*
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
