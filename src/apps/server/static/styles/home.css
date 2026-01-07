@@ -480,6 +480,12 @@
     padding: 0 2rem;
 }
 
+/* Section hint text */
+.section-hint {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+}
+
 /* Feature Grid */
 .feature-grid {
     display: grid;
