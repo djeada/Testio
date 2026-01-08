@@ -9,7 +9,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from src.core.metrics import get_metrics_collector
-from src.core.cache import MemoryCache, cache_result
+from src.core.caching import MemoryCache, cache_result
 
 metrics_router: APIRouter = APIRouter(tags=["Metrics"])
 
@@ -70,7 +70,7 @@ async def get_cache_stats(request: Request) -> CacheStatsResponse:
     if cache and isinstance(cache, MemoryCache):
         stats = cache.get_stats()
     else:
-        from src.core.cache.memory_cache import get_global_cache
+        from src.core.caching.memory_cache import get_global_cache
         stats = get_global_cache().get_stats()
     
     return CacheStatsResponse(

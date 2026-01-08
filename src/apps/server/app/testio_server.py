@@ -29,7 +29,7 @@ from src.apps.server.routes.config_generator import config_generator_page_router
 from src.apps.server.routes.metrics import metrics_router
 from src.apps.server.middleware import RequestLoggingMiddleware, ErrorHandlingMiddleware
 from src.apps.server.rate_limiter import RateLimitMiddleware, RateLimitConfig
-from src.core.cache import MemoryCache
+from src.core.caching import MemoryCache
 from src.core.metrics import get_metrics_collector
 
 
