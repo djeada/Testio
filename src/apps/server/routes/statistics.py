@@ -5,10 +5,11 @@ from typing import Dict, Any, List, Optional
 
 sys.path.append(".")
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from src.apps.server.database.exam_sessions import ExamSessionsTable
+from src.core.utils.pagination import paginate, PaginatedResponse
 
 stats_router: APIRouter = APIRouter(tags=["Statistics"])
 
@@ -98,13 +99,17 @@ async def get_session_stats(session_id: str) -> SessionStats:
 @stats_router.get("/api/stats/leaderboard/{session_id}", response_model=LeaderboardResponse)
 async def get_session_leaderboard(
     session_id: str, 
-    limit: int = 10
+    limit: int = Query(default=10, ge=1, le=100, description="Maximum number of entries"),
+    page: int = Query(default=1, ge=1, description="Page number for pagination"),
+    page_size: int = Query(default=20, ge=1, le=100, description="Items per page")
 ) -> LeaderboardResponse:
     """
     Get the leaderboard for a specific exam session.
     
     :param session_id: The session ID
     :param limit: Maximum number of entries to return (default: 10)
+    :param page: Page number for pagination (default: 1)
+    :param page_size: Items per page (default: 20)
     :return: Leaderboard with ranked entries
     """
     exam_db = ExamSessionsTable()
@@ -121,12 +126,17 @@ async def get_session_leaderboard(
             key=lambda x: (-(x["score"] or 0), x["submitted_at"])
         )
         
-        # Limit results
-        limited_submissions = sorted_submissions[:limit]
+        # Apply pagination
+        total_entries = len(sorted_submissions)
+        offset = (page - 1) * page_size
+        paginated_submissions = sorted_submissions[offset:offset + page_size]
+        
+        # Apply limit within the page
+        limited_submissions = paginated_submissions[:limit]
         
         entries = [
             LeaderboardEntry(
-                rank=i + 1,
+                rank=offset + i + 1,  # Adjust rank for pagination
                 student_id=sub["student_id"],
                 score=sub["score"] or 0.0,
                 submitted_at=sub["submitted_at"]
@@ -137,7 +147,7 @@ async def get_session_leaderboard(
         return LeaderboardResponse(
             session_id=session_id,
             entries=entries,
-            total_entries=len(submissions)
+            total_entries=total_entries
         )
     finally:
         exam_db.close()
