@@ -3,11 +3,10 @@ Execution queue for managing test execution with resource limits.
 Provides queuing, prioritization, and resource management.
 """
 
-import asyncio
 import threading
 import time
 import logging
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Future
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from queue import PriorityQueue, Empty

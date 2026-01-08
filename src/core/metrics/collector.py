@@ -11,7 +11,6 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Generator, List, Optional
 from functools import wraps
 import logging
-import statistics
 
 logger = logging.getLogger(__name__)
 
