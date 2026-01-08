@@ -26,7 +26,11 @@ from src.apps.server.routes.statistics import stats_router
 from src.apps.server.routes.batch_execution import batch_router
 from src.apps.server.routes.export import export_router
 from src.apps.server.routes.config_generator import config_generator_page_router
+from src.apps.server.routes.metrics import metrics_router
 from src.apps.server.middleware import RequestLoggingMiddleware, ErrorHandlingMiddleware
+from src.apps.server.rate_limiter import RateLimitMiddleware, RateLimitConfig
+from src.core.cache import MemoryCache
+from src.core.metrics import get_metrics_collector
 
 
 # API version
@@ -78,9 +82,23 @@ def create_app(mode: AppMode = "teacher") -> FastAPI:
     # Add custom middleware
     app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(ErrorHandlingMiddleware)
+    
+    # Add rate limiting middleware for API protection
+    rate_limit_config = RateLimitConfig(
+        requests_per_minute=120,  # 2 requests per second average
+        requests_per_second=20,   # Allow bursts
+        burst_size=30
+    )
+    app.add_middleware(RateLimitMiddleware, config=rate_limit_config)
 
     # Reference to the custom database class
     app.state.db = Database("testio.db")
+    
+    # Initialize application cache
+    app.state.cache = MemoryCache(default_ttl=300.0, max_size=1000)
+    
+    # Initialize metrics collector
+    app.state.metrics = get_metrics_collector()
 
     # Store the application mode in app state
     app.state.mode = mode
@@ -135,6 +153,8 @@ def create_app(mode: AppMode = "teacher") -> FastAPI:
             stats_router,
             batch_router,
             export_router,
+            # Metrics and monitoring
+            metrics_router,
         ]
 
     for router in routers:
