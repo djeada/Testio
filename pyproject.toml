@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "testio"
+version = "0.1.0"
+description = "A test-running platform for programming exercises"
+requires-python = ">=3.10"
+dependencies = [
+  "attrs",
+  "fastapi==0.115.0",
+  "uvicorn==0.27.0",
+  "python-multipart==0.0.18",
+  "Jinja2==3.1.2",
+  "MarkupSafe==2.1.2",
+  "python-json-logger>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "autoflake",
+  "black",
+  "httpx==0.27.0",
+  "hypothesis>=6.0",
+  "isort",
+  "pytest==7.2.1",
+  "pytest-asyncio",
+  "pytest-cov",
+  "ruff",
+]
+
+[project.scripts]
+testio = "src.apps.cli.main:main"
+testio-server = "src.apps.server.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.black]
+target-version = ["py310", "py311", "py312"]

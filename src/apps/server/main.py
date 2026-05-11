@@ -7,11 +7,10 @@ The server can be started in two modes:
 - teacher (default): Full access to all features including exam management, homework grading, and config generation
 - student: Limited access focused on code submission and testing
 """
+
 import argparse
 import sys
 from typing import List, Optional
-
-sys.path.append(".")
 
 from src.apps.server.app.testio_server import create_app
 from src.apps.server.database.configuration_data import update_execution_manager_data
@@ -40,7 +39,7 @@ class ArgumentParser(argparse.ArgumentParser):
             type=str,
             choices=["teacher", "student"],
             default="teacher",
-            help="Application mode: 'teacher' (default) for full access, 'student' for student-focused UI"
+            help="Application mode: 'teacher' (default) for full access, 'student' for student-focused UI",
         )
 
 
@@ -68,6 +67,7 @@ def main(argv: Optional[List[str]] = None):
     app = create_app(mode=args.mode)
 
     import uvicorn
+
     uvicorn.run(app, host=args.host, port=args.port)
 
 

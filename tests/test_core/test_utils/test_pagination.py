@@ -1,16 +1,16 @@
 """Tests for the pagination utility module."""
+
 import sys
 
 sys.path.append(".")
 
-import pytest
 
 from src.core.utils.pagination import (
     PaginationParams,
     PaginatedResponse,
     paginate,
     encode_cursor,
-    decode_cursor
+    decode_cursor,
 )
 
 
@@ -46,12 +46,9 @@ class TestPaginatedResponse:
     def test_create_from_items(self):
         """Test creating a paginated response."""
         response = PaginatedResponse.create(
-            items=["a", "b", "c"],
-            total_items=10,
-            page=1,
-            page_size=3
+            items=["a", "b", "c"], total_items=10, page=1, page_size=3
         )
-        
+
         assert response.items == ["a", "b", "c"]
         assert response.total_items == 10
         assert response.total_pages == 4
@@ -63,24 +60,18 @@ class TestPaginatedResponse:
     def test_last_page(self):
         """Test last page has no next page."""
         response = PaginatedResponse.create(
-            items=["a"],
-            total_items=7,
-            page=4,
-            page_size=2
+            items=["a"], total_items=7, page=4, page_size=2
         )
-        
+
         assert response.has_next is False
         assert response.has_previous is True
 
     def test_single_page(self):
         """Test single page has no next or previous."""
         response = PaginatedResponse.create(
-            items=["a", "b"],
-            total_items=2,
-            page=1,
-            page_size=10
+            items=["a", "b"], total_items=2, page=1, page_size=10
         )
-        
+
         assert response.total_pages == 1
         assert response.has_next is False
         assert response.has_previous is False
@@ -88,12 +79,9 @@ class TestPaginatedResponse:
     def test_empty_items(self):
         """Test response with no items."""
         response = PaginatedResponse.create(
-            items=[],
-            total_items=0,
-            page=1,
-            page_size=10
+            items=[], total_items=0, page=1, page_size=10
         )
-        
+
         assert response.items == []
         assert response.total_items == 0
         assert response.total_pages == 1
@@ -106,7 +94,7 @@ class TestPaginateFunction:
         """Test paginating first page."""
         items = list(range(100))
         result = paginate(items, page=1, page_size=10)
-        
+
         assert result.items == list(range(10))
         assert result.total_items == 100
         assert result.total_pages == 10
@@ -116,7 +104,7 @@ class TestPaginateFunction:
         """Test paginating middle page."""
         items = list(range(100))
         result = paginate(items, page=5, page_size=10)
-        
+
         assert result.items == list(range(40, 50))
         assert result.current_page == 5
 
@@ -124,7 +112,7 @@ class TestPaginateFunction:
         """Test paginating last page."""
         items = list(range(25))
         result = paginate(items, page=3, page_size=10)
-        
+
         assert result.items == list(range(20, 25))
         assert result.has_next is False
 
@@ -132,7 +120,7 @@ class TestPaginateFunction:
         """Test paginating beyond available items."""
         items = list(range(10))
         result = paginate(items, page=5, page_size=10)
-        
+
         assert result.items == []
         assert result.total_items == 10
 

@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PoolConfig:
     """Configuration for the connection pool."""
+
     min_connections: int = 2
     max_connections: int = 10
     connection_timeout: float = 30.0
@@ -30,11 +31,7 @@ class PooledConnection:
     A wrapper around a SQLite connection that tracks metadata.
     """
 
-    def __init__(
-        self, 
-        connection: sqlite3.Connection,
-        pool: "ConnectionPool"
-    ):
+    def __init__(self, connection: sqlite3.Connection, pool: "ConnectionPool"):
         """
         Initialize a pooled connection.
 
@@ -61,9 +58,7 @@ class PooledConnection:
     @property
     def is_stale(self) -> bool:
         """Check if the connection has been idle too long."""
-        return (
-            time.time() - self._last_used > self._pool.config.idle_timeout
-        )
+        return time.time() - self._last_used > self._pool.config.idle_timeout
 
     def execute(self, sql: str, params: Optional[tuple] = None) -> sqlite3.Cursor:
         """
@@ -84,11 +79,7 @@ class PooledConnection:
             logger.error(f"SQL execution error: {e}")
             raise
 
-    def executemany(
-        self, 
-        sql: str, 
-        params_list: list
-    ) -> sqlite3.Cursor:
+    def executemany(self, sql: str, params_list: list) -> sqlite3.Cursor:
         """
         Execute SQL statement with multiple parameter sets.
 
@@ -133,11 +124,7 @@ class ConnectionPool:
     Manages a pool of reusable database connections.
     """
 
-    def __init__(
-        self,
-        database_path: str,
-        config: Optional[PoolConfig] = None
-    ):
+    def __init__(self, database_path: str, config: Optional[PoolConfig] = None):
         """
         Initialize the connection pool.
 
@@ -146,7 +133,7 @@ class ConnectionPool:
         """
         self.database_path = database_path
         self.config = config or PoolConfig()
-        
+
         self._available: Queue[PooledConnection] = Queue()
         self._all_connections: list[PooledConnection] = []
         self._lock = threading.RLock()
@@ -177,28 +164,23 @@ class ConnectionPool:
         """
         try:
             connection = sqlite3.connect(
-                self.database_path,
-                check_same_thread=self.config.check_same_thread
+                self.database_path, check_same_thread=self.config.check_same_thread
             )
             # Enable foreign keys
             connection.execute("PRAGMA foreign_keys = ON")
             # Optimize for performance
             connection.execute("PRAGMA journal_mode = WAL")
             connection.execute("PRAGMA synchronous = NORMAL")
-            
+
             pooled = PooledConnection(connection, self)
-            
+
             with self._lock:
                 self._all_connections.append(pooled)
                 self._total_connections_created += 1
                 current_count = len(self._all_connections)
-                self._peak_connections = max(
-                    self._peak_connections, current_count
-                )
-            
-            logger.debug(
-                f"Created new connection (total: {current_count})"
-            )
+                self._peak_connections = max(self._peak_connections, current_count)
+
+            logger.debug(f"Created new connection (total: {current_count})")
             return pooled
 
         except sqlite3.Error as e:
@@ -238,12 +220,12 @@ class ConnectionPool:
         while True:
             try:
                 connection = self._available.get_nowait()
-                
+
                 # Check if connection is stale
                 if connection.is_stale:
                     self._remove_connection(connection)
                     continue
-                
+
                 connection.mark_used()
                 return connection
 
@@ -262,9 +244,7 @@ class ConnectionPool:
             # Wait for a connection to become available
             elapsed = time.time() - start_time
             if elapsed >= self.config.connection_timeout:
-                raise RuntimeError(
-                    f"Connection timeout after {elapsed:.1f}s"
-                )
+                raise RuntimeError(f"Connection timeout after {elapsed:.1f}s")
 
             with self._lock:
                 self._wait_count += 1
@@ -319,7 +299,7 @@ class ConnectionPool:
     def close(self) -> None:
         """Close all connections and shut down the pool."""
         self._closed = True
-        
+
         # Close all available connections
         while True:
             try:
@@ -343,14 +323,13 @@ class ConnectionPool:
         :return: Dictionary with pool statistics
         """
         with self._lock:
-            active_count = sum(
-                1 for c in self._all_connections if c._in_use
-            )
+            active_count = sum(1 for c in self._all_connections if c._in_use)
             avg_wait = (
-                self._total_wait_time / self._wait_count 
-                if self._wait_count > 0 else 0.0
+                self._total_wait_time / self._wait_count
+                if self._wait_count > 0
+                else 0.0
             )
-            
+
             return {
                 "database_path": self.database_path,
                 "total_connections": len(self._all_connections),
@@ -363,7 +342,7 @@ class ConnectionPool:
                 "total_closed": self._total_connections_closed,
                 "wait_count": self._wait_count,
                 "avg_wait_ms": round(avg_wait * 1000, 2),
-                "is_closed": self._closed
+                "is_closed": self._closed,
             }
 
 
@@ -373,8 +352,7 @@ _pools_lock = threading.Lock()
 
 
 def get_connection_pool(
-    database_path: str,
-    config: Optional[PoolConfig] = None
+    database_path: str, config: Optional[PoolConfig] = None
 ) -> ConnectionPool:
     """
     Get or create a connection pool for the given database.

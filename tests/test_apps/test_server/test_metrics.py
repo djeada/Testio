@@ -1,4 +1,5 @@
 """Tests for the metrics routes."""
+
 import sys
 
 sys.path.append(".")
@@ -25,7 +26,7 @@ class TestMetricsEndpoints:
         response = client.get("/api/metrics")
         assert response.status_code == 200
         data = response.json()
-        
+
         assert data["application"] == "Testio"
         assert data["version"] == "1.0.0"
         assert "timestamp" in data
@@ -39,7 +40,7 @@ class TestMetricsEndpoints:
         response = client.get("/api/metrics/cache")
         assert response.status_code == 200
         data = response.json()
-        
+
         assert "timestamp" in data
         assert "cache_stats" in data
         assert "size" in data["cache_stats"]
@@ -52,7 +53,7 @@ class TestMetricsEndpoints:
         response = client.get("/api/metrics/system")
         assert response.status_code == 200
         data = response.json()
-        
+
         assert "timestamp" in data
         assert "database" in data
         assert "execution_queue" in data
@@ -63,13 +64,13 @@ class TestMetricsEndpoints:
         # First, make some requests to generate metrics
         client.get("/health")
         client.get("/api/metrics")
-        
+
         # Reset metrics
         response = client.post("/api/metrics/reset")
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "success"
-        
+
         # Verify metrics are reset
         response = client.get("/api/metrics")
         data = response.json()

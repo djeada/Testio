@@ -3,12 +3,14 @@ Rate limiting middleware for API protection.
 Implements a sliding window rate limiter with configurable limits.
 """
 
-import time
+import ipaddress
+import logging
+import os
 import threading
+import time
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Callable, Dict, Optional, Tuple
-import logging
 
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
@@ -17,9 +19,26 @@ from starlette.middleware.base import BaseHTTPMiddleware
 logger = logging.getLogger(__name__)
 
 
+def _get_trusted_proxies() -> list:
+    raw = os.getenv("TESTIO_TRUSTED_PROXIES", "")
+    result = []
+    for entry in raw.split(","):
+        entry = entry.strip()
+        if entry:
+            try:
+                result.append(ipaddress.ip_network(entry, strict=False))
+            except ValueError:
+                pass
+    return result
+
+
+_TRUSTED_PROXIES = _get_trusted_proxies()
+
+
 @dataclass
 class RateLimitConfig:
     """Configuration for rate limiting."""
+
     requests_per_minute: int = 60
     requests_per_second: int = 10
     burst_size: int = 20
@@ -32,11 +51,7 @@ class SlidingWindowLimiter:
     Tracks requests per client within a time window.
     """
 
-    def __init__(
-        self,
-        requests_per_window: int = 60,
-        window_size: float = 60.0
-    ):
+    def __init__(self, requests_per_window: int = 60, window_size: float = 60.0):
         """
         Initialize the rate limiter.
 
@@ -61,7 +76,8 @@ class SlidingWindowLimiter:
         with self._lock:
             # Remove old requests outside the window
             self._client_data[client_id] = [
-                req_time for req_time in self._client_data[client_id]
+                req_time
+                for req_time in self._client_data[client_id]
                 if req_time > window_start
             ]
 
@@ -91,13 +107,21 @@ class SlidingWindowLimiter:
             return {
                 "active_clients": len(self._client_data),
                 "requests_per_window": self._requests_per_window,
-                "window_size_seconds": self._window_size
+                "window_size_seconds": self._window_size,
             }
 
     def clear(self) -> None:
         """Clear all rate limiting data."""
         with self._lock:
             self._client_data.clear()
+
+
+_active_middleware: Optional["RateLimitMiddleware"] = None
+
+
+def get_active_rate_limiter() -> Optional["RateLimitMiddleware"]:
+    """Return the currently active RateLimitMiddleware instance, if any."""
+    return _active_middleware
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -109,29 +133,22 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     # Paths that are exempt from rate limiting
     EXEMPT_PATHS = {"/health", "/api/status", "/docs", "/redoc", "/openapi.json"}
 
-    def __init__(
-        self,
-        app,
-        config: Optional[RateLimitConfig] = None
-    ):
+    def __init__(self, app, config: Optional[RateLimitConfig] = None):
         """
         Initialize the rate limit middleware.
 
         :param app: FastAPI application
         :param config: Rate limit configuration
         """
+        global _active_middleware
         super().__init__(app)
         self.config = config or RateLimitConfig()
         self._limiter = SlidingWindowLimiter(
-            requests_per_window=self.config.requests_per_minute,
-            window_size=60.0
+            requests_per_window=self.config.requests_per_minute, window_size=60.0
         )
+        _active_middleware = self
 
-    async def dispatch(
-        self, 
-        request: Request, 
-        call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         """
         Process the request and apply rate limiting.
 
@@ -156,8 +173,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 content={
                     "error": "rate_limit_exceeded",
                     "message": "Too many requests. Please try again later.",
-                    "retry_after": round(reset_time - time.time())
-                }
+                    "retry_after": round(reset_time - time.time()),
+                },
             )
             if self.config.enable_headers:
                 response.headers["X-RateLimit-Limit"] = str(
@@ -165,9 +182,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 )
                 response.headers["X-RateLimit-Remaining"] = "0"
                 response.headers["X-RateLimit-Reset"] = str(int(reset_time))
-                response.headers["Retry-After"] = str(
-                    int(reset_time - time.time())
-                )
+                response.headers["Retry-After"] = str(int(reset_time - time.time()))
             return response
 
         # Process the request
@@ -175,9 +190,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         # Add rate limit headers to response
         if self.config.enable_headers:
-            response.headers["X-RateLimit-Limit"] = str(
-                self.config.requests_per_minute
-            )
+            response.headers["X-RateLimit-Limit"] = str(self.config.requests_per_minute)
             response.headers["X-RateLimit-Remaining"] = str(remaining)
             response.headers["X-RateLimit-Reset"] = str(int(reset_time))
 
@@ -186,18 +199,25 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     def _get_client_id(self, request: Request) -> str:
         """
         Extract client identifier from request.
-        Uses X-Forwarded-For header if present, otherwise client IP.
+        Only trusts X-Forwarded-For from configured proxy networks.
 
         :param request: The request object
         :return: Client identifier string
         """
+        client_host = request.client.host if request.client else None
         forwarded_for = request.headers.get("X-Forwarded-For")
-        if forwarded_for:
-            # Get the first IP in the chain
-            return forwarded_for.split(",")[0].strip()
 
-        if request.client:
-            return request.client.host
+        if forwarded_for and client_host:
+            try:
+                client_ip = ipaddress.ip_address(client_host)
+            except ValueError:
+                client_ip = None
+
+            if client_ip and any(client_ip in network for network in _TRUSTED_PROXIES):
+                return forwarded_for.split(",")[0].strip()
+
+        if client_host:
+            return client_host
 
         return "unknown"
 

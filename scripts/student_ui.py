@@ -16,7 +16,6 @@ sys.path.insert(0, str(project_root))
 
 from src.apps.server.main import main
 
-
 if __name__ == "__main__":
     # Run the server with student mode
     argv = sys.argv[1:]

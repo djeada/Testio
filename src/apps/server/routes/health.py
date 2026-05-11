@@ -1,9 +1,6 @@
 """This module defines FastAPI routes for health checks and system status."""
-import sys
-from datetime import datetime
-from typing import Dict, Any
 
-sys.path.append(".")
+from datetime import datetime
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
@@ -13,6 +10,7 @@ health_router: APIRouter = APIRouter(tags=["Health"])
 
 class HealthResponse(BaseModel):
     """Response model for health check endpoint."""
+
     status: str
     timestamp: str
     version: str
@@ -20,6 +18,7 @@ class HealthResponse(BaseModel):
 
 class StatusResponse(BaseModel):
     """Response model for status endpoint."""
+
     status: str
     timestamp: str
     version: str
@@ -36,27 +35,37 @@ def health_check() -> HealthResponse:
     """
     Simple health check endpoint.
     Returns the server status, current timestamp, and API version.
-    
+
     :return: HealthResponse with status information
     """
     return HealthResponse(
-        status="healthy",
-        timestamp=datetime.now().isoformat(),
-        version="1.0.0"
+        status="healthy", timestamp=datetime.now().isoformat(), version="1.0.0"
     )
+
+
+@health_router.get("/livez")
+def liveness() -> dict:
+    """Kubernetes liveness probe — returns 200 if the process is alive."""
+    return {"status": "ok"}
+
+
+@health_router.get("/readyz")
+def readiness() -> dict:
+    """Kubernetes readiness probe — returns 200 if the server can handle traffic."""
+    return {"status": "ok"}
 
 
 @health_router.get("/api/status", response_model=StatusResponse)
 def api_status(request: Request) -> StatusResponse:
     """
     Detailed status endpoint with system information.
-    
+
     :param request: The FastAPI request object
     :return: StatusResponse with detailed status information
     """
     current_time = datetime.now()
     uptime = (current_time - _server_start_time).total_seconds()
-    
+
     # Check database connectivity
     db_connected = False
     try:
@@ -65,11 +74,11 @@ def api_status(request: Request) -> StatusResponse:
             db_connected = True
     except Exception:
         pass
-    
+
     return StatusResponse(
         status="running",
         timestamp=current_time.isoformat(),
         version="1.0.0",
         uptime_seconds=round(uptime, 2),
-        database_connected=db_connected
+        database_connected=db_connected,
     )

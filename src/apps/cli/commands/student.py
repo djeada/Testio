@@ -6,17 +6,15 @@ Students can use this to test their submissions before submitting.
 import argparse
 import json
 import os
+import sys
 import tempfile
 from pathlib import Path
-from typing import Optional, List, Dict, Any
-from concurrent.futures import ProcessPoolExecutor
+from typing import Optional, Dict, Any
 
 from src.core.config_parser.parsers import ConfigParser
 from src.core.execution.data import (
     ComparisonResult,
     ExecutionManagerFactory,
-    ExecutionManagerInputData,
-    ComparisonOutputData,
 )
 from src.core.execution.manager import ExecutionManager
 
@@ -48,7 +46,9 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
     test_parser.add_argument(
         "config_file",
         type=str,
-        help="Path to the test configuration file",
+        nargs="?",
+        default="config.json",
+        help="Path to the test configuration file (default: ./config.json)",
     )
     test_parser.add_argument(
         "--show-expected",
@@ -77,7 +77,7 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         "--language",
         "-l",
         type=str,
-        choices=["python", "c", "cpp", "java", "go", "rust"],
+        choices=["python", "c", "cpp", "java", "go", "rust", "javascript", "js"],
         help="Programming language (auto-detected if not specified)",
     )
     check_parser.set_defaults(func=execute_check)
@@ -116,7 +116,7 @@ def detect_language(file_path: Path) -> Optional[str]:
 def check_syntax(file_path: Path, language: str) -> Dict[str, Any]:
     """
     Check syntax/compilation of a file.
-    
+
     :param file_path: Path to the source file.
     :param language: Programming language.
     :return: Dictionary with check results.
@@ -134,7 +134,7 @@ def check_syntax(file_path: Path, language: str) -> Dict[str, Any]:
         if language == "python":
             # Use py_compile for Python
             proc = subprocess.run(
-                ["python3", "-m", "py_compile", str(file_path)],
+                [sys.executable, "-m", "py_compile", str(file_path)],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -170,6 +170,17 @@ def check_syntax(file_path: Path, language: str) -> Dict[str, Any]:
             # Compile to check syntax
             proc = subprocess.run(
                 ["javac", "-d", tempfile.gettempdir(), str(file_path)],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            if proc.returncode != 0:
+                result["valid"] = False
+                result["errors"].append(proc.stderr.strip())
+
+        elif language in ("nodejs", "javascript", "js"):
+            proc = subprocess.run(
+                ["node", "--check", str(file_path)],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -223,7 +234,7 @@ def run_tests(
 ) -> Dict[str, Any]:
     """
     Run tests on a student submission.
-    
+
     :param submission_path: Path to the student's submission.
     :param config: Test configuration dictionary.
     :param config_path: Path to the config file.
@@ -235,7 +246,7 @@ def run_tests(
     test_suite_config = parser.parse_from_json(config)
 
     # Create execution manager data using the student's file
-    execution_data = ExecutionManagerFactory._create_execution_manager_data(
+    execution_data = ExecutionManagerFactory.create_execution_manager_data(
         test_suite_config, str(submission_path)
     )
 
@@ -247,9 +258,7 @@ def run_tests(
         results.append(result)
 
     total_tests = len(results)
-    passed_tests = len(
-        [r for r in results if r.result == ComparisonResult.MATCH]
-    )
+    passed_tests = len([r for r in results if r.result == ComparisonResult.MATCH])
     score = (passed_tests / total_tests * 100) if total_tests > 0 else 0
 
     return {
@@ -357,7 +366,7 @@ def execute_check(args: argparse.Namespace) -> int:
     # Detect language
     language = args.language or detect_language(submission_path)
     if not language:
-        print(f"Error: Could not detect language. Please specify with --language")
+        print("Error: Could not detect language. Please specify with --language")
         return 1
 
     print("=" * 50)

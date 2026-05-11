@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/djeada/Testio/schemas/testio-config.schema.json",
+  "title": "Testio Configuration",
+  "description": "Schema for Testio test-suite configuration files.",
+  "type": "object",
+  "required": ["path", "tests"],
+  "additionalProperties": false,
+  "properties": {
+    "command": {
+      "type": "string",
+      "description": "Command used to run the program (e.g. 'python3', 'java'). Mutually exclusive with compile_command/run_command.",
+      "examples": ["python3", "node", "java"]
+    },
+    "compile_command": {
+      "type": "string",
+      "description": "Compilation command template. Use {source} for the source file and {output} for the compiled binary.",
+      "examples": ["gcc {source} -o {output}", "javac {source}"]
+    },
+    "run_command": {
+      "type": "string",
+      "description": "Command template used to run the compiled binary. Use {output} for the compiled artifact.",
+      "examples": ["./{output}", "java {output}"]
+    },
+    "path": {
+      "type": "string",
+      "description": "Relative path to the program file being tested.",
+      "examples": ["solution.py", "hello.c", "Main.java"]
+    },
+    "tests": {
+      "type": "array",
+      "description": "List of test cases.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/TestCase"
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "required": ["command"],
+      "not": { "required": ["compile_command"] }
+    },
+    {
+      "required": ["compile_command"]
+    }
+  ],
+  "$defs": {
+    "TestCase": {
+      "type": "object",
+      "required": ["input", "output"],
+      "additionalProperties": false,
+      "properties": {
+        "input": {
+          "type": "array",
+          "description": "Lines of standard input to feed to the program.",
+          "items": { "type": "string" },
+          "examples": [["5", "3"], []]
+        },
+        "output": {
+          "type": "array",
+          "description": "Expected lines of standard output.",
+          "items": { "type": "string" },
+          "examples": [["8"], ["Hello, World!"]]
+        },
+        "timeout": {
+          "type": "number",
+          "description": "Maximum execution time in seconds.",
+          "minimum": 0,
+          "default": 5,
+          "examples": [1, 5, 10]
+        },
+        "unordered": {
+          "type": "boolean",
+          "description": "When true, output lines are compared without regard to order.",
+          "default": false
+        }
+      }
+    }
+  }
+}

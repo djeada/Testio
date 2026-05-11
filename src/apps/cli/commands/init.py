@@ -6,7 +6,6 @@ Teachers can use this to set up a new assignment directory.
 import argparse
 import json
 from pathlib import Path
-from typing import Optional
 
 
 def add_parser(subparsers: argparse._SubParsersAction) -> None:
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     "c": {
         "extension": ".c",
         "compile_command": "gcc {source} -o {output}",
-        "sample_code": '''/*
+        "sample_code": """/*
  * Student submission for: {name}
  * Name: [Your Name]
  * Date: [Date]
@@ -107,8 +106,8 @@ int main() {{
     
     return 0;
 }}
-''',
-        "solution_code": '''/*
+""",
+        "solution_code": """/*
  * Solution for: {name}
  */
 
@@ -120,12 +119,12 @@ int main() {{
     printf("Hello, %s!\\n", name);
     return 0;
 }}
-''',
+""",
     },
     "cpp": {
         "extension": ".cpp",
         "compile_command": "g++ {source} -o {output}",
-        "sample_code": '''/*
+        "sample_code": """/*
  * Student submission for: {name}
  * Name: [Your Name]
  * Date: [Date]
@@ -141,8 +140,8 @@ int main() {{
     
     return 0;
 }}
-''',
-        "solution_code": '''/*
+""",
+        "solution_code": """/*
  * Solution for: {name}
  */
 
@@ -157,13 +156,13 @@ int main() {{
     cout << "Hello, " << name << "!" << endl;
     return 0;
 }}
-''',
+""",
     },
     "java": {
         "extension": ".java",
         "compile_command": "javac {source}",
         "run_command": "java",
-        "sample_code": '''/*
+        "sample_code": """/*
  * Student submission for: {name}
  * Name: [Your Name]
  * Date: [Date]
@@ -178,8 +177,8 @@ public class Solution {{
         
     }}
 }}
-''',
-        "solution_code": '''/*
+""",
+        "solution_code": """/*
  * Solution for: {name}
  */
 
@@ -192,12 +191,12 @@ public class Solution {{
         System.out.println("Hello, " + name + "!");
     }}
 }}
-''',
+""",
     },
     "nodejs": {
         "extension": ".js",
         "run_command": "node",
-        "sample_code": '''/*
+        "sample_code": """/*
  * Student submission for: {name}
  * Name: [Your Name]
  * Date: [Date]
@@ -215,8 +214,8 @@ const rl = readline.createInterface({{
 rl.on('line', (line) => {{
     // Process input
 }});
-''',
-        "solution_code": '''/*
+""",
+        "solution_code": """/*
  * Solution for: {name}
  */
 
@@ -231,27 +230,27 @@ const rl = readline.createInterface({{
 rl.on('line', (line) => {{
     console.log(`Hello, ${{line}}!`);
 }});
-''',
+""",
     },
     "ruby": {
         "extension": ".rb",
         "run_command": "ruby",
-        "sample_code": '''# Student submission for: {name}
+        "sample_code": """# Student submission for: {name}
 # Name: [Your Name]
 # Date: [Date]
 
 # TODO: Implement your solution here
-''',
-        "solution_code": '''# Solution for: {name}
+""",
+        "solution_code": """# Solution for: {name}
 
 name = gets.chomp
 puts "Hello, #{{name}}!"
-''',
+""",
     },
     "go": {
         "extension": ".go",
         "compile_command": "go build -o {output} {source}",
-        "sample_code": '''// Student submission for: {name}
+        "sample_code": """// Student submission for: {name}
 // Name: [Your Name]
 // Date: [Date]
 
@@ -262,8 +261,8 @@ import "fmt"
 func main() {{
     // TODO: Implement your solution here
 }}
-''',
-        "solution_code": '''// Solution for: {name}
+""",
+        "solution_code": """// Solution for: {name}
 
 package main
 
@@ -274,12 +273,12 @@ func main() {{
     fmt.Scan(&name)
     fmt.Printf("Hello, %s!\\n", name)
 }}
-''',
+""",
     },
     "rust": {
         "extension": ".rs",
         "compile_command": "rustc {source} -o {output}",
-        "sample_code": '''// Student submission for: {name}
+        "sample_code": """// Student submission for: {name}
 // Name: [Your Name]
 // Date: [Date]
 
@@ -288,8 +287,8 @@ use std::io;
 fn main() {{
     // TODO: Implement your solution here
 }}
-''',
-        "solution_code": '''// Solution for: {name}
+""",
+        "solution_code": """// Solution for: {name}
 
 use std::io;
 
@@ -298,7 +297,7 @@ fn main() {{
     io::stdin().read_line(&mut input).unwrap();
     println!("Hello, {{}}!", input.trim());
 }}
-''',
+""",
     },
 }
 
@@ -370,21 +369,13 @@ def create_config(
 ) -> dict:
     """Generate configuration for the assignment."""
     lang_config = LANGUAGE_CONFIGS[language]
-    
+
     config = {
         "path": program_path,
         "tests": [
-            {
-                "input": ["World"],
-                "output": ["Hello, World!"],
-                "timeout": 10
-            },
-            {
-                "input": ["Testio"],
-                "output": ["Hello, Testio!"],
-                "timeout": 10
-            }
-        ]
+            {"input": ["World"], "output": ["Hello, World!"], "timeout": 10},
+            {"input": ["Testio"], "output": ["Hello, Testio!"], "timeout": 10},
+        ],
     }
 
     # Add language-specific execution config
@@ -467,14 +458,14 @@ def execute(args: argparse.Namespace) -> int:
     print("=" * 50)
     print("\nDirectory structure:")
     print(f"  {assignment_dir}/")
-    print(f"    ├── config.json          # Test configuration")
+    print("    ├── config.json          # Test configuration")
     print(f"    ├── template{extension:<12} # Student template")
-    print(f"    ├── submissions/          # Place student files here")
+    print("    ├── submissions/          # Place student files here")
     if args.with_solution:
-        print(f"    └── solution/             # Reference solution")
+        print("    └── solution/             # Reference solution")
         print(f"        └── solution{extension}")
     if args.with_readme:
-        print(f"    └── README.md             # Problem description")
+        print("    └── README.md             # Problem description")
 
     print("\nNext steps:")
     print(f"  1. Edit {assignment_dir}/README.md to add problem description")

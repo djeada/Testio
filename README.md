@@ -2,7 +2,7 @@
 
 <a href="https://github.com/djeada/testio/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/djeada/testio"></a>
 <a href="https://github.com/djeada/testio/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/djeada/testio"></a>
-<a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
+<a href="https://github.com/djeada/testio/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 
 Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its two convenient interfaces: CLI and web server, you can test applications with a variety of configurations and inputs on a large scale.
@@ -31,7 +31,7 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 
 ## Requirements
 
-* Python 3.8+
+* Python 3.10+
 * fastapi
 * uvicorn
 
@@ -45,6 +45,10 @@ The easiest way to install Testio is to use virtualenv:
     $ virtualenv env
     $ source env/bin/activate
     $ pip install -r requirements.txt
+
+For development and testing, install the additional tooling with:
+
+    $ pip install -r requirements-dev.txt
 
 ## Usage
 
@@ -223,6 +227,16 @@ To update the test suite, use the following API endpoint:
 The FastAPI server also provides automatic API documentation at:
 - Swagger UI: http://localhost:5000/docs
 - ReDoc: http://localhost:5000/redoc
+
+### Environment Variables
+
+The server behavior can be configured with the following environment variables:
+
+- `TESTIO_TEACHER_API_KEY`: Protect teacher-only endpoints with the `X-API-Key` header.
+- `TESTIO_ALLOW_ORIGINS`: Comma-separated list of allowed CORS origins.
+- `TESTIO_TRUSTED_PROXIES`: Comma-separated list of trusted proxy IPs or CIDR ranges for forwarded headers.
+- `TESTIO_SANDBOX_CPU_SECS`: CPU limit for sandboxed student code in seconds.
+- `TESTIO_SANDBOX_MEM_MB`: Memory limit for sandboxed student code in megabytes.
 
 ## Configuration
 
@@ -475,7 +489,7 @@ The program_runner module runs the programs and captures their standard output. 
 There are a few planned features and known issues that are being worked on for Testio:
 
 - [x] Enhanced Timeout Management: The timeout parameter will be changed from a regex-based approach to an array-based approach, providing a more flexible and intuitive way of managing timeouts.
-- [x] Improved User Interface: A frontend generated with Flask templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
+- [x] Improved User Interface: A frontend generated with FastAPI/Jinja2 templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
 - [x] Add support for testing applications written in multiple programming languages.
 
  

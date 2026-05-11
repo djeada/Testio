@@ -9,13 +9,13 @@ operation = input()
 print("Enter second number:")
 num2 = float(input())
 
-if operation == '+':
+if operation == "+":
     result = num1 + num2
-elif operation == '-':
+elif operation == "-":
     result = num1 - num2
-elif operation == '*':
+elif operation == "*":
     result = num1 * num2
-elif operation == '/':
+elif operation == "/":
     if num2 != 0:
         result = num1 / num2
     else:

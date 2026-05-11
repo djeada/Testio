@@ -219,7 +219,7 @@ function updateResultsTable(submissions) {
         if (submission.test_results) {
             const total = submission.test_results.length;
             const passed = submission.test_results.filter(
-                r => r.result === 'ComparisonResult.MATCH'
+                r => (r.result_name || r.result) === 'MATCH' || (r.result_name || r.result) === 'ComparisonResult.MATCH'
             ).length;
             cellTests.textContent = `${passed} / ${total}`;
         } else {
@@ -282,7 +282,7 @@ function generateCSV(submissions) {
         const score = submission.score || 0;
         const total = submission.test_results ? submission.test_results.length : 0;
         const passed = submission.test_results 
-            ? submission.test_results.filter(r => r.result === 'ComparisonResult.MATCH').length 
+            ? submission.test_results.filter(r => (r.result_name || r.result) === 'MATCH' || (r.result_name || r.result) === 'ComparisonResult.MATCH').length
             : 0;
         
         const row = [

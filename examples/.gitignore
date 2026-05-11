@@ -1,0 +1,8 @@
+# Compiled artifacts produced by example programs
+*.class
+*.o
+*.obj
+*.exe
+a.out
+__pycache__/
+*.pyc

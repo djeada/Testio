@@ -1,4 +1,5 @@
 """Tests for the connection pool module."""
+
 import sys
 import threading
 import time
@@ -12,7 +13,7 @@ from src.apps.server.database.connection_pool import (
     PoolConfig,
     PooledConnection,
     get_connection_pool,
-    close_all_pools
+    close_all_pools,
 )
 
 
@@ -41,7 +42,7 @@ class TestConnectionPool:
             conn.execute("CREATE TABLE IF NOT EXISTS test (id INTEGER)")
             conn.execute("INSERT INTO test (id) VALUES (?)", (1,))
             conn.commit()
-            
+
             cursor = conn.execute("SELECT id FROM test")
             result = cursor.fetchone()
             assert result[0] == 1
@@ -61,9 +62,9 @@ class TestConnectionPool:
         for _ in range(3):
             conn = pool.acquire()
             connections.append(conn)
-        
+
         assert len(connections) == 3
-        
+
         for conn in connections:
             pool.release(conn)
 
@@ -71,14 +72,14 @@ class TestConnectionPool:
         """Test that pool statistics are tracked."""
         conn = pool.acquire()
         stats = pool.get_stats()
-        
+
         assert stats["total_connections"] >= 1
         assert stats["active_connections"] == 1
         assert "database_path" in stats
         assert stats["is_closed"] is False
-        
+
         pool.release(conn)
-        
+
         stats = pool.get_stats()
         assert stats["active_connections"] == 0
 
@@ -87,7 +88,7 @@ class TestConnectionPool:
         db_path = str(tmp_path / "test_min.db")
         config = PoolConfig(min_connections=3, max_connections=10)
         pool = ConnectionPool(db_path, config)
-        
+
         try:
             stats = pool.get_stats()
             assert stats["total_connections"] >= 3
@@ -110,7 +111,7 @@ class TestConnectionPool:
                 errors.append(e)
 
         threads = [threading.Thread(target=worker, args=(i,)) for i in range(5)]
-        
+
         for t in threads:
             t.start()
         for t in threads:
@@ -123,11 +124,11 @@ class TestConnectionPool:
         """Test closing the pool."""
         db_path = str(tmp_path / "test_close.db")
         pool = ConnectionPool(db_path)
-        
+
         conn = pool.acquire()
         pool.release(conn)
         pool.close()
-        
+
         assert pool.get_stats()["is_closed"] is True
 
     def test_connection_rollback_on_error(self, pool):
@@ -137,7 +138,7 @@ class TestConnectionPool:
                 conn.execute("CREATE TABLE IF NOT EXISTS rollback_test (id INTEGER)")
                 conn.execute("INSERT INTO rollback_test (id) VALUES (?)", (1,))
                 raise Exception("Simulated error")
-        
+
         # Verify the transaction was rolled back
         with pool.get_connection() as conn:
             conn.execute("CREATE TABLE IF NOT EXISTS rollback_test (id INTEGER)")
@@ -153,12 +154,12 @@ class TestGlobalPoolRegistry:
     def test_get_same_pool_for_same_path(self, tmp_path):
         """Test that get_connection_pool returns same instance for same path."""
         db_path = str(tmp_path / "shared.db")
-        
+
         pool1 = get_connection_pool(db_path)
         pool2 = get_connection_pool(db_path)
-        
+
         assert pool1 is pool2
-        
+
         # Cleanup
         close_all_pools()
 
@@ -166,11 +167,11 @@ class TestGlobalPoolRegistry:
         """Test that different paths get different pools."""
         path1 = str(tmp_path / "db1.db")
         path2 = str(tmp_path / "db2.db")
-        
+
         pool1 = get_connection_pool(path1)
         pool2 = get_connection_pool(path2)
-        
+
         assert pool1 is not pool2
-        
+
         # Cleanup
         close_all_pools()

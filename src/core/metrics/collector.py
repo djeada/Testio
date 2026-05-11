@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TimingStats:
     """Statistics for timing measurements."""
+
     count: int = 0
     total_time: float = 0.0
     min_time: float = float("inf")
@@ -31,7 +32,7 @@ class TimingStats:
         self.total_time += duration
         self.min_time = min(self.min_time, duration)
         self.max_time = max(self.max_time, duration)
-        
+
         # Keep only recent samples for percentile calculation
         if len(self.samples) >= self.max_samples:
             self.samples.pop(0)
@@ -56,7 +57,9 @@ class TimingStats:
             "count": self.count,
             "total_ms": round(self.total_time * 1000, 2),
             "avg_ms": round(self.avg_time * 1000, 2),
-            "min_ms": round(self.min_time * 1000, 2) if self.min_time != float("inf") else 0,
+            "min_ms": (
+                round(self.min_time * 1000, 2) if self.min_time != float("inf") else 0
+            ),
             "max_ms": round(self.max_time * 1000, 2),
             "p50_ms": round(self.percentile(50) * 1000, 2),
             "p95_ms": round(self.percentile(95) * 1000, 2),
@@ -139,6 +142,7 @@ class MetricsCollector:
         :param name: Optional timing name (defaults to function name)
         :return: Decorated function
         """
+
         def decorator(func: Callable) -> Callable:
             timing_name = name or f"{func.__module__}.{func.__name__}"
 
@@ -152,6 +156,7 @@ class MetricsCollector:
                     self.record_timing(timing_name, duration)
 
             return wrapper
+
         return decorator
 
     def get_counter(self, name: str) -> int:
@@ -199,9 +204,8 @@ class MetricsCollector:
                 "counters": dict(self._counters),
                 "gauges": dict(self._gauges),
                 "timings": {
-                    name: stats.to_dict() 
-                    for name, stats in self._timings.items()
-                }
+                    name: stats.to_dict() for name, stats in self._timings.items()
+                },
             }
 
     def reset(self) -> None:

@@ -54,12 +54,14 @@ TestSuiteConfig(
     ]
 )
 """
+
 import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 from .data import TestData, TestSuiteConfig
+from src.core.execution.command_utils import validate_command_template
 
 
 class ConfigNotParsable(Exception):
@@ -101,10 +103,22 @@ class ConfigParser:
         return self.parse_from_json(data)
 
     def parse_from_json(self, json_data: dict) -> Optional[TestSuiteConfig]:
-        command = json_data.get(CONFIG_SCHEMA.COMMAND, "")
+        command = json_data.get(CONFIG_SCHEMA.COMMAND, "").strip()
         path = json_data.get(CONFIG_SCHEMA.PATH)
-        compile_command = json_data.get(CONFIG_SCHEMA.COMPILE_COMMAND, "")
-        run_command = json_data.get(CONFIG_SCHEMA.RUN_COMMAND, "")
+        compile_command = json_data.get(CONFIG_SCHEMA.COMPILE_COMMAND, "").strip()
+        run_command = json_data.get(CONFIG_SCHEMA.RUN_COMMAND, "").strip()
+
+        if command:
+            command = validate_command_template(command, CONFIG_SCHEMA.COMMAND)
+        if compile_command:
+            compile_command = validate_command_template(
+                compile_command,
+                CONFIG_SCHEMA.COMPILE_COMMAND,
+            )
+        if run_command:
+            run_command = validate_command_template(
+                run_command, CONFIG_SCHEMA.RUN_COMMAND
+            )
 
         tests = []
         for test_data in json_data.get(CONFIG_SCHEMA.TESTS, []):
@@ -117,14 +131,18 @@ class ConfigParser:
             if input_data is None or output_data is None or timeout is None:
                 return None
 
-            tests.append(TestData(input_data, output_data, timeout, use_regex, interleaved, unordered))
+            tests.append(
+                TestData(
+                    input_data, output_data, timeout, use_regex, interleaved, unordered
+                )
+            )
 
         return TestSuiteConfig(
-            command=command, 
-            path=path, 
+            command=command,
+            path=path,
             tests=tests,
             compile_command=compile_command,
-            run_command=run_command
+            run_command=run_command,
         )
 
     def validate(self, path: Path) -> bool:
@@ -140,7 +158,7 @@ class ConfigParser:
         has_command = data.get(CONFIG_SCHEMA.COMMAND) is not None
         has_run_command = data.get(CONFIG_SCHEMA.RUN_COMMAND) is not None
         has_compile_command = data.get(CONFIG_SCHEMA.COMPILE_COMMAND) is not None
-        
+
         if (
             not (has_command or has_run_command or has_compile_command)
             or data.get(CONFIG_SCHEMA.PATH) is None
@@ -156,5 +174,17 @@ class ConfigParser:
                 or test_data.get(CONFIG_SCHEMA.TIMEOUT) is None
             ):
                 return False
+
+        try:
+            for field_name in (
+                CONFIG_SCHEMA.COMMAND,
+                CONFIG_SCHEMA.RUN_COMMAND,
+                CONFIG_SCHEMA.COMPILE_COMMAND,
+            ):
+                command = data.get(field_name, "")
+                if command:
+                    validate_command_template(command, field_name)
+        except ValueError:
+            return False
 
         return True

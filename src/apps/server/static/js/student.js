@@ -208,7 +208,8 @@ function displayTestResults(results) {
         results.results.forEach((fileResult, fileIndex) => {
             if (fileResult.tests && fileResult.tests.length > 0) {
                 fileResult.tests.forEach((test, testIndex) => {
-                    const isPassed = test.result === 'ComparisonResult.MATCH';
+                    const resultName = test.result_name || test.result;
+                    const isPassed = resultName === 'MATCH' || resultName === 'ComparisonResult.MATCH';
                     const statusIcon = isPassed ? '✅' : '❌';
                     const statusText = isPassed ? 'Passed' : 'Failed';
                     const statusClass = isPassed ? 'passed' : 'failed';

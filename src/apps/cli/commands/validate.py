@@ -143,7 +143,9 @@ def validate_config(config_path: Path, strict: bool = False) -> Dict[str, Any]:
     return result
 
 
-def validate_test_case(test: Dict[str, Any], index: int, strict: bool) -> Dict[str, List[str]]:
+def validate_test_case(
+    test: Dict[str, Any], index: int, strict: bool
+) -> Dict[str, List[str]]:
     """
     Validate a single test case.
 
@@ -170,7 +172,9 @@ def validate_test_case(test: Dict[str, Any], index: int, strict: bool) -> Dict[s
         if not isinstance(inp, (str, list)):
             result["errors"].append(f"Test {index}: 'input' must be a string or list")
         elif isinstance(inp, list) and not all(isinstance(x, str) for x in inp):
-            result["errors"].append(f"Test {index}: 'input' list must contain only strings")
+            result["errors"].append(
+                f"Test {index}: 'input' list must contain only strings"
+            )
 
     # Validate output format
     if "output" in test:
@@ -178,7 +182,9 @@ def validate_test_case(test: Dict[str, Any], index: int, strict: bool) -> Dict[s
         if not isinstance(out, (str, list)):
             result["errors"].append(f"Test {index}: 'output' must be a string or list")
         elif isinstance(out, list) and not all(isinstance(x, str) for x in out):
-            result["errors"].append(f"Test {index}: 'output' list must contain only strings")
+            result["errors"].append(
+                f"Test {index}: 'output' list must contain only strings"
+            )
 
     # Strict mode checks
     if strict:

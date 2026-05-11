@@ -6,11 +6,11 @@ Provides queuing, prioritization, and resource management.
 import threading
 import time
 import logging
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass, field
-from enum import Enum, auto
+from enum import Enum
 from queue import PriorityQueue, Empty
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class ExecutionPriority(Enum):
     """Priority levels for execution tasks."""
+
     CRITICAL = 0
     HIGH = 1
     NORMAL = 2
@@ -28,6 +29,7 @@ class ExecutionPriority(Enum):
 @dataclass(order=True)
 class ExecutionTask:
     """A task to be executed in the queue."""
+
     priority: int
     task_id: str = field(compare=False)
     func: Callable = field(compare=False)
@@ -40,6 +42,7 @@ class ExecutionTask:
 @dataclass
 class ExecutionResult:
     """Result of a task execution."""
+
     task_id: str
     success: bool
     result: Any = None
@@ -58,7 +61,7 @@ class ResourceLimiter:
         self,
         max_concurrent: int = 4,
         max_memory_mb: int = 512,
-        max_cpu_time: float = 60.0
+        max_cpu_time: float = 60.0,
     ):
         """
         Initialize the resource limiter.
@@ -110,41 +113,49 @@ class ResourceLimiter:
                 "active_count": self._active_count,
                 "available_slots": self.max_concurrent - self._active_count,
                 "max_memory_mb": self.max_memory_mb,
-                "max_cpu_time": self.max_cpu_time
+                "max_cpu_time": self.max_cpu_time,
             }
 
 
 class ExecutionQueue:
     """
     Manages a queue of execution tasks with priority and resource limits.
-    Uses a combination of priority queue and process pool for execution.
+    Uses a combination of priority queue and thread/process pool for execution.
     """
 
     def __init__(
         self,
         max_workers: int = 4,
         max_queue_size: int = 100,
-        default_timeout: float = 30.0
+        default_timeout: float = 30.0,
+        use_threads: bool = True,
     ):
         """
         Initialize the execution queue.
 
-        :param max_workers: Maximum number of worker processes
+        :param max_workers: Maximum number of concurrent workers
         :param max_queue_size: Maximum size of the pending queue
         :param default_timeout: Default timeout for tasks in seconds
+        :param use_threads: Use ThreadPoolExecutor (True, default) instead of
+            ProcessPoolExecutor. Prefer threads when tasks already launch
+            subprocesses internally (e.g. ExecutionManager.run), to avoid
+            fork-in-multithreaded-process issues.
         """
         self._max_workers = max_workers
         self._max_queue_size = max_queue_size
         self._default_timeout = default_timeout
 
         self._queue: PriorityQueue = PriorityQueue(maxsize=max_queue_size)
-        self._executor = ProcessPoolExecutor(max_workers=max_workers)
+        if use_threads:
+            self._executor = ThreadPoolExecutor(max_workers=max_workers)
+        else:
+            self._executor = ProcessPoolExecutor(max_workers=max_workers)
         self._resource_limiter = ResourceLimiter(max_concurrent=max_workers)
-        
+
         self._results: Dict[str, ExecutionResult] = {}
         self._pending: Dict[str, ExecutionTask] = {}
         self._lock = threading.RLock()
-        
+
         self._running = False
         self._worker_thread: Optional[threading.Thread] = None
 
@@ -161,8 +172,7 @@ class ExecutionQueue:
                 return
             self._running = True
             self._worker_thread = threading.Thread(
-                target=self._worker_loop,
-                daemon=True
+                target=self._worker_loop, daemon=True
             )
             self._worker_thread.start()
             logger.info("Execution queue started")
@@ -171,10 +181,10 @@ class ExecutionQueue:
         """Stop the execution queue worker."""
         with self._lock:
             self._running = False
-        
+
         if self._worker_thread:
             self._worker_thread.join(timeout=5.0)
-        
+
         self._executor.shutdown(wait=False)
         logger.info("Execution queue stopped")
 
@@ -184,7 +194,7 @@ class ExecutionQueue:
         *args,
         priority: ExecutionPriority = ExecutionPriority.NORMAL,
         timeout: Optional[float] = None,
-        **kwargs
+        **kwargs,
     ) -> str:
         """
         Submit a task for execution.
@@ -203,7 +213,7 @@ class ExecutionQueue:
             func=func,
             args=args,
             kwargs=kwargs,
-            timeout=timeout or self._default_timeout
+            timeout=timeout or self._default_timeout,
         )
 
         try:
@@ -221,25 +231,54 @@ class ExecutionQueue:
         self,
         func: Callable,
         *args,
+        priority: "ExecutionPriority" = ExecutionPriority.HIGH,
         timeout: Optional[float] = None,
-        **kwargs
+        **kwargs,
     ) -> Any:
         """
         Submit and wait for task completion synchronously.
 
         :param func: Function to execute
         :param args: Positional arguments
+        :param priority: Task priority (default HIGH for synchronous callers)
         :param timeout: Optional timeout
         :param kwargs: Keyword arguments
         :return: Task result
         """
-        task_id = self.submit(
-            func, *args,
-            priority=ExecutionPriority.HIGH,
-            timeout=timeout,
-            **kwargs
-        )
+        task_id = self.submit(func, *args, priority=priority, timeout=timeout, **kwargs)
         return self.wait_for_result(task_id, timeout=timeout or self._default_timeout)
+
+    async def submit_async(
+        self,
+        func: Callable,
+        *args,
+        priority: "ExecutionPriority" = ExecutionPriority.NORMAL,
+        timeout: Optional[float] = None,
+        **kwargs,
+    ) -> Any:
+        """
+        Submit a task and await its result without blocking the event loop.
+
+        Runs ``submit_sync`` inside asyncio's default thread-pool executor so
+        the coroutine yields control back to the event loop while the task is
+        queued and executed.
+
+        :param func: Function to execute
+        :param args: Positional arguments
+        :param priority: Task priority (default NORMAL for async callers)
+        :param timeout: Optional timeout
+        :param kwargs: Keyword arguments
+        :return: Task result
+        """
+        import asyncio
+
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(
+            None,
+            lambda: self.submit_sync(
+                func, *args, priority=priority, timeout=timeout, **kwargs
+            ),
+        )
 
     def get_result(self, task_id: str) -> Optional[ExecutionResult]:
         """
@@ -252,10 +291,7 @@ class ExecutionQueue:
             return self._results.get(task_id)
 
     def wait_for_result(
-        self, 
-        task_id: str, 
-        timeout: float = 60.0,
-        poll_interval: float = 0.1
+        self, task_id: str, timeout: float = 60.0, poll_interval: float = 0.1
     ) -> Any:
         """
         Wait for a task to complete and return its result.
@@ -275,7 +311,7 @@ class ExecutionQueue:
                     return result.result
                 raise RuntimeError(result.error or "Task execution failed")
             time.sleep(poll_interval)
-        
+
         raise TimeoutError(f"Task {task_id} did not complete within {timeout}s")
 
     def cancel(self, task_id: str) -> bool:
@@ -305,7 +341,7 @@ class ExecutionQueue:
                 "total_completed": self._total_completed,
                 "total_failed": self._total_failed,
                 "total_timeouts": self._total_timeouts,
-                "resources": self._resource_limiter.get_stats()
+                "resources": self._resource_limiter.get_stats(),
             }
 
     def _worker_loop(self) -> None:
@@ -347,9 +383,7 @@ class ExecutionQueue:
 
         try:
             # Submit to process pool
-            future = self._executor.submit(
-                task.func, *task.args, **task.kwargs
-            )
+            future = self._executor.submit(task.func, *task.args, **task.kwargs)
 
             # Wait for result with timeout
             result = future.result(timeout=task.timeout)
@@ -360,7 +394,7 @@ class ExecutionQueue:
                 success=True,
                 result=result,
                 execution_time=execution_time,
-                queued_time=queued_time
+                queued_time=queued_time,
             )
 
             with self._lock:
@@ -368,9 +402,7 @@ class ExecutionQueue:
                 self._pending.pop(task.task_id, None)
                 self._total_completed += 1
 
-            logger.debug(
-                f"Task {task.task_id} completed in {execution_time:.2f}s"
-            )
+            logger.debug(f"Task {task.task_id} completed in {execution_time:.2f}s")
 
         except TimeoutError:
             execution_time = time.time() - start_time
@@ -379,7 +411,7 @@ class ExecutionQueue:
                 success=False,
                 error="Task execution timed out",
                 execution_time=execution_time,
-                queued_time=queued_time
+                queued_time=queued_time,
             )
 
             with self._lock:
@@ -396,7 +428,7 @@ class ExecutionQueue:
                 success=False,
                 error=str(e),
                 execution_time=execution_time,
-                queued_time=queued_time
+                queued_time=queued_time,
             )
 
             with self._lock:

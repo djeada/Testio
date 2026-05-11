@@ -1,11 +1,11 @@
 """Tests for the metrics collector module."""
+
 import sys
 import time
 import threading
 
 sys.path.append(".")
 
-import pytest
 
 from src.core.metrics.collector import MetricsCollector, get_metrics_collector
 
@@ -52,7 +52,7 @@ class TestMetricsCollector:
         collector.record_timing("db_query", 0.05)
         collector.record_timing("db_query", 0.10)
         collector.record_timing("db_query", 0.15)
-        
+
         timing = collector.get_timing("db_query")
         assert timing["count"] == 3
         assert timing["min_ms"] == 50.0  # 0.05s = 50ms
@@ -62,10 +62,10 @@ class TestMetricsCollector:
     def test_timer_context_manager(self):
         """Test the timer context manager."""
         collector = MetricsCollector()
-        
+
         with collector.timer("operation"):
             time.sleep(0.05)  # Sleep for 50ms
-        
+
         timing = collector.get_timing("operation")
         assert timing["count"] == 1
         assert timing["min_ms"] >= 50.0  # At least 50ms
@@ -81,7 +81,7 @@ class TestMetricsCollector:
 
         result = slow_function()
         assert result == "done"
-        
+
         timing = collector.get_timing("my_function")
         assert timing["count"] == 1
         assert timing["min_ms"] >= 50.0
@@ -92,9 +92,9 @@ class TestMetricsCollector:
         collector.increment("requests", 10)
         collector.set_gauge("memory", 512.0)
         collector.record_timing("latency", 0.1)
-        
+
         all_metrics = collector.get_all_metrics()
-        
+
         assert "uptime_seconds" in all_metrics
         assert "counters" in all_metrics
         assert "gauges" in all_metrics
@@ -108,9 +108,9 @@ class TestMetricsCollector:
         collector.increment("requests", 100)
         collector.set_gauge("memory", 512.0)
         collector.record_timing("latency", 0.1)
-        
+
         collector.reset()
-        
+
         assert collector.get_counter("requests") == 0
         assert collector.get_gauge("memory") is None
         assert collector.get_timing("latency") is None
@@ -128,7 +128,7 @@ class TestMetricsCollector:
                 errors.append(e)
 
         threads = [threading.Thread(target=increment_worker) for _ in range(10)]
-        
+
         for t in threads:
             t.start()
         for t in threads:
@@ -144,13 +144,13 @@ class TestTimingStats:
     def test_percentile_calculation(self):
         """Test percentile calculation."""
         collector = MetricsCollector()
-        
+
         # Add 100 samples from 1 to 100
         for i in range(1, 101):
             collector.record_timing("test", i / 1000)  # Convert to seconds
-        
+
         timing = collector.get_timing("test")
-        
+
         # P50 should be around 50ms
         assert 40 <= timing["p50_ms"] <= 60
         # P95 should be around 95ms

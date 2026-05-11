@@ -1,5 +1,5 @@
 """
-Main module for the CLI application. 
+Main module for the CLI application.
 You can start the application by using the main function.
 
 The CLI supports multiple commands for different use cases:
@@ -17,56 +17,38 @@ will run tests using the legacy interface.
 
 import sys
 
-sys.path.append(".")
-
 import argparse
-from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
-from typing import Tuple, List, Optional
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
+from typing import Optional
 
+from src.apps.cli.commands.run import process_file
 from src.apps.cli.result_renderer import ResultRenderer
 from src.core.config_parser.parsers import ConfigParser
-from src.core.execution.data import ComparisonResult, ExecutionManagerFactory, ExecutionManagerInputData, ComparisonOutputData
-from src.core.execution.manager import ExecutionManager
+from src.core.execution.data import ExecutionManagerFactory
+
+try:
+    __version__ = version("testio")
+except PackageNotFoundError:
+    __version__ = "0.1.0"
 
 
-# Legacy functionality kept for backward compatibility
+# Legacy functionality kept for backward compatibility.
+# NOTE: This path is only reachable when the first argument ends with ".json".
+# Passing a non-JSON file without a subcommand falls through to the new parser,
+# which will print a usage error. This is intentional — legacy mode is JSON-only.
 class LegacyParser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
         super(LegacyParser, self).__init__(*args, **kwargs)
         self.add_argument("config_file", type=str, help="Path to config file")
 
 
-def process_file(args: Tuple[str, List[ExecutionManagerInputData]]) -> Tuple[str, List[ComparisonOutputData], int, int, float]:
-    """
-    Process a single file's tests and return the results.
-    This function is designed to be used with ProcessPoolExecutor.
-    
-    :param args: A tuple containing (path, execution_manager_data)
-    :return: A tuple containing (path, results, total_test, passed_test, passed_tests_ratio)
-    """
-    path, execution_manager_data = args
-    manager = ExecutionManager()
-    results = []
-    
-    for data in execution_manager_data:
-        result = manager.run(data)
-        results.append(result)
-    
-    total_test = len(results)
-    passed_test = len(
-        [result for result in results if result.result == ComparisonResult.MATCH]
-    )
-    passed_tests_ratio = passed_test / total_test * 100 if total_test > 0 else 0
-    
-    return path, results, total_test, passed_test, passed_tests_ratio
-
-
 def run_legacy(argv: list) -> int:
     """
     Legacy execution mode - runs tests directly from a config file.
     Kept for backward compatibility.
-    
+
     :param argv: Command line arguments.
     :return: Exit code.
     """
@@ -90,7 +72,7 @@ def run_legacy(argv: list) -> int:
             test_suite_config, str(config_path)
         )
     )
-    
+
     if not path_to_execution_manager_data:
         print("Error: No files to test found.")
         return 1
@@ -99,11 +81,13 @@ def run_legacy(argv: list) -> int:
 
     # Use ProcessPoolExecutor to run tests for multiple files concurrently
     with ProcessPoolExecutor() as executor:
-        file_results = list(executor.map(process_file, path_to_execution_manager_data.items()))
-    
+        file_results = list(
+            executor.map(process_file, path_to_execution_manager_data.items())
+        )
+
     total_passed = 0
     total_tests = 0
-    
+
     # Display results for each file
     for file_path, results, total_test, passed_test, passed_tests_ratio in file_results:
         total_tests += total_test
@@ -136,7 +120,12 @@ def create_parser() -> argparse.ArgumentParser:
             "  testio student test my_code.py config.json  Student self-test\n"
         ),
     )
-    
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
+
     subparsers = parser.add_subparsers(
         dest="command",
         title="commands",
@@ -145,7 +134,15 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     # Import and register all command modules
-    from src.apps.cli.commands import run, validate, batch, export, generate, init, student
+    from src.apps.cli.commands import (
+        run,
+        validate,
+        batch,
+        export,
+        generate,
+        init,
+        student,
+    )
 
     run.add_parser(subparsers)
     validate.add_parser(subparsers)
@@ -161,18 +158,28 @@ def create_parser() -> argparse.ArgumentParser:
 def main(argv: Optional[list] = None) -> int:
     """
     Main entry point for the CLI application.
-    
+
     Supports both the new subcommand interface and legacy mode for backward compatibility.
-    
+
     :param argv: Command line arguments (defaults to sys.argv[1:]).
     :return: Exit code.
     """
     if argv is None:
         argv = []
-    
+
     # Check if first argument is a known command
-    known_commands = {"run", "validate", "batch", "export", "generate", "init", "student", "-h", "--help"}
-    
+    known_commands = {
+        "run",
+        "validate",
+        "batch",
+        "export",
+        "generate",
+        "init",
+        "student",
+        "-h",
+        "--help",
+    }
+
     if not argv or (argv and argv[0] not in known_commands):
         # Legacy mode: first argument is a config file path
         if argv and Path(argv[0]).suffix == ".json":
@@ -184,15 +191,15 @@ def main(argv: Optional[list] = None) -> int:
         else:
             # No arguments, show help
             pass
-    
+
     # New subcommand interface
     parser = create_parser()
     args = parser.parse_args(argv)
-    
+
     if not hasattr(args, "func") or args.func is None:
         parser.print_help()
         return 0
-    
+
     return args.func(args)
 
 

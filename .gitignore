@@ -3,7 +3,6 @@
 *.pyc
 .idea
 *.db
-program.py
 
 # Distribution / packaging
 .Python

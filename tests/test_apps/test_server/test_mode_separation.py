@@ -1,4 +1,5 @@
 """Tests for the application mode separation (student vs teacher)."""
+
 import sys
 
 sys.path.append(".")
@@ -6,7 +7,11 @@ sys.path.append(".")
 import pytest
 from fastapi.testclient import TestClient
 
-from src.apps.server.app.testio_server import create_app
+from src.apps.server.app.testio_server import create_app, _get_cors_settings
+from src.apps.server.settings import (
+    get_app_database_path,
+    get_config_database_path,
+)
 
 
 class TestApplicationModes:
@@ -32,7 +37,11 @@ class TestApplicationModes:
         assert response.status_code == 200
         # Teacher mode should have teacher-specific content
         assert "Teacher" in response.text
-        assert "Config Generator" in response.text or "Homework Mode" in response.text or "Examination Mode" in response.text
+        assert (
+            "Config Generator" in response.text
+            or "Homework Mode" in response.text
+            or "Examination Mode" in response.text
+        )
 
     def test_student_mode_index_page(self, student_client):
         """Test that student mode renders the student home page."""
@@ -87,7 +96,9 @@ class TestApplicationModes:
 
     def test_student_mode_has_execute_tests(self, student_client):
         """Test that student mode has access to execute tests API."""
-        response = student_client.post("/execute_tests", json={"script_text": "print('hello')"})
+        response = student_client.post(
+            "/execute_tests", json={"script_text": "print('hello')"}
+        )
         # Should return 200 (may fail without config, but route exists)
         assert response.status_code in [200, 400, 500]
 
@@ -96,14 +107,14 @@ class TestApplicationModes:
         response = teacher_client.get("/")
         assert response.status_code == 200
         # Teacher menubar should show teacher badge
-        assert 'mode-badge teacher' in response.text or 'Teacher' in response.text
+        assert "mode-badge teacher" in response.text or "Teacher" in response.text
 
     def test_student_mode_menubar(self, student_client):
         """Test that student mode uses student menubar."""
         response = student_client.get("/")
         assert response.status_code == 200
         # Student menubar should show student badge
-        assert 'mode-badge student' in response.text or 'Student' in response.text
+        assert "mode-badge student" in response.text or "Student" in response.text
 
     def test_default_mode_is_teacher(self):
         """Test that default mode is teacher when not specified."""
@@ -114,6 +125,46 @@ class TestApplicationModes:
         """Test that the mode is stored in app state."""
         teacher_app = create_app(mode="teacher")
         student_app = create_app(mode="student")
-        
+
         assert teacher_app.state.mode == "teacher"
         assert student_app.state.mode == "student"
+
+
+def test_cors_defaults_are_safe(monkeypatch):
+    monkeypatch.delenv("TESTIO_ALLOW_ORIGINS", raising=False)
+
+    allow_origins, allow_credentials = _get_cors_settings()
+
+    assert allow_origins == []
+    assert allow_credentials is False
+
+
+def test_cors_settings_read_from_environment(monkeypatch):
+    monkeypatch.setenv(
+        "TESTIO_ALLOW_ORIGINS",
+        "https://example.com, https://student.example.com",
+    )
+
+    allow_origins, allow_credentials = _get_cors_settings()
+
+    assert allow_origins == [
+        "https://example.com",
+        "https://student.example.com",
+    ]
+    assert allow_credentials is True
+
+
+def test_database_paths_default_safely(monkeypatch):
+    monkeypatch.delenv("TESTIO_APP_DB_PATH", raising=False)
+    monkeypatch.delenv("TESTIO_CONFIG_DB_PATH", raising=False)
+
+    assert get_app_database_path() == "testio.db"
+    assert get_config_database_path() == "test.db"
+
+
+def test_database_paths_read_from_environment(monkeypatch):
+    monkeypatch.setenv("TESTIO_APP_DB_PATH", "/tmp/app.sqlite")
+    monkeypatch.setenv("TESTIO_CONFIG_DB_PATH", "/tmp/config.sqlite")
+
+    assert get_app_database_path() == "/tmp/app.sqlite"
+    assert get_config_database_path() == "/tmp/config.sqlite"

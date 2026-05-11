@@ -1,6 +1,7 @@
 """
 Data classes for execution module.
 """
+
 import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -8,6 +9,7 @@ from pathlib import Path
 from typing import Dict, List, Union
 
 from src.core.config_parser.data import TestSuiteConfig
+from src.core.execution.command_utils import build_run_command
 
 logger = logging.getLogger(__name__)
 
@@ -95,19 +97,17 @@ class ComparisonOutputData:
             "expected_output": self.expected_output,
             "output": self.output,
             "error": self.error,
+            "result_name": self.result.name,
             "result": str(self.result),
         }
 
 
 class ExecutionManagerFactory:
     @staticmethod
-    def _compile_if_needed(
-        test_suite_config: TestSuiteConfig,
-        file_path: str
-    ) -> str:
+    def _compile_if_needed(test_suite_config: TestSuiteConfig, file_path: str) -> str:
         """
         Compiles the source file if compile_command is provided.
-        
+
         :param test_suite_config: The TestSuiteConfig object containing compilation command
         :param file_path: Path to the source file
         :return: Path to the compiled executable or original path if no compilation
@@ -115,36 +115,33 @@ class ExecutionManagerFactory:
         """
         if not test_suite_config.compile_command:
             return file_path
-            
+
         from .compiler import Compiler
+
         compiler = Compiler()
-        compiled_path = compiler.compile(
-            test_suite_config.compile_command,
-            file_path
-        )
+        compiled_path = compiler.compile(test_suite_config.compile_command, file_path)
         return compiled_path if compiled_path else file_path
-    
+
     @staticmethod
     def _process_files(
-        test_suite_config: TestSuiteConfig,
-        path: str
+        test_suite_config: TestSuiteConfig, path: str
     ) -> Dict[str, List[ExecutionManagerInputData]]:
         """
         Process files by compiling (if needed) and creating execution manager data.
-        
+
         :param test_suite_config: The TestSuiteConfig object
         :param path: Path to file or directory to process
         :return: Dictionary mapping file paths to execution manager data lists
         """
         from .compiler import CompilationError
-        
+
         if Path(path).is_dir():
             # path points to a folder
             file_data_dict = {}
             for file in Path(path).glob("*"):
                 if file.is_file():
                     file_path = str(file)
-                    
+
                     # Compile if needed
                     try:
                         file_path = ExecutionManagerFactory._compile_if_needed(
@@ -153,9 +150,9 @@ class ExecutionManagerFactory:
                     except CompilationError as e:
                         logger.error(f"Compilation failed for {file}: {e}")
                         continue
-                    
+
                     execution_manager_data_list = (
-                        ExecutionManagerFactory._create_execution_manager_data(
+                        ExecutionManagerFactory.create_execution_manager_data(
                             test_suite_config, file_path
                         )
                     )
@@ -164,7 +161,7 @@ class ExecutionManagerFactory:
         else:
             # path points to a file
             file_path = path
-            
+
             # Compile if needed
             try:
                 file_path = ExecutionManagerFactory._compile_if_needed(
@@ -173,16 +170,16 @@ class ExecutionManagerFactory:
             except CompilationError as e:
                 logger.error(f"Compilation failed: {e}")
                 return {}
-            
+
             execution_manager_data_list = (
-                ExecutionManagerFactory._create_execution_manager_data(
+                ExecutionManagerFactory.create_execution_manager_data(
                     test_suite_config, file_path
                 )
             )
             return {path: execution_manager_data_list}
-    
+
     @staticmethod
-    def _create_execution_manager_data(
+    def create_execution_manager_data(
         test_suite_config: TestSuiteConfig,
         path: str,
     ) -> List[ExecutionManagerInputData]:
@@ -195,14 +192,14 @@ class ExecutionManagerFactory:
         # Priority: run_command > command (for backward compatibility)
         if test_suite_config.run_command:
             # Use run_command if explicitly provided
-            command = f'{test_suite_config.run_command} "{path}"'.strip()
+            command = build_run_command(test_suite_config.run_command, path)
         elif test_suite_config.command:
             # Fall back to command for backward compatibility
-            command = f'{test_suite_config.command} "{path}"'.strip()
+            command = build_run_command(test_suite_config.command, path)
         else:
             # If neither is provided, just use the path (for compiled executables)
-            command = f'"{path}"'
-            
+            command = build_run_command("", path)
+
         execution_manager_data_list = []
         for test_data in test_suite_config.tests:
             execution_manager_data = ExecutionManagerInputData(
@@ -230,26 +227,29 @@ class ExecutionManagerFactory:
         :return: A dictionary where the keys are paths to the tested files and the
                 values are lists of ExecutionManagerInputData objects.
         """
-        path = test_suite_config.path
-        path = str(Path(config_path).parent / path)
-        
+        path_obj = Path(test_suite_config.path)
+        path = (
+            str(Path(config_path).parent / path_obj)
+            if not path_obj.is_absolute()
+            else str(path_obj)
+        )
+
         return ExecutionManagerFactory._process_files(test_suite_config, path)
 
-    # TODO: This method is unnecessary. We could use from_test_suite_config_local() for server as well.
-    #  Leaving in for now.
     @staticmethod
     def from_test_suite_config_server(
         test_suite_config: TestSuiteConfig,
     ) -> Dict[str, List[ExecutionManagerInputData]]:
         """
-        Creates a list of ExecutionManagerInputData objects based on the provided
-        TestSuiteConfig object and the path to the file being tested.
+        Creates a dictionary where the keys are paths to the tested files and the
+        values are lists of ExecutionManagerInputData objects.
 
         :param test_suite_config: The TestSuiteConfig object.
-        :param path_to_program: The path that server uses to access the file being
-                                tested.
-        :return: A list of ExecutionManagerInputData objects.
+        :return: A dictionary where the keys are paths to the tested files and the
+                values are lists of ExecutionManagerInputData objects.
         """
-        path = test_suite_config.path
-        
+        path_obj = Path(test_suite_config.path)
+        path = (
+            str(Path.cwd() / path_obj) if not path_obj.is_absolute() else str(path_obj)
+        )
         return ExecutionManagerFactory._process_files(test_suite_config, path)

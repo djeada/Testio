@@ -1,6 +1,7 @@
 """
 Tests for the CLI commands module.
 """
+
 import json
 import sys
 import tempfile
@@ -19,19 +20,13 @@ class TestValidateCommand:
         config = {
             "command": "python3",
             "path": "test.py",
-            "tests": [
-                {
-                    "input": ["test"],
-                    "output": ["test"],
-                    "timeout": 10
-                }
-            ]
+            "tests": [{"input": ["test"], "output": ["test"], "timeout": 10}],
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config, f)
             temp_path = Path(f.name)
-        
+
         try:
             result = validate.validate_config(temp_path)
             assert result["valid"] is True
@@ -43,19 +38,13 @@ class TestValidateCommand:
         """Test that config without command fails validation."""
         config = {
             "path": "test.py",
-            "tests": [
-                {
-                    "input": ["test"],
-                    "output": ["test"],
-                    "timeout": 10
-                }
-            ]
+            "tests": [{"input": ["test"], "output": ["test"], "timeout": 10}],
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config, f)
             temp_path = Path(f.name)
-        
+
         try:
             result = validate.validate_config(temp_path)
             assert result["valid"] is False
@@ -65,16 +54,12 @@ class TestValidateCommand:
 
     def test_validate_missing_tests(self):
         """Test that config without tests fails validation."""
-        config = {
-            "command": "python3",
-            "path": "test.py",
-            "tests": []
-        }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        config = {"command": "python3", "path": "test.py", "tests": []}
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config, f)
             temp_path = Path(f.name)
-        
+
         try:
             result = validate.validate_config(temp_path)
             assert result["valid"] is False
@@ -97,21 +82,17 @@ class TestExportCommand:
         config = {
             "command": "python3",
             "path": "test.py",
-            "tests": [
-                {
-                    "input": ["hello"],
-                    "output": ["world"],
-                    "timeout": 10
-                }
-            ]
+            "tests": [{"input": ["hello"], "output": ["world"], "timeout": 10}],
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config, f)
             temp_path = Path(f.name)
-        
+
         try:
-            content = export.generate_markdown(config, temp_path, include_solutions=True)
+            content = export.generate_markdown(
+                config, temp_path, include_solutions=True
+            )
             assert "# " in content  # Has title
             assert "Test Case 1" in content
             assert "Input:" in content
@@ -125,19 +106,13 @@ class TestExportCommand:
         config = {
             "command": "python3",
             "path": "test.py",
-            "tests": [
-                {
-                    "input": ["hello"],
-                    "output": ["world"],
-                    "timeout": 10
-                }
-            ]
+            "tests": [{"input": ["hello"], "output": ["world"], "timeout": 10}],
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config, f)
             temp_path = Path(f.name)
-        
+
         try:
             content = export.generate_html(config, temp_path, include_solutions=True)
             assert "<!DOCTYPE html>" in content
@@ -151,21 +126,17 @@ class TestExportCommand:
         config = {
             "command": "python3",
             "path": "test.py",
-            "tests": [
-                {
-                    "input": ["hello"],
-                    "output": ["secret"],
-                    "timeout": 10
-                }
-            ]
+            "tests": [{"input": ["hello"], "output": ["secret"], "timeout": 10}],
         }
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(config, f)
             temp_path = Path(f.name)
-        
+
         try:
-            content = export.generate_markdown(config, temp_path, include_solutions=False)
+            content = export.generate_markdown(
+                config, temp_path, include_solutions=False
+            )
             assert "secret" not in content  # Solution not included
             assert "hidden" in content.lower()
         finally:
@@ -209,7 +180,9 @@ class TestInitCommand:
 
     def test_create_readme(self):
         """Test README creation."""
-        readme = init.create_readme("test_assignment", "homework", "python", Path("/test"))
+        readme = init.create_readme(
+            "test_assignment", "homework", "python", Path("/test")
+        )
         assert "test_assignment" in readme
         assert "Python" in readme
         assert "Homework" in readme
@@ -247,7 +220,7 @@ class TestBatchReportGeneration:
             "lowest_score": 50.0,
             "pass_rate": 50.0,
         }
-        
+
         report = batch.generate_text_report(results, summary)
         assert "Alice" in report
         assert "Bob" in report
@@ -271,7 +244,7 @@ class TestBatchReportGeneration:
             "generated_at": "2024-01-01T00:00:00",
             "config_file": "config.json",
         }
-        
+
         report = batch.generate_csv_report(results, summary)
         assert "Alice" in report
         assert "100.0" in report
@@ -298,7 +271,7 @@ class TestBatchReportGeneration:
             "lowest_score": 100.0,
             "pass_rate": 100.0,
         }
-        
+
         report = batch.generate_html_report(results, summary)
         assert "<!DOCTYPE html>" in report
         assert "Alice" in report

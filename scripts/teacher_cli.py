@@ -17,7 +17,6 @@ sys.path.insert(0, str(project_root))
 
 from src.apps.cli.main import main
 
-
 if __name__ == "__main__":
     # Run the main CLI with all commands available
     argv = sys.argv[1:]

@@ -2,15 +2,16 @@ import sys
 
 sys.path.append(".")
 
-import json
+import tempfile
 from dataclasses import asdict
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-from src.apps.server.database.configuration_data import \
-    update_execution_manager_data
+from src.apps.server.database.configuration_data import update_execution_manager_data
 from src.apps.server.app.testio_server import app
+from src.apps.server.routes.execute_tests import process_file_for_server
 from src.core.config_parser.data import TestData, TestSuiteConfig
 from src.core.execution.data import ExecutionManagerInputData
 
@@ -73,6 +74,7 @@ def test_execute_endpoint(client):
                         "expected_output": "Hello World",
                         "input": "",
                         "output": "Hello World",
+                        "result_name": "MATCH",
                         "result": "ComparisonResult.MATCH",
                     }
                 ],
@@ -81,3 +83,31 @@ def test_execute_endpoint(client):
         "total_passed_tests": 1,
         "total_tests": 1,
     }
+
+
+def test_process_file_for_server_does_not_overwrite_source_file():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        original_path = Path(temp_dir) / "program.py"
+        original_path.write_text("print('original')", encoding="utf-8")
+
+        file_path, results, num_tests, passed_tests, ratio = process_file_for_server(
+            (
+                str(original_path),
+                "print('submitted')",
+                [
+                    ExecutionManagerInputData(
+                        command=f'python3 "{original_path}"',
+                        input=[],
+                        output=["submitted"],
+                        timeout=5,
+                    )
+                ],
+            )
+        )
+
+        assert file_path == str(original_path)
+        assert num_tests == 1
+        assert passed_tests == 1
+        assert ratio == 100.0
+        assert results[0].output == "submitted"
+        assert original_path.read_text(encoding="utf-8") == "print('original')"

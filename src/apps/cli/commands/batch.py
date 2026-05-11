@@ -16,7 +16,6 @@ from src.core.execution.data import (
     ComparisonResult,
     ExecutionManagerFactory,
     ExecutionManagerInputData,
-    ComparisonOutputData,
 )
 from src.core.execution.manager import ExecutionManager
 
@@ -70,7 +69,7 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def process_submission(
-    args: Tuple[str, str, List[ExecutionManagerInputData]]
+    args: Tuple[str, str, List[ExecutionManagerInputData]],
 ) -> Dict[str, Any]:
     """
     Process a single student submission.
@@ -87,9 +86,7 @@ def process_submission(
         results.append(result)
 
     total_tests = len(results)
-    passed_tests = len(
-        [r for r in results if r.result == ComparisonResult.MATCH]
-    )
+    passed_tests = len([r for r in results if r.result == ComparisonResult.MATCH])
     score = (passed_tests / total_tests * 100) if total_tests > 0 else 0
 
     return {
@@ -177,29 +174,34 @@ def generate_text_report(results: List[Dict[str, Any]], summary: Dict[str, Any])
 def generate_csv_report(results: List[Dict[str, Any]], summary: Dict[str, Any]) -> str:
     """Generate a CSV format report."""
     import io
+
     output = io.StringIO()
     writer = csv.writer(output)
 
     # Header
-    writer.writerow([
-        "Student Name",
-        "File Path",
-        "Score (%)",
-        "Passed Tests",
-        "Failed Tests",
-        "Total Tests",
-    ])
+    writer.writerow(
+        [
+            "Student Name",
+            "File Path",
+            "Score (%)",
+            "Passed Tests",
+            "Failed Tests",
+            "Total Tests",
+        ]
+    )
 
     # Data rows
     for result in results:
-        writer.writerow([
-            result["student_name"],
-            result["file_path"],
-            result["score"],
-            result["passed_tests"],
-            result["failed_tests"],
-            result["total_tests"],
-        ])
+        writer.writerow(
+            [
+                result["student_name"],
+                result["file_path"],
+                result["score"],
+                result["passed_tests"],
+                result["failed_tests"],
+                result["total_tests"],
+            ]
+        )
 
     return output.getvalue()
 
@@ -254,13 +256,13 @@ def generate_html_report(results: List[Dict[str, Any]], summary: Dict[str, Any])
 </body>
 </html>
 """
-    
+
     rows = []
     for result in results:
         score_class = (
-            "score-high" if result["score"] >= 80
-            else "score-mid" if result["score"] >= 60
-            else "score-low"
+            "score-high"
+            if result["score"] >= 80
+            else "score-mid" if result["score"] >= 60 else "score-low"
         )
         rows.append(
             f'<tr class="{score_class}">'
@@ -269,7 +271,7 @@ def generate_html_report(results: List[Dict[str, Any]], summary: Dict[str, Any])
             f'<td class="pass">{result["passed_tests"]}</td>'
             f'<td class="fail">{result["failed_tests"]}</td>'
             f'<td>{result["total_tests"]}</td>'
-            f'</tr>'
+            f"</tr>"
         )
 
     return html.format(
@@ -312,7 +314,7 @@ def execute(args: argparse.Namespace) -> int:
     pool_args = []
     for student_name, file_path in submissions:
         # Create execution data using the student's file
-        execution_data = ExecutionManagerFactory._create_execution_manager_data(
+        execution_data = ExecutionManagerFactory.create_execution_manager_data(
             test_suite_config, file_path
         )
         pool_args.append((student_name, file_path, execution_data))

@@ -4,11 +4,17 @@ This is the original CLI functionality refactored as a command.
 """
 
 import argparse
-from pathlib import Path
+import uuid
 from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
 from typing import Tuple, List
 
-from src.apps.cli.result_renderer import ResultRenderer
+from src.apps.cli.result_renderer import (
+    ResultRenderer,
+    render_json_report,
+    render_junitxml_report,
+    render_tap_report,
+)
 from src.core.config_parser.parsers import ConfigParser
 from src.core.execution.data import (
     ComparisonResult,
@@ -20,7 +26,7 @@ from src.core.execution.manager import ExecutionManager
 
 
 def process_file(
-    args: Tuple[str, List[ExecutionManagerInputData]]
+    args: Tuple[str, List[ExecutionManagerInputData]],
 ) -> Tuple[str, List[ComparisonOutputData], int, int, float]:
     """
     Process a single file's tests and return the results.
@@ -71,6 +77,17 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         action="store_true",
         help="Suppress detailed output, only show summary",
     )
+    parser.add_argument(
+        "--format",
+        "-f",
+        choices=["console", "json", "junitxml", "tap"],
+        default="console",
+        metavar="FORMAT",
+        help=(
+            "Output format: console (default), json, junitxml, tap. "
+            "Non-console formats write to stdout or -o/--output."
+        ),
+    )
     parser.set_defaults(func=execute)
 
 
@@ -94,14 +111,17 @@ def execute(args: argparse.Namespace) -> int:
         print(f"Error: Failed to parse config file: {e}")
         return 1
 
-    path_to_execution_manager_data = ExecutionManagerFactory.from_test_suite_config_local(
-        test_suite_config, str(config_path)
+    path_to_execution_manager_data = (
+        ExecutionManagerFactory.from_test_suite_config_local(
+            test_suite_config, str(config_path)
+        )
     )
 
     if not path_to_execution_manager_data:
         print("Error: No files to test found.")
         return 1
 
+    fmt = getattr(args, "format", "console")
     renderer = ResultRenderer()
 
     # Use ProcessPoolExecutor to run tests for multiple files concurrently
@@ -110,67 +130,83 @@ def execute(args: argparse.Namespace) -> int:
             executor.map(process_file, path_to_execution_manager_data.items())
         )
 
-    # Track overall results
+    # Collect results
     total_files = len(file_results)
     total_tests = 0
     total_passed = 0
     all_results = []
 
-    # Display results for each file
     for path, results, test_count, passed_count, passed_ratio in file_results:
         total_tests += test_count
         total_passed += passed_count
 
-        if not args.quiet:
+        # Console per-file output (skipped for machine-readable formats)
+        if fmt == "console" and not args.quiet:
             print(f"\n{'='*60}")
             print(f"Tests for: {path}")
             print(f"{'='*60}")
             print(f"Results: {passed_count}/{test_count} ({passed_ratio:.2f}%)")
-
             for i, result in enumerate(results):
                 renderer.render(result, i + 1)
 
-        all_results.append({
-            "file": path,
-            "total_tests": test_count,
-            "passed_tests": passed_count,
-            "pass_rate": passed_ratio,
-            "tests": [result.to_dict() for result in results],
-        })
+        all_results.append(
+            {
+                "file": path,
+                "total_tests": test_count,
+                "passed_tests": passed_count,
+                "pass_rate": passed_ratio,
+                "tests": [result.to_dict() for result in results],
+            }
+        )
 
-    # Print summary
     overall_ratio = (total_passed / total_tests * 100) if total_tests > 0 else 0
-    print(f"\n{'='*60}")
-    print("SUMMARY")
-    print(f"{'='*60}")
-    print(f"Files tested: {total_files}")
-    print(f"Total tests: {total_tests}")
-    print(f"Passed: {total_passed}")
-    print(f"Failed: {total_tests - total_passed}")
-    print(f"Overall pass rate: {overall_ratio:.2f}%")
+    summary = {
+        "config_file": str(config_path),
+        "files_tested": total_files,
+        "total_tests": total_tests,
+        "passed": total_passed,
+        "failed": total_tests - total_passed,
+        "pass_rate": overall_ratio,
+    }
 
-    # Generate report if requested
-    if args.report:
-        import json
-        from datetime import datetime
+    if fmt == "console":
+        # Human-readable summary
+        print(f"\n{'='*60}")
+        print("SUMMARY")
+        print(f"{'='*60}")
+        print(f"Files tested: {total_files}")
+        print(f"Total tests:  {total_tests}")
+        print(f"Passed:       {total_passed}")
+        print(f"Failed:       {total_tests - total_passed}")
+        print(f"Pass rate:    {overall_ratio:.2f}%")
 
-        report = {
-            "generated_at": datetime.now().isoformat(),
-            "config_file": str(config_path),
-            "summary": {
-                "files_tested": total_files,
-                "total_tests": total_tests,
-                "passed": total_passed,
-                "failed": total_tests - total_passed,
-                "pass_rate": overall_ratio,
-            },
-            "results": all_results,
+        # Legacy --report flag: save JSON alongside console output
+        if args.report:
+            from datetime import datetime
+            import json
+
+            report = {
+                "generated_at": datetime.now().isoformat(),
+                **summary,
+                "results": all_results,
+            }
+            output_path = args.output or f"report_{uuid.uuid4().hex[:8]}.json"
+            with open(output_path, "w") as f:
+                json.dump(report, f, indent=2)
+            print(f"\nReport saved to: {output_path}")
+    else:
+        # Machine-readable output
+        _FORMATTERS = {
+            "json": render_json_report,
+            "junitxml": render_junitxml_report,
+            "tap": render_tap_report,
         }
+        formatted = _FORMATTERS[fmt](all_results, summary)
+        if args.output:
+            with open(args.output, "w") as f:
+                f.write(formatted)
+                f.write("\n")
+        else:
+            print(formatted)
 
-        output_path = args.output or f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        with open(output_path, "w") as f:
-            json.dump(report, f, indent=2)
-        print(f"\nReport saved to: {output_path}")
-
-    # Return non-zero if any tests failed
     return 0 if total_passed == total_tests else 1

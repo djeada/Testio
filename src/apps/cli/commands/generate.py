@@ -5,7 +5,6 @@ Teachers can use this to create test configurations easily.
 
 import argparse
 import json
-import sys
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
@@ -28,7 +27,17 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         "--template",
         "-t",
         type=str,
-        choices=["python", "c", "cpp", "java", "nodejs", "ruby", "go", "rust", "custom"],
+        choices=[
+            "python",
+            "c",
+            "cpp",
+            "java",
+            "nodejs",
+            "ruby",
+            "go",
+            "rust",
+            "custom",
+        ],
         default="python",
         help="Language template to use (default: python)",
     )
@@ -174,7 +183,9 @@ def create_test_case_interactive() -> Dict[str, Any]:
     return test_case
 
 
-def generate_interactive(template_name: str, output_path: Path, program_path: Optional[str]) -> Dict[str, Any]:
+def generate_interactive(
+    template_name: str, output_path: Path, program_path: Optional[str]
+) -> Dict[str, Any]:
     """Generate configuration through interactive prompts."""
     template = LANGUAGE_TEMPLATES.get(template_name, LANGUAGE_TEMPLATES["python"])
 
@@ -225,7 +236,9 @@ def generate_interactive(template_name: str, output_path: Path, program_path: Op
     return config
 
 
-def generate_template(template_name: str, program_path: Optional[str]) -> Dict[str, Any]:
+def generate_template(
+    template_name: str, program_path: Optional[str]
+) -> Dict[str, Any]:
     """Generate a template configuration without interactive prompts."""
     template = LANGUAGE_TEMPLATES.get(template_name, LANGUAGE_TEMPLATES["python"])
 
@@ -247,16 +260,8 @@ def generate_template(template_name: str, program_path: Optional[str]) -> Dict[s
 
     # Sample test cases
     config["tests"] = [
-        {
-            "input": ["sample input"],
-            "output": ["expected output"],
-            "timeout": 10
-        },
-        {
-            "input": [],
-            "output": ["Hello World"],
-            "timeout": 5
-        }
+        {"input": ["sample input"], "output": ["expected output"], "timeout": 10},
+        {"input": [], "output": ["Hello World"], "timeout": 5},
     ]
 
     return config

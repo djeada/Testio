@@ -1,12 +1,18 @@
 """
-Defines the InteractiveRunner class for executing programs with interleaved input/output.
+Defines the InteractiveRunner class for executing programs with batched stdin/stdout.
+
+Despite the name, this module does not implement true line-by-line interleaving.
+It joins all provided input, sends it in a single communicate() call, and then
+collects stdout/stderr after the process finishes or times out.
 """
 
 import subprocess
-import time
 
+from src.apps.server.settings import get_sandbox_cpu_secs, get_sandbox_mem_mb
+from src.core.execution.sandbox import make_preexec_fn
 from src.core.utils.misc import strip_carriage_return
 
+from .command_utils import split_command
 from .data import ExecutionOutputData
 
 
@@ -20,10 +26,12 @@ class InteractiveRunner:
         self, command: str, inputs: list, timeout: int
     ) -> ExecutionOutputData:
         """
-        Runs a program with interleaved input/output.
-        Unlike the standard runner, this uses line-buffered I/O and can handle
-        programs that alternate between prompting and waiting for input.
-        
+        Runs a program using sequential stdin/stdout collection.
+
+        This method does not perform true interactive, line-by-line interleaving.
+        It is equivalent to joining all input lines, sending them once via
+        communicate(), and collecting the resulting stdout/stderr afterward.
+
         :param command: The command to execute
         :param inputs: List of input strings to provide
         :param timeout: Maximum time to wait for the program
@@ -33,30 +41,23 @@ class InteractiveRunner:
             # Join inputs with newlines - we still provide all inputs at once
             # but the program will consume them one by one when it calls input()
             input_str = "\n".join(inputs)
-            
+
+            preexec_fn = make_preexec_fn(get_sandbox_cpu_secs(), get_sandbox_mem_mb())
             process = subprocess.Popen(
-                command,
-                shell=True,
+                split_command(command),
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=False,  # Use bytes for better control
+                text=True,
+                preexec_fn=preexec_fn,
             )
 
             try:
                 # Provide all input at once and get output
-                stdout_bytes, stderr_bytes = process.communicate(
-                    input=input_str.encode(), timeout=timeout
-                )
-                
-                # Decode output
-                stdout = stdout_bytes.decode('utf-8')
-                stderr = stderr_bytes.decode('utf-8')
-                
-                # Remove trailing newline that subprocess adds
-                if stdout.endswith('\n'):
-                    stdout = stdout[:-1]
-                
+                stdout, stderr = process.communicate(input=input_str, timeout=timeout)
+
+                stdout = stdout.rstrip("\n")
+
                 stdout = strip_carriage_return(stdout)
                 stderr = strip_carriage_return(stderr)
 
@@ -67,10 +68,9 @@ class InteractiveRunner:
                 process.wait()
                 return ExecutionOutputData(timeout=True)
 
-        except Exception as e:
+        except OSError as exc:
             return ExecutionOutputData(
                 stdout="",
-                stderr=f"Error during interactive execution: {str(e)}",
-                timeout=False
+                stderr=f"Error during interactive execution: {exc}",
+                timeout=False,
             )
-
