@@ -245,9 +245,7 @@ class ExecutionQueue:
         :param kwargs: Keyword arguments
         :return: Task result
         """
-        task_id = self.submit(
-            func, *args, priority=priority, timeout=timeout, **kwargs
-        )
+        task_id = self.submit(func, *args, priority=priority, timeout=timeout, **kwargs)
         return self.wait_for_result(task_id, timeout=timeout or self._default_timeout)
 
     async def submit_async(

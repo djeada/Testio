@@ -210,4 +210,3 @@ def execute(args: argparse.Namespace) -> int:
             print(formatted)
 
     return 0 if total_passed == total_tests else 1
-

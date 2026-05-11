@@ -28,7 +28,11 @@ from src.apps.server.routes.export import export_router
 from src.apps.server.routes.config_generator import config_generator_page_router
 from src.apps.server.routes.metrics import metrics_router
 from src.apps.server.routes.exercise_submission import exercise_router
-from src.apps.server.settings import get_app_database_path, get_log_level, get_log_format
+from src.apps.server.settings import (
+    get_app_database_path,
+    get_log_level,
+    get_log_format,
+)
 from src.apps.server.middleware import RequestLoggingMiddleware, ErrorHandlingMiddleware
 from src.apps.server.rate_limiter import RateLimitMiddleware, RateLimitConfig
 from src.core.caching import MemoryCache

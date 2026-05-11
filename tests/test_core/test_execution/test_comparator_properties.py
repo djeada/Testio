@@ -95,7 +95,17 @@ def test_stderr_overrides_exact_match(text: str, stderr: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-@given(lines=st.lists(st.text(alphabet=st.characters(blacklist_categories=("Cs",), blacklist_characters="\x00\n"), max_size=40), max_size=10))
+@given(
+    lines=st.lists(
+        st.text(
+            alphabet=st.characters(
+                blacklist_categories=("Cs",), blacklist_characters="\x00\n"
+            ),
+            max_size=40,
+        ),
+        max_size=10,
+    )
+)
 def test_unordered_reflexive(lines: list) -> None:
     """A string unordered-matches itself."""
     text = "\n".join(lines)

@@ -42,4 +42,3 @@ def get_log_level() -> str:
 def get_log_format() -> str:
     """Log output format: 'json' (structured) or 'text' (human-readable). Default: text."""
     return os.environ.get("TESTIO_LOG_FORMAT", "text").lower()
-

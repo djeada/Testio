@@ -215,9 +215,7 @@ def render_tap_report(
             if not passed:
                 lines.append("  ---")
                 if test.get("expected_output"):
-                    lines.append(
-                        f"  expected: {test['expected_output']!r}"
-                    )
+                    lines.append(f"  expected: {test['expected_output']!r}")
                 if test.get("output"):
                     lines.append(f"  got:      {test['output']!r}")
                 if test.get("error"):
@@ -225,4 +223,3 @@ def render_tap_report(
                 lines.append("  ...")
             test_num += 1
     return "\n".join(lines)
-
