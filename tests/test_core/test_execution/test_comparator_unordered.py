@@ -1,9 +1,6 @@
-import pytest
-
 from src.core.execution.comparator import OutputComparator
 from src.core.execution.data import (
     ComparisonInputData,
-    ComparisonOutputData,
     ComparisonResult,
     ExecutionOutputData,
 )

@@ -71,22 +71,13 @@ class OutputComparator:
         return output_data
 
     def _compare_unordered(self, expected: str, actual: str) -> bool:
+        """Compare output lines as a multiset (order-independent, duplicate-aware).
+
+        Returns True if the actual output contains exactly the same lines as
+        the expected output, regardless of order but respecting duplicates.
         """
-        Compares expected and actual output in an unordered manner.
-        All expected lines must be present in the actual output,
-        and the actual output must have the same number of lines.
+        from collections import Counter
 
-        :param expected: The expected output as a string with newline-separated lines.
-        :param actual: The actual output as a string with newline-separated lines.
-        :return: True if all expected lines are present in actual output with same count.
-        """
-        # Strip trailing newlines before splitting to handle trailing newline differences
-        expected_lines = expected.rstrip("\n").split("\n") if expected.rstrip("\n") else []
-        actual_lines = actual.rstrip("\n").split("\n") if actual.rstrip("\n") else []
-
-        # Both must have the same number of lines
-        if len(expected_lines) != len(actual_lines):
-            return False
-
-        # Sort both lists and compare
-        return sorted(expected_lines) == sorted(actual_lines)
+        expected_lines = [line for line in expected.splitlines() if line.strip()]
+        actual_lines = [line for line in actual.splitlines() if line.strip()]
+        return Counter(expected_lines) == Counter(actual_lines)

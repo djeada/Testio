@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  testio:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - TESTIO_TEACHER_API_KEY=${TESTIO_TEACHER_API_KEY:-}
+      - TESTIO_APP_DB_PATH=/data/testio.db
+      - TESTIO_CONFIG_DB_PATH=/data/test.db
+      - TESTIO_TRUST_PROXY=${TESTIO_TRUST_PROXY:-false}
+      - TESTIO_RATE_LIMIT=${TESTIO_RATE_LIMIT:-100}
+      - TESTIO_MAX_UPLOAD_SIZE_MB=${TESTIO_MAX_UPLOAD_SIZE_MB:-10}
+    volumes:
+      - testio_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/livez')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  testio_data:

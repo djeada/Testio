@@ -1,4 +1,5 @@
 """Tests for the health and status endpoints."""
+
 import sys
 
 sys.path.append(".")
@@ -38,6 +39,20 @@ def test_health_endpoint(client):
     assert data["status"] == "healthy"
     assert "timestamp" in data
     assert data["version"] == "1.0.0"
+
+
+def test_livez_endpoint(client):
+    """Test the liveness endpoint returns ok."""
+    response = client.get("/livez")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
+def test_readyz_endpoint(client):
+    """Test the readiness endpoint returns ok."""
+    response = client.get("/readyz")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
 
 
 def test_status_endpoint(client):

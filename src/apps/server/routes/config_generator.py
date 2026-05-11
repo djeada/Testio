@@ -1,7 +1,4 @@
 """This module defines a FastAPI router for rendering the config generator page."""
-import sys
-
-sys.path.append(".")
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
@@ -16,5 +13,5 @@ def config_generator_page(request: Request) -> HTMLResponse:
     :return: The HTML content of the config generator page.
     """
     templates = request.app.state.templates
-    mode = getattr(request.app.state, 'mode', 'teacher')
+    mode = getattr(request.app.state, "mode", "teacher")
     return templates.TemplateResponse(request, "config_generator.html", {"mode": mode})

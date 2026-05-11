@@ -2,7 +2,7 @@
 
 <a href="https://github.com/djeada/testio/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/djeada/testio"></a>
 <a href="https://github.com/djeada/testio/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/djeada/testio"></a>
-<a href="https://github.com/djeada/testio/blob/master/LICENSE.txt"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
+<a href="https://github.com/djeada/testio/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/djeada/testio"></a>
 <a href=""><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"></a>
 
 Testio is a flexible and powerful testing framework that uses multiprocessing to verify the standard output of applications. With its two convenient interfaces: CLI and web server, you can test applications with a variety of configurations and inputs on a large scale.
@@ -31,7 +31,7 @@ In addition to its educational benefits, Testio is also a useful tool for indust
 
 ## Requirements
 
-* Python 3.8+
+* Python 3.10+
 * fastapi
 * uvicorn
 
@@ -46,19 +46,128 @@ The easiest way to install Testio is to use virtualenv:
     $ source env/bin/activate
     $ pip install -r requirements.txt
 
+For development and testing, install the additional tooling with:
+
+    $ pip install -r requirements-dev.txt
+
 ## Usage
 
 Testio provides two different interfaces for running tests: a command-line interface (CLI) and a web interface using a FastAPI server. Both interfaces provide similar functionality but allow you to interact with Testio in different ways.
 
 ### Command-line interface
 
-To use the CLI, run the main.py script with the cli argument and pass the path to the config file as an argument:
+The CLI provides several commands for different use cases:
+
+#### Running Tests
+
+Run tests from a configuration file:
+
+    $ python src/main.py cli run path/to/config_file.json
+
+Generate a JSON report with the `--report` flag:
+
+    $ python src/main.py cli run path/to/config_file.json --report -o results.json
+
+Use `--quiet` for summary-only output:
+
+    $ python src/main.py cli run path/to/config_file.json --quiet
+
+#### Validating Configurations
+
+Validate one or more configuration files before running tests:
+
+    $ python src/main.py cli validate config.json
+
+Enable strict validation for best practices:
+
+    $ python src/main.py cli validate config.json --strict
+
+Attempt to fix common issues automatically:
+
+    $ python src/main.py cli validate config.json --fix
+
+#### Batch Testing Student Submissions
+
+Test multiple student submissions at once (ideal for teachers):
+
+    $ python src/main.py cli batch config.json student1.py student2.py student3.py
+
+Test all files in a directory:
+
+    $ python src/main.py cli batch config.json submissions/
+
+Export results in different formats:
+
+    $ python src/main.py cli batch config.json submissions/ -f html -o report.html
+    $ python src/main.py cli batch config.json submissions/ -f csv -o grades.csv
+    $ python src/main.py cli batch config.json submissions/ -f json -o results.json
+
+#### Exporting Problems
+
+Export problem descriptions and test cases to printable formats:
+
+    $ python src/main.py cli export config.json -f html -o output_dir/
+    $ python src/main.py cli export config.json -f md -o output_dir/
+    $ python src/main.py cli export config.json -f pdf -o output_dir/
+
+Include expected outputs for teacher reference:
+
+    $ python src/main.py cli export config.json --include-solutions
+
+Export all formats at once:
+
+    $ python src/main.py cli export config.json -f all
+
+#### Generating Configuration Files
+
+Generate a configuration template interactively:
+
+    $ python src/main.py cli generate config.json
+
+Generate a template for a specific language without prompts:
+
+    $ python src/main.py cli generate config.json -t python -n
+    $ python src/main.py cli generate config.json -t c -n
+    $ python src/main.py cli generate config.json -t java -n
+
+#### Initializing New Assignments
+
+Create a new homework/exam/lab directory structure:
+
+    $ python src/main.py cli init homework1
+    $ python src/main.py cli init exam1 -t exam -l python --with-solution
+    $ python src/main.py cli init lab1 -t lab -l cpp
+
+This creates:
+- A README with problem description template
+- A configuration file with sample tests
+- A template file for students
+- A submissions directory for student files
+- Optionally, a solution directory with a reference solution
+
+#### Student Self-Testing
+
+Students can test their submissions before submitting:
+
+    $ python src/main.py cli student test my_solution.py config.json
+
+Show expected output when tests fail:
+
+    $ python src/main.py cli student test my_solution.py config.json --show-expected
+
+Quick syntax/compilation check:
+
+    $ python src/main.py cli student check my_solution.py
+
+Practice mode to see available test cases:
+
+    $ python src/main.py cli student practice config.json
+
+#### Legacy Mode
+
+For backward compatibility, you can still use the old syntax:
 
     $ python src/main.py cli path/to/config_file.json
-
-The CLI will run the tests specified in the config file and display the results on the command line. You can also generate a PDF report containing the results by passing the --report flag:
-
-    $ python src/main.py cli path/to/config_file.json --report
 
 ### FastAPI server
 
@@ -118,6 +227,16 @@ To update the test suite, use the following API endpoint:
 The FastAPI server also provides automatic API documentation at:
 - Swagger UI: http://localhost:5000/docs
 - ReDoc: http://localhost:5000/redoc
+
+### Environment Variables
+
+The server behavior can be configured with the following environment variables:
+
+- `TESTIO_TEACHER_API_KEY`: Protect teacher-only endpoints with the `X-API-Key` header.
+- `TESTIO_ALLOW_ORIGINS`: Comma-separated list of allowed CORS origins.
+- `TESTIO_TRUSTED_PROXIES`: Comma-separated list of trusted proxy IPs or CIDR ranges for forwarded headers.
+- `TESTIO_SANDBOX_CPU_SECS`: CPU limit for sandboxed student code in seconds.
+- `TESTIO_SANDBOX_MEM_MB`: Memory limit for sandboxed student code in megabytes.
 
 ## Configuration
 
@@ -370,7 +489,7 @@ The program_runner module runs the programs and captures their standard output. 
 There are a few planned features and known issues that are being worked on for Testio:
 
 - [x] Enhanced Timeout Management: The timeout parameter will be changed from a regex-based approach to an array-based approach, providing a more flexible and intuitive way of managing timeouts.
-- [x] Improved User Interface: A frontend generated with Flask templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
+- [x] Improved User Interface: A frontend generated with FastAPI/Jinja2 templates will be added to make the interface more user-friendly and intuitive. This will make it easier for users to interact with Testio and get the results they need.
 - [x] Add support for testing applications written in multiple programming languages.
 
  

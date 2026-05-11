@@ -1,13 +1,12 @@
 """
 Tests for config parser with interleaved flag
 """
+
 import json
 import tempfile
-import pytest
 from pathlib import Path
 
 from src.core.config_parser.parsers import ConfigParser
-from src.core.config_parser.data import TestData
 
 
 def test_parse_config_with_interleaved_flag():
@@ -20,14 +19,14 @@ def test_parse_config_with_interleaved_flag():
                 "input": ["input1", "input2"],
                 "output": ["output1", "output2"],
                 "timeout": 10,
-                "interleaved": True
+                "interleaved": True,
             }
-        ]
+        ],
     }
-    
+
     parser = ConfigParser()
     result = parser.parse_from_json(config_data)
-    
+
     assert result is not None
     assert len(result.tests) == 1
     assert result.tests[0].interleaved is True
@@ -38,18 +37,12 @@ def test_parse_config_without_interleaved_flag():
     config_data = {
         "command": "python3",
         "path": "test.py",
-        "tests": [
-            {
-                "input": ["input1"],
-                "output": ["output1"],
-                "timeout": 10
-            }
-        ]
+        "tests": [{"input": ["input1"], "output": ["output1"], "timeout": 10}],
     }
-    
+
     parser = ConfigParser()
     result = parser.parse_from_json(config_data)
-    
+
     assert result is not None
     assert len(result.tests) == 1
     assert not result.tests[0].interleaved
@@ -65,14 +58,14 @@ def test_parse_config_with_interleaved_false():
                 "input": ["input1"],
                 "output": ["output1"],
                 "timeout": 10,
-                "interleaved": False
+                "interleaved": False,
             }
-        ]
+        ],
     }
-    
+
     parser = ConfigParser()
     result = parser.parse_from_json(config_data)
-    
+
     assert result is not None
     assert len(result.tests) == 1
     assert not result.tests[0].interleaved
@@ -88,25 +81,21 @@ def test_parse_config_mixed_interleaved():
                 "input": ["input1"],
                 "output": ["output1"],
                 "timeout": 10,
-                "interleaved": True
+                "interleaved": True,
             },
             {
                 "input": ["input2"],
                 "output": ["output2"],
                 "timeout": 10,
-                "interleaved": False
+                "interleaved": False,
             },
-            {
-                "input": ["input3"],
-                "output": ["output3"],
-                "timeout": 10
-            }
-        ]
+            {"input": ["input3"], "output": ["output3"], "timeout": 10},
+        ],
     }
-    
+
     parser = ConfigParser()
     result = parser.parse_from_json(config_data)
-    
+
     assert result is not None
     assert len(result.tests) == 3
     assert result.tests[0].interleaved
@@ -124,20 +113,20 @@ def test_parse_config_file_with_interleaved():
                 "input": ["Alice", "25"],
                 "output": ["Hello", "You are 25"],
                 "timeout": 5,
-                "interleaved": True
+                "interleaved": True,
             }
-        ]
+        ],
     }
-    
+
     # Create a temporary config file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump(config_data, f)
         temp_path = f.name
-    
+
     try:
         parser = ConfigParser()
         result = parser.parse_from_path(Path(temp_path))
-        
+
         assert result is not None
         assert result.tests[0].interleaved is True
     finally:
@@ -154,20 +143,20 @@ def test_validate_config_with_interleaved():
                 "input": ["input1"],
                 "output": ["output1"],
                 "timeout": 10,
-                "interleaved": True
+                "interleaved": True,
             }
-        ]
+        ],
     }
-    
+
     # Create a temporary config file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump(config_data, f)
         temp_path = f.name
-    
+
     try:
         parser = ConfigParser()
         is_valid = parser.validate(Path(temp_path))
-        
+
         assert is_valid
     finally:
         Path(temp_path).unlink()

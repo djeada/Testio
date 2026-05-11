@@ -167,7 +167,8 @@ function displayTestResults(result) {
     
     // Display individual test results
     result.test_results.forEach((test, index) => {
-        const isPassed = test.result === 'ComparisonResult.MATCH';
+        const resultName = test.result_name || test.result;
+        const isPassed = resultName === 'MATCH' || resultName === 'ComparisonResult.MATCH';
         const resultCard = document.createElement('div');
         resultCard.className = `result-card ${isPassed ? 'passed' : 'failed'}`;
         

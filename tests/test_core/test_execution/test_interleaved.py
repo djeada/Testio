@@ -1,12 +1,14 @@
 """
 Tests for interleaved input/output functionality
 """
-import pytest
+
+import sys
+
 from src.core.config_parser.data import TestData
 from src.core.execution.data import ExecutionManagerInputData
 from src.core.execution.manager import ExecutionManager
 from src.core.execution.interactive_runner import InteractiveRunner
-from src.core.execution.data import ExecutionOutputData, ComparisonResult
+from src.core.execution.data import ComparisonResult
 
 
 def test_test_data_with_interleaved_flag():
@@ -15,18 +17,14 @@ def test_test_data_with_interleaved_flag():
         input=["input1", "input2"],
         output=["output1", "output2"],
         timeout=10,
-        interleaved=True
+        interleaved=True,
     )
     assert test_data.interleaved is True
 
 
 def test_test_data_default_interleaved_is_false():
     """Test that TestData defaults interleaved to False"""
-    test_data = TestData(
-        input=["input1"],
-        output=["output1"],
-        timeout=10
-    )
+    test_data = TestData(input=["input1"], output=["output1"], timeout=10)
     assert test_data.interleaved is False
 
 
@@ -37,7 +35,7 @@ def test_execution_manager_input_data_with_interleaved():
         input=["input1", "input2"],
         output=["output1", "output2"],
         timeout=10,
-        interleaved=True
+        interleaved=True,
     )
     assert data.interleaved is True
 
@@ -46,11 +44,11 @@ def test_interactive_runner_simple_echo():
     """Test InteractiveRunner with a simple echo command"""
     runner = InteractiveRunner()
     result = runner.run_interleaved(
-        command='python -c "name=input(); print(f\'Hello {name}\')"',
+        command=f"{sys.executable} -c \"name=input(); print(f'Hello {{name}}')\"",
         inputs=["Alice"],
-        timeout=5
+        timeout=5,
     )
-    
+
     assert not result.timeout
     assert result.stderr == ""
     assert "Hello Alice" in result.stdout
@@ -68,11 +66,9 @@ age = input()
 print(f'You are {age} years old.')
 """
     result = runner.run_interleaved(
-        command=f'python -c "{script}"',
-        inputs=["Bob", "30"],
-        timeout=5
+        command=f'{sys.executable} -c "{script}"', inputs=["Bob", "30"], timeout=5
     )
-    
+
     assert not result.timeout
     assert result.stderr == ""
     assert "Hello Bob!" in result.stdout
@@ -82,18 +78,18 @@ print(f'You are {age} years old.')
 def test_execution_manager_with_interleaved_flag():
     """Test that ExecutionManager uses InteractiveRunner when interleaved=True"""
     manager = ExecutionManager()
-    
+
     # Create test data with interleaved flag
     data = ExecutionManagerInputData(
-        command='python -c "name=input(); print(f\'Hello {name}\')"',
+        command=f"{sys.executable} -c \"name=input(); print(f'Hello {{name}}')\"",
         input=["TestUser"],
         output=["Hello TestUser"],
         timeout=5,
-        interleaved=True
+        interleaved=True,
     )
-    
+
     result = manager.run(data)
-    
+
     # The result should be successful (not timeout or error)
     assert result.result in [ComparisonResult.MATCH, ComparisonResult.MISMATCH]
     assert "Hello TestUser" in result.output
@@ -102,18 +98,18 @@ def test_execution_manager_with_interleaved_flag():
 def test_execution_manager_backward_compatibility():
     """Test that ExecutionManager still works with interleaved=False (default)"""
     manager = ExecutionManager()
-    
+
     # Create test data without interleaved flag (should default to False)
     data = ExecutionManagerInputData(
-        command='python -c "print(\'Hello World\')"',
+        command=f"{sys.executable} -c \"print('Hello World')\"",
         input=[],
         output=["Hello World"],
         timeout=5,
-        interleaved=False
+        interleaved=False,
     )
-    
+
     result = manager.run(data)
-    
+
     assert result.result == ComparisonResult.MATCH
     assert result.output == "Hello World"
 
@@ -121,12 +117,12 @@ def test_execution_manager_backward_compatibility():
 def test_interactive_runner_timeout():
     """Test that InteractiveRunner properly handles timeout"""
     runner = InteractiveRunner()
-    
+
     # Script that sleeps longer than timeout
     result = runner.run_interleaved(
-        command='python -c "import time; time.sleep(10)"',
+        command=f'{sys.executable} -c "import time; time.sleep(10)"',
         inputs=[],
-        timeout=1
+        timeout=1,
     )
-    
+
     assert result.timeout is True

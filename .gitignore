@@ -3,7 +3,6 @@
 *.pyc
 .idea
 *.db
-program.py
 
 # Distribution / packaging
 .Python
@@ -30,6 +29,11 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+
+# Nuitka
+*.build/
+*.dist/
+*.onefile-build/
 
 # Installer logs
 pip-log.txt
