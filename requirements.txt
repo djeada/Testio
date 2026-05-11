@@ -1,7 +1,7 @@
 attrs
+MarkupSafe==3.0.3
 uvicorn==0.46.0
 fastapi==0.136.1
 python-multipart==0.0.28
 Jinja2==3.1.6
-MarkupSafe==2.1.2
 python-json-logger>=2.0
