@@ -9,7 +9,7 @@ description = "A test-running platform for programming exercises"
 requires-python = ">=3.10"
 dependencies = [
   "attrs",
-  "fastapi==0.115.0",
+  "fastapi==0.136.1",
   "uvicorn==0.27.0",
   "python-multipart==0.0.18",
   "Jinja2==3.1.2",
