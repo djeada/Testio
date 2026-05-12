@@ -44,7 +44,7 @@ jobs:
       NUITKA_COMMON_FLAGS: --standalone --onefile --include-package=src --include-package-data=src --assume-yes-for-downloads
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Set up Python 3.10
       uses: actions/setup-python@v5
