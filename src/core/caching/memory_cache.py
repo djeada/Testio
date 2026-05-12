@@ -204,7 +204,9 @@ def cache_result(
             key_parts.extend(str(arg) for arg in args)
             key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
             raw_key = ":".join(key_parts)
-            cache_key = hashlib.md5(raw_key.encode()).hexdigest()
+            cache_key = hashlib.md5(
+                raw_key.encode(), usedforsecurity=False
+            ).hexdigest()
 
             cache_instance = cache or get_global_cache()
 

@@ -1,7 +1,7 @@
 """Tests for the memory cache module."""
+import threading
 import sys
 import time
-import threading
 
 sys.path.append(".")
 
@@ -167,3 +167,21 @@ class TestCacheDecorator:
         greet("Alice", greeting="Hi")
         
         assert call_count == 2
+
+    def test_cache_key_hash_marks_md5_not_for_security(self, monkeypatch):
+        """Test cache key hashing opts out of security-sensitive MD5 usage."""
+        original_md5 = __import__("hashlib").md5
+        call_args = {}
+
+        def fake_md5(data, *, usedforsecurity=True):
+            call_args["usedforsecurity"] = usedforsecurity
+            return original_md5(data, usedforsecurity=usedforsecurity)
+
+        monkeypatch.setattr("src.core.caching.memory_cache.hashlib.md5", fake_md5)
+
+        @cache_result(ttl=60.0)
+        def expensive_function(x):
+            return x * 2
+
+        assert expensive_function(5) == 10
+        assert call_args["usedforsecurity"] is False
