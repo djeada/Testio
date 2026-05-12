@@ -2,6 +2,7 @@
 autoflake
 black
 httpx==0.28.1
+hypothesis>=6.0
 isort
 pytest==9.0.3
 pytest-asyncio
