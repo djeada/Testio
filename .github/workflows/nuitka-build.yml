@@ -86,7 +86,7 @@ jobs:
       shell: bash
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.app.name }}-${{ runner.os }}
         path: dist/${{ matrix.app.name }}${{ runner.os == 'Windows' && '.exe' || '' }}
