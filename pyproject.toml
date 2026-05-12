@@ -24,7 +24,7 @@ dev = [
   "httpx==0.28.1",
   "hypothesis>=6.0",
   "isort",
-  "pytest==7.2.1",
+  "pytest==9.0.3",
   "pytest-asyncio",
   "pytest-cov",
   "ruff",
