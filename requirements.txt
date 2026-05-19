@@ -1,6 +1,6 @@
 attrs
 MarkupSafe==3.0.3
-uvicorn==0.46.0
+uvicorn==0.47.0
 fastapi==0.136.1
 python-multipart==0.0.29
 Jinja2==3.1.6
