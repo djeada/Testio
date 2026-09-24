@@ -10,33 +10,28 @@ For Nuitka compilation, this script serves as the main entry point.
 import sys
 from pathlib import Path
 
-# Add the project root to the path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+# Make the `testio` package importable from a source checkout.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from src.apps.cli.main import main
+from testio.apps.cli.main import main
+
+STUDENT_SUBCOMMANDS = {"test", "check", "practice"}
+
+
+def build_argv(argv: list) -> list:
+    """Map student-CLI arguments onto the full CLI's `student` command.
+
+    Only student commands are exposed: `student_cli prog.py config.json`
+    is shorthand for `testio student test prog.py config.json`.
+    """
+    if not argv or argv[0] in ("-h", "--help"):
+        return ["student", "--help"]
+    if argv[0] == "--version":
+        return ["--version"]
+    if argv[0] in STUDENT_SUBCOMMANDS:
+        return ["student"] + argv
+    return ["student", "test"] + argv
+
 
 if __name__ == "__main__":
-    # Run the main CLI with student-focused command
-    argv = sys.argv[1:]
-
-    # Known top-level commands that should not be prefixed with 'student'
-    TOP_LEVEL_COMMANDS = {
-        "student",
-        "run",
-        "validate",
-        "batch",
-        "export",
-        "generate",
-        "init",
-        "-h",
-        "--help",
-    }
-
-    # If no command is specified or the first argument is not a known top-level command,
-    # prepend 'student' to provide a student-focused experience
-    if argv and argv[0] not in TOP_LEVEL_COMMANDS:
-        argv = ["student"] + argv
-
-    exit_code = main(argv)
-    sys.exit(exit_code)
+    sys.exit(main(build_argv(sys.argv[1:])))

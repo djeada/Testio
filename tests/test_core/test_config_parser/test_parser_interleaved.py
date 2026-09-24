@@ -6,7 +6,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from src.core.config_parser.parsers import ConfigParser
+from testio.core.config_parser.parsers import ConfigParser
 
 
 def test_parse_config_with_interleaved_flag():

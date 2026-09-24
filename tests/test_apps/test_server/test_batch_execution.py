@@ -7,13 +7,12 @@ sys.path.append(".")
 import pytest
 from fastapi.testclient import TestClient
 
-from src.apps.server.app.testio_server import app
-from src.apps.server.database.configuration_data import update_execution_manager_data
-from src.core.execution.data import ExecutionManagerInputData
+from testio.apps.server.database.configuration_data import update_execution_manager_data
+from testio.core.execution.data import ExecutionManagerInputData
 
 
 @pytest.fixture
-def client():
+def client(teacher_app, teacher_headers):
     """Create a test client with basic test data."""
     update_execution_manager_data(
         {
@@ -27,7 +26,7 @@ def client():
             ]
         }
     )
-    with TestClient(app) as client:
+    with TestClient(teacher_app, headers=teacher_headers) as client:
         yield client
 
 

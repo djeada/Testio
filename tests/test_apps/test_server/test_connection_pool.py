@@ -8,12 +8,12 @@ sys.path.append(".")
 
 import pytest
 
-from src.apps.server.database.connection_pool import (
+from testio.apps.server.database.connection_pool import (
     ConnectionPool,
     PoolConfig,
     PooledConnection,
-    get_connection_pool,
     close_all_pools,
+    get_connection_pool,
 )
 
 

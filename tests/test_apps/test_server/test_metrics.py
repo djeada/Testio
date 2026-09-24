@@ -5,17 +5,14 @@ import sys
 sys.path.append(".")
 
 import pytest
-from fastapi.testclient import TestClient
 
-from src.apps.server.app.testio_server import create_app
+from testio import __version__
 
 
 @pytest.fixture
-def client():
-    """Create a test client with the teacher mode app."""
-    app = create_app(mode="teacher")
-    with TestClient(app) as client:
-        yield client
+def client(teacher_client):
+    """Create an authenticated test client with the teacher mode app."""
+    return teacher_client
 
 
 class TestMetricsEndpoints:
@@ -28,7 +25,7 @@ class TestMetricsEndpoints:
         data = response.json()
 
         assert data["application"] == "Testio"
-        assert data["version"] == "1.0.0"
+        assert data["version"] == __version__
         assert "timestamp" in data
         assert "metrics" in data
         assert "counters" in data["metrics"]

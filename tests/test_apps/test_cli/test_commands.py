@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.append(".")
 
-from src.apps.cli.commands import validate, batch, export, generate, init
+from testio.apps.cli.commands import batch, export, generate, init, validate
 
 
 class TestValidateCommand:
@@ -162,10 +162,9 @@ class TestGenerateCommand:
     def test_generate_template_java(self):
         """Test Java template generation."""
         config = generate.generate_template("java", None)
-        assert "compile_command" in config
-        assert "javac" in config["compile_command"]
-        assert "run_command" in config
-        assert "java" in config["run_command"]
+        # Source-file mode: any file name works and no build step is needed.
+        assert "compile_command" not in config
+        assert config["run_command"] == "java"
 
 
 class TestInitCommand:

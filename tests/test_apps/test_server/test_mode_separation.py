@@ -7,8 +7,8 @@ sys.path.append(".")
 import pytest
 from fastapi.testclient import TestClient
 
-from src.apps.server.app.testio_server import create_app, _get_cors_settings
-from src.apps.server.settings import (
+from testio.apps.server.app.testio_server import _get_cors_settings, create_app
+from testio.apps.server.settings import (
     get_app_database_path,
     get_config_database_path,
 )
@@ -18,10 +18,10 @@ class TestApplicationModes:
     """Test class for application mode functionality."""
 
     @pytest.fixture
-    def teacher_client(self):
-        """Create a test client for teacher mode."""
+    def teacher_client(self, teacher_headers):
+        """Create an authenticated test client for teacher mode."""
         app = create_app(mode="teacher")
-        with TestClient(app) as client:
+        with TestClient(app, headers=teacher_headers) as client:
             yield client
 
     @pytest.fixture
@@ -99,8 +99,8 @@ class TestApplicationModes:
         response = student_client.post(
             "/execute_tests", json={"script_text": "print('hello')"}
         )
-        # Should return 200 (may fail without config, but route exists)
-        assert response.status_code in [200, 400, 500]
+        # Route exists; without a loaded test suite it reports 404 (not 500)
+        assert response.status_code in [200, 404]
 
     def test_teacher_mode_menubar(self, teacher_client):
         """Test that teacher mode uses teacher menubar."""

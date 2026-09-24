@@ -1,5 +1,5 @@
-from src.core.execution.comparator import OutputComparator
-from src.core.execution.data import (
+from testio.core.execution.comparator import OutputComparator
+from testio.core.execution.data import (
     ComparisonInputData,
     ComparisonResult,
     ExecutionOutputData,

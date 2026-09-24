@@ -4,11 +4,10 @@ Tests for interleaved input/output functionality
 
 import sys
 
-from src.core.config_parser.data import TestData
-from src.core.execution.data import ExecutionManagerInputData
-from src.core.execution.manager import ExecutionManager
-from src.core.execution.interactive_runner import InteractiveRunner
-from src.core.execution.data import ComparisonResult
+from testio.core.config_parser.data import TestData
+from testio.core.execution.data import ComparisonResult, ExecutionManagerInputData
+from testio.core.execution.interactive_runner import InteractiveRunner
+from testio.core.execution.manager import ExecutionManager
 
 
 def test_test_data_with_interleaved_flag():

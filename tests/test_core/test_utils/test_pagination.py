@@ -5,12 +5,12 @@ import sys
 sys.path.append(".")
 
 
-from src.core.utils.pagination import (
-    PaginationParams,
+from testio.core.utils.pagination import (
     PaginatedResponse,
-    paginate,
-    encode_cursor,
+    PaginationParams,
     decode_cursor,
+    encode_cursor,
+    paginate,
 )
 
 

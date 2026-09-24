@@ -1,7 +1,7 @@
 """Tests for the standard Runner."""
 
-from src.core.execution.data import ExecutionInputData
-from src.core.execution.runner import Runner
+from testio.core.execution.data import ExecutionInputData
+from testio.core.execution.runner import Runner
 
 
 def test_runner_preserves_stdout_without_trailing_newline():

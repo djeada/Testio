@@ -4,8 +4,9 @@ Tests for concurrent execution of multiple files in the CLI.
 
 import tempfile
 from pathlib import Path
-from src.apps.cli.main import process_file
-from src.core.execution.data import ExecutionManagerInputData, ComparisonResult
+
+from testio.apps.cli.main import process_file
+from testio.core.execution.data import ComparisonResult, ExecutionManagerInputData
 
 
 def test_process_file_single():

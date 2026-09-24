@@ -2,14 +2,14 @@
 Tests for the Compiler class
 """
 
-import subprocess
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from src.core.execution.compiler import Compiler, CompilationError
+from testio.core.execution.compiler import CompilationError, Compiler
+from testio.core.execution.process import ProcessResult
 
 
 def test_compile_simple_c_program():
@@ -150,10 +150,10 @@ def test_compile_java_returns_matching_artifact(tmp_path):
         artifact_path = output_dir / "pkg" / "Hello.class"
         artifact_path.parent.mkdir(parents=True, exist_ok=True)
         artifact_path.write_text("bytecode")
-        return subprocess.CompletedProcess(command, 0, "", "")
+        return ProcessResult(returncode=0)
 
     compiler = Compiler()
-    with patch("src.core.execution.compiler.subprocess.run", side_effect=fake_run):
+    with patch("testio.core.execution.compiler.run_process", side_effect=fake_run):
         output_path = compiler.compile(
             "javac {source}",
             str(source_path),

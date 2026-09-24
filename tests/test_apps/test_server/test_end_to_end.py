@@ -1,15 +1,12 @@
 """End-to-end tests for the FastAPI app using TestClient."""
 
-import importlib
-
 import pytest
 from fastapi.testclient import TestClient
 
-from src.apps.server.app.testio_server import create_app
-import src.apps.server.auth as auth_mod
+from testio.apps.server.app.testio_server import create_app
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def client():
     app = create_app()
     with TestClient(app) as test_client:
@@ -49,10 +46,10 @@ def test_openapi_json(client):
 def test_protected_route_without_key(monkeypatch, client):
     """Teacher route without API key should be 401 when key is configured."""
     monkeypatch.setenv("TESTIO_TEACHER_API_KEY", "secret")
-    importlib.reload(auth_mod)
 
     response = client.post(
-        "/api/exam/create_session", json={"config_file": "test.json"}
+        "/api/exam/create_session",
+        json={"config_data": {"command": "python3", "path": "a.py", "tests": []}},
     )
 
-    assert response.status_code in (401, 422)
+    assert response.status_code == 401

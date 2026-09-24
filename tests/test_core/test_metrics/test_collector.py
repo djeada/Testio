@@ -1,13 +1,13 @@
 """Tests for the metrics collector module."""
 
 import sys
-import time
 import threading
+import time
 
 sys.path.append(".")
 
 
-from src.core.metrics.collector import MetricsCollector, get_metrics_collector
+from testio.core.metrics.collector import MetricsCollector, get_metrics_collector
 
 
 class TestMetricsCollector:

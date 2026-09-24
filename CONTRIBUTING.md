@@ -2,11 +2,15 @@
 
 ## Setup
 ```bash
-git clone https://github.com/djeida/Testio.git
+git clone https://github.com/djeada/Testio.git
 cd Testio
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
+pre-commit install
 ```
+
+The examples are part of the test suite, so `gcc`, `node` and `ruby` should be
+on your `PATH` (tests needing a missing toolchain are skipped).
 
 ## Running tests
 ```bash
@@ -25,5 +29,5 @@ make lint  # check
 1. Fork the repository
 2. Create a feature branch
 3. Add tests for your changes
-4. Ensure `make test` and `make lint` pass
+4. Ensure `make check` passes
 5. Open a pull request against `main`

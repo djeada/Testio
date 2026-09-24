@@ -2,7 +2,7 @@
 
 import json
 
-from src.core.config_parser.parsers import ConfigParser
+from testio.core.config_parser.parsers import ConfigParser
 
 
 def _config(tmp_path, **kwargs):

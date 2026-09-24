@@ -1,7 +1,14 @@
 import argparse
+import sys
+from pathlib import Path
+
+# Allow `python src/main.py ...` from a source checkout without installing.
+_SRC_DIR = str(Path(__file__).resolve().parent)
+if _SRC_DIR not in sys.path:
+    sys.path.insert(0, _SRC_DIR)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "script", type=str, choices=["cli", "fastapi"], help="Script to run"
@@ -9,15 +16,14 @@ def main():
     args, extra_args = parser.parse_known_args()
 
     if args.script == "cli":
-        from apps.cli.main import main as cli_main
+        from testio.apps.cli.main import main as cli_main
 
-        cli_main(extra_args)
+        return cli_main(extra_args)
 
-    elif args.script == "fastapi":
-        from apps.server.main import main as fastapi_main
+    from testio.apps.server.main import main as fastapi_main
 
-        fastapi_main(extra_args)
+    return fastapi_main(extra_args) or 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

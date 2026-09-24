@@ -11,16 +11,15 @@ For Nuitka compilation, this script serves as the main entry point.
 import sys
 from pathlib import Path
 
-# Add the project root to the path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+# Make the `testio` package importable from a source checkout.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from src.apps.server.main import main
+from testio.apps.server.main import main
 
 if __name__ == "__main__":
     # Run the server with teacher mode (default)
     argv = sys.argv[1:]
     # Ensure teacher mode is set
-    if "--mode" not in argv and "-m" not in argv:
+    if not any(arg == "--mode" or arg.startswith("--mode=") for arg in argv):
         argv = ["--mode", "teacher"] + argv
     main(argv)

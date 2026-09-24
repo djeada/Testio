@@ -1,13 +1,13 @@
 """Tests for the memory cache module."""
-import threading
 import sys
+import threading
 import time
 
 sys.path.append(".")
 
 import pytest
 
-from src.core.caching.memory_cache import MemoryCache, cache_result
+from testio.core.caching.memory_cache import MemoryCache, cache_result
 
 
 class TestMemoryCache:
@@ -177,7 +177,7 @@ class TestCacheDecorator:
             call_args["usedforsecurity"] = usedforsecurity
             return original_md5(data, usedforsecurity=usedforsecurity)
 
-        monkeypatch.setattr("src.core.caching.memory_cache.hashlib.md5", fake_md5)
+        monkeypatch.setattr("testio.core.caching.memory_cache.hashlib.md5", fake_md5)
 
         @cache_result(ttl=60.0)
         def expensive_function(x):

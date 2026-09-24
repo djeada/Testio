@@ -1,26 +1,32 @@
-version: "3.9"
-
 services:
   testio:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - TESTIO_TEACHER_API_KEY=${TESTIO_TEACHER_API_KEY:-}
-      - TESTIO_APP_DB_PATH=/data/testio.db
-      - TESTIO_CONFIG_DB_PATH=/data/test.db
-      - TESTIO_TRUST_PROXY=${TESTIO_TRUST_PROXY:-false}
-      - TESTIO_RATE_LIMIT=${TESTIO_RATE_LIMIT:-100}
+      # Required: teacher endpoints refuse requests when no key is configured.
+      - TESTIO_TEACHER_API_KEY=${TESTIO_TEACHER_API_KEY:?set TESTIO_TEACHER_API_KEY}
+      # Comma-separated proxy IPs whose X-Forwarded-For may be trusted.
+      - TESTIO_TRUSTED_PROXIES=${TESTIO_TRUSTED_PROXIES:-}
       - TESTIO_MAX_UPLOAD_SIZE_MB=${TESTIO_MAX_UPLOAD_SIZE_MB:-10}
+      - TESTIO_RATE_LIMIT_PER_MINUTE=${TESTIO_RATE_LIMIT_PER_MINUTE:-120}
+      # Set to true when served over HTTPS (behind a TLS-terminating proxy).
+      - TESTIO_SECURE_COOKIES=${TESTIO_SECURE_COOKIES:-false}
     volumes:
       - testio_data:/data
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/livez')"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+    # Submissions run arbitrary code: bound the whole container.
+    mem_limit: 2g
+    pids_limit: 256
+    cpus: 2
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m
+      - /home/testio:size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
   testio_data:

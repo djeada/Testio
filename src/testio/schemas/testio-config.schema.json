@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/djeada/Testio/src/testio/schemas/testio-config.schema.json",
+  "title": "Testio Configuration",
+  "description": "Schema for Testio test-suite configuration files. Kept in sync with testio.core.config_parser.parsers.validate_config_data.",
+  "type": "object",
+  "required": ["path", "tests"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "command": {
+      "type": "string",
+      "description": "Interpreter used to run the program; the program path is appended (e.g. 'python3', 'node').",
+      "examples": ["python3", "node", "ruby"]
+    },
+    "run_command": {
+      "type": "string",
+      "description": "Like 'command' but takes precedence over it. With compile_command, leave empty to run the compiled binary directly.",
+      "examples": ["node", "java -cp ."]
+    },
+    "compile_command": {
+      "type": "string",
+      "description": "Compilation command template. {source} is the source file name and {output} the path of the compiled artifact.",
+      "examples": ["gcc {source} -o {output}", "javac {source}"]
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Program file, or a directory whose files are each tested. Relative to the config file.",
+      "examples": ["solution.py", "hello.c", "submissions"]
+    },
+    "tests": {
+      "type": "array",
+      "description": "List of test cases.",
+      "items": { "$ref": "#/$defs/TestCase" }
+    }
+  },
+  "anyOf": [
+    { "required": ["command"] },
+    { "required": ["run_command"] },
+    { "required": ["compile_command"] }
+  ],
+  "$defs": {
+    "TextBlock": {
+      "description": "Either one string (split on newlines) or a list of lines.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": ["string", "number"] } }
+      ]
+    },
+    "TestCase": {
+      "type": "object",
+      "required": ["input", "output"],
+      "additionalProperties": false,
+      "properties": {
+        "input": {
+          "$ref": "#/$defs/TextBlock",
+          "description": "Standard input fed to the program.",
+          "examples": [["5", "3"], [], "hello"]
+        },
+        "output": {
+          "$ref": "#/$defs/TextBlock",
+          "description": "Expected standard output. Trailing newlines are ignored.",
+          "examples": [["8"], "Hello, World!"]
+        },
+        "timeout": {
+          "type": "number",
+          "description": "Wall-clock limit in seconds. Capped by TESTIO_MAX_TEST_TIMEOUT (default 300).",
+          "exclusiveMinimum": 0,
+          "default": 5
+        },
+        "use_regex": {
+          "type": "boolean",
+          "description": "Treat the expected output as a regular expression that must match the whole output.",
+          "default": false
+        },
+        "interleaved": {
+          "type": "boolean",
+          "description": "Program alternates prompts and reads; input lines are supplied in order.",
+          "default": false
+        },
+        "unordered": {
+          "type": "boolean",
+          "description": "Compare output lines as a multiset, ignoring order and blank lines.",
+          "default": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "compile_command": "javac {source}",
+    "run_command": "java -cp {dir} {stem}",
+    "path": "Hello.java",
+    "tests": [
+        {
+            "input": [],
+            "output": ["Hello from Java!"],
+            "timeout": 10
+        }
+    ]
+}

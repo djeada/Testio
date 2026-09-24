@@ -1,0 +1,28 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    padding: 4rem 1rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem;
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 12px;
+    background: var(--color-bg-secondary, #fff);
+}
+
+.login-title {
+    margin-top: 0;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.login-message--error {
+    color: #b91c1c;
+}

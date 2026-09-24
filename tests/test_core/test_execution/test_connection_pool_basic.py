@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.apps.server.database.connection_pool import (
+from testio.apps.server.database.connection_pool import (
     close_all_pools,
     get_connection_pool,
 )
