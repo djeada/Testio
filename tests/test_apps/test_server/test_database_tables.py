@@ -4,10 +4,10 @@ import sys
 
 sys.path.append(".")
 
-from src.apps.server.database.connection_pool import close_all_pools
-from src.apps.server.database.database import ExecutionManagerDataTable
-from src.apps.server.database.exam_sessions import ExamSessionsTable
-from src.core.execution.data import ExecutionManagerInputData
+from testio.apps.server.database.connection_pool import close_all_pools
+from testio.apps.server.database.database import ExecutionManagerDataTable
+from testio.apps.server.database.exam_sessions import ExamSessionsTable
+from testio.core.execution.data import ExecutionManagerInputData
 
 
 def test_execution_manager_data_table_round_trip(tmp_path):
@@ -61,3 +61,26 @@ def test_exam_sessions_table_round_trip(tmp_path):
     assert submission["test_results"][0]["result_name"] == "MATCH"
 
     close_all_pools()
+
+
+def test_old_database_is_migrated(tmp_path):
+    """A database from an older version gains the new columns."""
+    import sqlite3
+
+    from testio.apps.server.database.exam_sessions import ExamSessionsTable
+
+    db_path = str(tmp_path / "old.db")
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "CREATE TABLE exam_sessions (session_id TEXT PRIMARY KEY, "
+            "config_data TEXT NOT NULL, created_at TEXT NOT NULL, "
+            "is_active INTEGER DEFAULT 1)"
+        )
+
+    table = ExamSessionsTable(db_path)
+    table._ensure_tables()
+    table._ensure_tables()  # second call is a no-op
+
+    with sqlite3.connect(db_path) as conn:
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(exam_sessions)")}
+    assert {"closed_at", "is_deleted"} <= columns

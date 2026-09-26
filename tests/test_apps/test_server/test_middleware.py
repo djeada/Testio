@@ -4,7 +4,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from src.apps.server.middleware import RequestLoggingMiddleware
+from testio.apps.server.middleware import RequestLoggingMiddleware
 
 
 @pytest.fixture

@@ -10,10 +10,10 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.requests import Request
 
-from src.apps.server import rate_limiter as rate_limiter_module
-from src.apps.server.rate_limiter import (
-    RateLimitMiddleware,
+from testio.apps.server import rate_limiter as rate_limiter_module
+from testio.apps.server.rate_limiter import (
     RateLimitConfig,
+    RateLimitMiddleware,
     SlidingWindowLimiter,
 )
 
@@ -228,3 +228,58 @@ class TestRateLimitMiddleware:
         request = self.make_request("203.0.113.5", "198.51.100.20")
 
         assert middleware._get_client_id(request) == "203.0.113.5"
+
+
+class TestRateLimiterHardening:
+    """Eviction, proxy handling and exemptions."""
+
+    def test_idle_clients_are_evicted(self, monkeypatch):
+        limiter = SlidingWindowLimiter(requests_per_window=5, window_size=1.0)
+        for index in range(50):
+            limiter.is_allowed(f"client{index}")
+        assert limiter.get_stats()["active_clients"] == 50
+
+        future = time.time() + 5
+        monkeypatch.setattr(rate_limiter_module.time, "time", lambda: future)
+        limiter.is_allowed("new-client")
+        assert limiter.get_stats()["active_clients"] == 1
+
+    def test_tracked_clients_are_capped(self):
+        limiter = SlidingWindowLimiter(
+            requests_per_window=5, window_size=60.0, max_clients=10
+        )
+        for index in range(100):
+            limiter.is_allowed(f"client{index}")
+        assert limiter.get_stats()["active_clients"] == 10
+
+    def test_spoofed_leftmost_forwarded_for_is_ignored(self, monkeypatch):
+        monkeypatch.setattr(
+            rate_limiter_module,
+            "_TRUSTED_PROXIES",
+            [ipaddress.ip_network("10.0.0.0/8")],
+        )
+        middleware = RateLimitMiddleware(FastAPI())
+        # The client sent "1.2.3.4" itself; the proxy appended the real peer.
+        request = TestRateLimitMiddleware.make_request(
+            "10.0.0.1", "1.2.3.4, 198.51.100.7, 10.0.0.2"
+        )
+        assert middleware._get_client_id(request) == "198.51.100.7"
+
+    def test_static_and_probe_paths_are_exempt(self):
+        app = FastAPI()
+        app.add_middleware(
+            RateLimitMiddleware, config=RateLimitConfig(requests_per_minute=1)
+        )
+
+        @app.get("/static/app.js")
+        def static_file():
+            return {}
+
+        @app.get("/livez")
+        def livez():
+            return {}
+
+        with TestClient(app) as client:
+            for _ in range(5):
+                assert client.get("/static/app.js").status_code == 200
+                assert client.get("/livez").status_code == 200

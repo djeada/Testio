@@ -7,13 +7,13 @@ sys.path.append(".")
 import pytest
 from fastapi.testclient import TestClient
 
-from src.apps.server.app.testio_server import app
-from src.apps.server.database.configuration_data import update_execution_manager_data
-from src.core.execution.data import ExecutionManagerInputData
+from testio import __version__
+from testio.apps.server.database.configuration_data import update_execution_manager_data
+from testio.core.execution.data import ExecutionManagerInputData
 
 
 @pytest.fixture
-def client():
+def client(teacher_app):
     """Create a test client with basic test data."""
     update_execution_manager_data(
         {
@@ -27,7 +27,7 @@ def client():
             ]
         }
     )
-    with TestClient(app) as client:
+    with TestClient(teacher_app) as client:
         yield client
 
 
@@ -38,7 +38,7 @@ def test_health_endpoint(client):
     data = response.json()
     assert data["status"] == "healthy"
     assert "timestamp" in data
-    assert data["version"] == "1.0.0"
+    assert data["version"] == __version__
 
 
 def test_livez_endpoint(client):
@@ -62,7 +62,7 @@ def test_status_endpoint(client):
     data = response.json()
     assert data["status"] == "running"
     assert "timestamp" in data
-    assert data["version"] == "1.0.0"
+    assert data["version"] == __version__
     assert "uptime_seconds" in data
     assert isinstance(data["uptime_seconds"], float)
     assert "database_connected" in data

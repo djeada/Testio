@@ -1,9 +1,10 @@
 """Tests for ExecutionManager."""
 
 import sys
+from pathlib import Path
 
-from src.core.execution.data import ComparisonResult, ExecutionManagerInputData
-from src.core.execution.manager import ExecutionManager
+from testio.core.execution.data import ComparisonResult, ExecutionManagerInputData
+from testio.core.execution.manager import ExecutionManager
 
 
 def _make_input(command, inputs, outputs, interleaved=False, timeout=10):
@@ -50,3 +51,36 @@ def test_run_mismatch():
     )
     result = ExecutionManager().run(data)
     assert result.result == ComparisonResult.MISMATCH
+
+
+def test_compile_error_is_reported_not_dropped(tmp_path):
+    """A submission that fails to compile must show up as a failed result."""
+    import shutil
+
+    import pytest
+
+    from testio.core.config_parser.data import TestData, TestSuiteConfig
+    from testio.core.execution.data import ComparisonResult, ExecutionManagerFactory
+    from testio.core.execution.manager import ExecutionManager
+
+    if shutil.which("gcc") is None:
+        pytest.skip("gcc not available")
+
+    (tmp_path / "bad.c").write_text("int main( {")
+    (tmp_path / "good.c").write_text('#include <stdio.h>\nint main(){puts("ok");}')
+    config = TestSuiteConfig(
+        command="",
+        path=str(tmp_path),
+        tests=[TestData(input=[], output=["ok"], timeout=5)],
+        compile_command="gcc {source} -o {output}",
+    )
+
+    data = ExecutionManagerFactory.from_test_suite_config_server(config)
+    results = {
+        Path(path).name: ExecutionManager().run(items[0])
+        for path, items in data.items()
+    }
+
+    assert results["good.c"].result == ComparisonResult.MATCH
+    assert results["bad.c"].result == ComparisonResult.EXECUTION_ERROR
+    assert "Compilation failed" in results["bad.c"].error

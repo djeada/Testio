@@ -12,6 +12,10 @@ From inside this directory, run:
 testio run config.json
 ```
 
+## Expected result
+`main_e.py` is deliberately wrong, so 4 of the 5 programs pass and the run
+exits with a non-zero status.
+
 ## What this demonstrates
 - Testing all files in a directory at once.
 - Reusing one test definition across multiple programs.

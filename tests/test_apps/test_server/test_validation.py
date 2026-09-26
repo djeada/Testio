@@ -6,15 +6,15 @@ sys.path.append(".")
 
 import pytest
 
-from src.apps.server.validation import (
+from testio.apps.server.validation import (
     ValidationError,
-    validate_code,
-    validate_student_id,
-    validate_session_id,
-    validate_timeout,
-    validate_test_cases,
     sanitize_output,
+    validate_code,
     validate_command,
+    validate_session_id,
+    validate_student_id,
+    validate_test_cases,
+    validate_timeout,
 )
 
 

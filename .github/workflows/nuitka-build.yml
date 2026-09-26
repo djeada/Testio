@@ -6,13 +6,11 @@
 
 name: Nuitka Compilation
 
+# Binaries are only built for releases (12 jobs); run manually to test changes.
 on:
   push:
-    branches: [ main ]
     tags:
       - 'v*'
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 # Restrict GITHUB_TOKEN permissions to only what is needed
@@ -41,7 +39,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      NUITKA_COMMON_FLAGS: --standalone --onefile --include-package=src --include-package-data=src --assume-yes-for-downloads
+      NUITKA_COMMON_FLAGS: --standalone --onefile --include-package=testio --include-package-data=testio --assume-yes-for-downloads
 
     steps:
     - uses: actions/checkout@v7
@@ -55,6 +53,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install --no-deps .
         pip install nuitka==2.5.1
 
     - name: Install Linux dependencies
@@ -80,8 +79,8 @@ jobs:
           $NUITKA_COMMON_FLAGS \
           --output-filename=${{ matrix.app.name }}${{ runner.os == 'Windows' && '.exe' || '' }} \
           --output-dir=dist \
-          --include-data-dir=src/apps/server/templates=src/apps/server/templates \
-          --include-data-dir=src/apps/server/static=src/apps/server/static \
+          --include-data-dir=src/testio/apps/server/templates=testio/apps/server/templates \
+          --include-data-dir=src/testio/apps/server/static=testio/apps/server/static \
           ${{ matrix.app.script }}
       shell: bash
 
@@ -108,7 +107,8 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v3
       with:
+        # The Release workflow creates the release and its notes; this only
+        # attaches the binaries to it.
         files: artifacts/**/*
-        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

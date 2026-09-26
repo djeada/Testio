@@ -1,4 +1,4 @@
-name: Python application
+name: CI
 
 on:
   push:
@@ -6,52 +6,89 @@ on:
   pull_request:
     branches: [ main ]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+permissions:
+  contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v7
+    - uses: actions/setup-python@v7
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.12"
         cache: pip
-    - name: Install dependencies
+    - name: Install
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-dev.txt
-    - name: Lint with black
+    - name: black
+      run: black --check --diff src tests scripts
+    - name: ruff
+      run: ruff check src tests scripts
+    - name: bandit
+      run: bandit -r src -ll
+    - name: pip-audit
+      run: pip-audit -r requirements.txt
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-python@v7
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: pip
+    - name: Install
       run: |
-        black --check --diff .
-    - name: Lint with ruff
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+    - name: Toolchains used by the examples
       run: |
-        pip install ruff
-        ruff check src/ tests/
-    - name: Security scan with bandit
-      run: |
-        pip install bandit
-        bandit -r src/ -ll
-    - name: Dependency audit with pip-audit
-      run: |
-        pip install pip-audit
-        pip-audit
-    - name: Test with pytest
-      run: |
-        pytest --cov=src --cov-report=xml --cov-report=html --cov-fail-under=50
+        gcc --version | head -1
+        node --version
+        ruby --version
+    - name: Test
+      run: pytest --cov --cov-report=xml --cov-report=term --cov-fail-under=70
     - name: Upload coverage report
       uses: actions/upload-artifact@v7
       if: always()
       with:
         name: coverage-${{ matrix.python-version }}
-        path: |
-          htmlcov/
-          coverage.xml
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v7
+        path: coverage.xml
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-python@v7
       with:
-        files: coverage.xml
-        fail_ci_if_error: false
+        python-version: "3.12"
+    - name: Build sdist and wheel
+      run: |
+        python -m pip install --upgrade pip build
+        python -m build
+    - name: Install wheel into a clean venv and smoke test
+      run: |
+        python -m venv /tmp/wheel-venv
+        /tmp/wheel-venv/bin/pip install dist/*.whl
+        cd /tmp
+        /tmp/wheel-venv/bin/testio --version
+        /tmp/wheel-venv/bin/testio run "$GITHUB_WORKSPACE/examples/single_input/config.json"
+        if /tmp/wheel-venv/bin/testio run "$GITHUB_WORKSPACE/examples/failed_test/config.json"; then
+          echo "failing suite must exit non-zero"; exit 1
+        fi
+        /tmp/wheel-venv/bin/testio-server --help
+        /tmp/wheel-venv/bin/python -c "from testio.apps.server.app.testio_server import create_app; create_app()"
+    - uses: actions/upload-artifact@v7
+      with:
+        name: dist
+        path: dist/

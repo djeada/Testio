@@ -2,19 +2,15 @@ import sys
 
 sys.path.append(".")
 
-import json
 import io
+import json
 
 import pytest
-from fastapi.testclient import TestClient
-
-from src.apps.server.app.testio_server import app
 
 
 @pytest.fixture
-def client():
-    with TestClient(app) as client:
-        yield client
+def client(teacher_client):
+    return teacher_client
 
 
 def test_homework_submission_endpoint(client):

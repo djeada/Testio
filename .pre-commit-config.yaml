@@ -11,19 +11,19 @@ repos:
         args: ["--maxkb=500"]
       - id: debug-statements
 
+  # Keep these revs in step with the ranges in pyproject.toml [dev].
   - repo: https://github.com/psf/black
-    rev: 24.3.0
+    rev: 26.5.1
     hooks:
       - id: black
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.2
+    rev: v0.15.15
     hooks:
       - id: ruff
         args: ["--fix"]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 8.0.1
     hooks:
       - id: isort
-        args: ["--profile", "black"]

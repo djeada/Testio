@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-from src.apps.cli.commands import student
+from testio.apps.cli.commands import student
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -77,3 +77,27 @@ def test_check_syntax_supports_nodejs():
     )
     assert result["valid"] is False
     assert result["errors"] == ["SyntaxError"]
+
+
+def test_run_tests_compiles_c_submission(tmp_path):
+    """`student test` must honour compile_command (C, C++, Rust, ...)."""
+    import shutil
+
+    import pytest
+
+    from testio.apps.cli.commands.student import run_tests
+
+    if shutil.which("gcc") is None:
+        pytest.skip("gcc not available")
+
+    source = tmp_path / "solution.c"
+    source.write_text('#include <stdio.h>\nint main(){puts("hi");return 0;}\n')
+    config = {
+        "compile_command": "gcc {source} -o {output}",
+        "path": "solution.c",
+        "tests": [{"input": [], "output": ["hi"]}],
+    }
+
+    results = run_tests(source, config, tmp_path / "config.json")
+
+    assert results["passed_tests"] == results["total_tests"] == 1

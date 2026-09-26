@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.core.execution.command_utils import (
+from testio.core.execution.command_utils import (
     build_run_command,
     infer_source_suffix,
     replace_command_path,

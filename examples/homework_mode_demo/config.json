@@ -1,6 +1,6 @@
 {
     "command": "python3",
-    "path": "student_program.py",
+    "path": "alice_perfect.py",
     "tests": [
         {
             "input": ["5", "3"],

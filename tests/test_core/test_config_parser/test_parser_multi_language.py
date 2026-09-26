@@ -4,10 +4,11 @@ Tests for config parser with compile_command and run_command fields
 
 import json
 import tempfile
-import pytest
 from pathlib import Path
 
-from src.core.config_parser.parsers import ConfigParser
+import pytest
+
+from testio.core.config_parser.parsers import ConfigParser
 
 
 def test_parse_config_with_compile_command():

@@ -9,15 +9,14 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from src.apps.server.database.configuration_data import update_execution_manager_data
-from src.apps.server.app.testio_server import app
-from src.apps.server.routes.execute_tests import process_file_for_server
-from src.core.config_parser.data import TestData, TestSuiteConfig
-from src.core.execution.data import ExecutionManagerInputData
+from testio.apps.server.database.configuration_data import update_execution_manager_data
+from testio.apps.server.routes.execute_tests import process_file_for_server
+from testio.core.config_parser.data import TestData, TestSuiteConfig
+from testio.core.execution.data import ExecutionManagerInputData
 
 
 @pytest.fixture
-def client():
+def client(teacher_app, teacher_headers):
     update_execution_manager_data(
         {
             "program.py": [
@@ -30,7 +29,7 @@ def client():
             ]
         }
     )
-    with TestClient(app) as client:
+    with TestClient(teacher_app, headers=teacher_headers) as client:
         yield client
 
 
