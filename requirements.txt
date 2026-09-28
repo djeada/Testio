@@ -5,4 +5,4 @@ uvicorn==0.53.0
 python-multipart==0.0.32
 Jinja2==3.1.6
 MarkupSafe==3.0.3
-python-json-logger==4.1.0
+python-json-logger==4.2.0
