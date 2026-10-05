@@ -1,6 +1,6 @@
 # Exact runtime pins for reproducible deployments (Docker, Nuitka builds).
 # Version ranges for library consumers live in pyproject.toml.
-fastapi==0.141.1
+fastapi==0.142.2
 uvicorn==0.54.0
 python-multipart==0.0.32
 Jinja2==3.1.6
