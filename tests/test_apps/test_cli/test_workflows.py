@@ -3,6 +3,7 @@
 import json
 import os
 import shutil
+import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -57,6 +58,22 @@ def test_init_scaffold_solution_passes(in_tmp, language):
     config_path.write_text(json.dumps(config))
     os.chdir(in_tmp / "hw")
     assert main(["run", "config.json", "-q"]) == 0
+
+
+def test_go_student_template_compiles(in_tmp):
+    """A new Go assignment must not have unused imports in its student template."""
+    if shutil.which("go") is None:
+        pytest.skip("go not installed")
+
+    assert main(["init", "hw", "-l", "go"]) == 0
+    result = subprocess.run(
+        ["go", "build", "-o", str(in_tmp / "student"), str(in_tmp / "hw" / "template.go")],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def _suite(tmp_path, tests, program="print(input())"):
