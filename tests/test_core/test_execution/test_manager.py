@@ -102,5 +102,7 @@ def test_go_compilation_skips_virtual_memory_limit():
             tests=[TestData(input=["A"], output=["Hello, A!"], timeout=10)],
             compile_command=command,
         )
-        data = ExecutionManagerFactory.create_execution_manager_data(config, "solution.go")
+        data = ExecutionManagerFactory.create_execution_manager_data(
+            config, "solution.go"
+        )
         assert data[0].limit_address_space is should_limit
