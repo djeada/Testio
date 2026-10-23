@@ -67,7 +67,13 @@ def test_go_student_template_compiles(in_tmp):
 
     assert main(["init", "hw", "-l", "go"]) == 0
     result = subprocess.run(
-        ["go", "build", "-o", str(in_tmp / "student"), str(in_tmp / "hw" / "template.go")],
+        [
+            "go",
+            "build",
+            "-o",
+            str(in_tmp / "student"),
+            str(in_tmp / "hw" / "template.go"),
+        ],
         capture_output=True,
         text=True,
         check=False,
