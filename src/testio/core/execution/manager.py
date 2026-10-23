@@ -54,6 +54,7 @@ class ExecutionManager:
                 inputs=inputs,
                 timeout=data.timeout,
                 cwd=data.cwd,
+                limit_address_space=data.limit_address_space,
             )
         else:
             runner_input_data = ExecutionInputData(
@@ -61,6 +62,7 @@ class ExecutionManager:
                 input=display_input,
                 timeout=data.timeout,
                 cwd=data.cwd,
+                limit_address_space=data.limit_address_space,
             )
             runner = Runner()
             execution_output = runner.run(runner_input_data)
