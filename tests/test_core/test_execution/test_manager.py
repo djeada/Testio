@@ -84,3 +84,25 @@ def test_compile_error_is_reported_not_dropped(tmp_path):
     assert results["good.c"].result == ComparisonResult.MATCH
     assert results["bad.c"].result == ComparisonResult.EXECUTION_ERROR
     assert "Compilation failed" in results["bad.c"].error
+
+
+def test_go_compilation_skips_virtual_memory_limit():
+    """Only Go-built programs opt out of RLIMIT_AS, not other compilers."""
+    from testio.core.config_parser.data import TestData, TestSuiteConfig
+    from testio.core.execution.data import ExecutionManagerFactory
+
+    for command, should_limit in (
+        ("go build -o {output} {source}", False),
+        ("gcc {source} -o {output}", True),
+        ("", True),
+    ):
+        config = TestSuiteConfig(
+            command="",
+            path="solution.go",
+            tests=[TestData(input=["A"], output=["Hello, A!"], timeout=10)],
+            compile_command=command,
+        )
+        data = ExecutionManagerFactory.create_execution_manager_data(
+            config, "solution.go"
+        )
+        assert data[0].limit_address_space is should_limit

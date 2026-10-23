@@ -19,11 +19,11 @@ if sys.platform != "win32":
 else:  # pragma: no cover - Windows has no rlimits
     resource = None
 
-# Runtimes that reserve very large virtual address ranges at startup (V8, JVM).
+# Runtimes that reserve very large virtual address ranges at startup (V8, JVM, Go).
 # RLIMIT_AS makes them abort before running a single line of user code, so the
 # address-space cap is skipped for them; CPU/file limits and the wall-clock
 # timeout still apply. Use container memory limits to bound these.
-_ADDRESS_SPACE_HUNGRY = {"node", "nodejs", "java", "deno", "bun"}
+_ADDRESS_SPACE_HUNGRY = {"node", "nodejs", "java", "deno", "bun", "go"}
 
 _MAX_FILE_SIZE_BYTES = 64 * 1024 * 1024
 
@@ -48,12 +48,15 @@ def make_preexec_fn(
     cpu_secs: int = 30,
     mem_mb: int = 512,
     argv: Optional[Sequence[str]] = None,
+    limit_address_space: bool = True,
 ) -> Optional[Callable[[], None]]:
     """Return a preexec_fn that applies POSIX resource limits, or None on non-POSIX."""
     if resource is None:
         return None
 
-    limit_memory = mem_mb > 0 and _wants_address_space_limit(argv)
+    limit_memory = (
+        limit_address_space and mem_mb > 0 and _wants_address_space_limit(argv)
+    )
 
     def _apply_limits() -> None:
         resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
@@ -71,6 +74,9 @@ def make_preexec_fn(
 
 def default_preexec_fn(
     argv: Optional[Sequence[str]] = None,
+    limit_address_space: bool = True,
 ) -> Optional[Callable[[], None]]:
     """preexec_fn using the limits configured through the environment."""
-    return make_preexec_fn(get_sandbox_cpu_secs(), get_sandbox_mem_mb(), argv)
+    return make_preexec_fn(
+        get_sandbox_cpu_secs(), get_sandbox_mem_mb(), argv, limit_address_space
+    )

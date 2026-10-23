@@ -33,6 +33,8 @@ class ExecutionManagerInputData:
     # Working directory for the program under test; empty means the caller's
     # cwd. The server sets a throw-away per-request directory here.
     cwd: str = ""
+    # Go binaries reserve large virtual address ranges even for small programs.
+    limit_address_space: bool = True
 
 
 @dataclass
@@ -45,6 +47,7 @@ class ExecutionInputData:
     input: str = ""
     timeout: int = 0
     cwd: str = ""
+    limit_address_space: bool = True
 
 
 @dataclass
@@ -243,6 +246,13 @@ class ExecutionManagerFactory:
             # If neither is provided, just use the path (for compiled executables)
             command = build_run_command("", path)
 
+        # Go executables reserve far more virtual address space than they use.
+        # Keep CPU, wall-clock and output limits, but omit RLIMIT_AS for Go.
+        limit_address_space = (
+            not test_suite_config.compile_command
+            or Path(test_suite_config.compile_command.split()[0]).name.lower() != "go"
+        )
+
         execution_manager_data_list = []
         for test_data in test_suite_config.tests:
             execution_manager_data = ExecutionManagerInputData(
@@ -253,6 +263,7 @@ class ExecutionManagerFactory:
                 use_regex=test_data.use_regex,
                 interleaved=test_data.interleaved,
                 unordered=test_data.unordered,
+                limit_address_space=limit_address_space,
             )
             execution_manager_data_list.append(execution_manager_data)
         return execution_manager_data_list
