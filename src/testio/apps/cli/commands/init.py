@@ -256,8 +256,6 @@ puts "Hello, #{{name}}!"
 
 package main
 
-import "fmt"
-
 func main() {{
     // TODO: Implement your solution here
 }}
@@ -353,7 +351,7 @@ expected output
 You can test your solution using Testio:
 
 ```bash
-python src/main.py cli run {assignment_dir}/config.json
+testio run config.json
 ```
 
 ## Notes
