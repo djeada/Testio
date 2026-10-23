@@ -60,6 +60,7 @@ class Runner:
                 input_text=with_trailing_newline(input_data.input),
                 timeout=input_data.timeout,
                 cwd=input_data.cwd or None,
+                limit_address_space=input_data.limit_address_space,
             )
         except (OSError, ValueError) as exc:
             return ExecutionOutputData(stderr=str(exc), timeout=False, returncode=-1)
