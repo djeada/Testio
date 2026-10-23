@@ -160,6 +160,7 @@ def run_process(
     cwd: Optional[str] = None,
     sandbox: bool = True,
     max_output_bytes: Optional[int] = None,
+    limit_address_space: bool = True,
 ) -> ProcessResult:
     """
     Run ``argv`` to completion and capture its output.
@@ -171,7 +172,9 @@ def run_process(
     if _POSIX:
         popen_kwargs["start_new_session"] = True
         if sandbox:
-            popen_kwargs["preexec_fn"] = default_preexec_fn(argv)
+            popen_kwargs["preexec_fn"] = default_preexec_fn(
+                argv, limit_address_space=limit_address_space
+            )
 
     process = subprocess.Popen(
         list(argv),
