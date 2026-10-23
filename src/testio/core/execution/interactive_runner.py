@@ -19,7 +19,12 @@ class InteractiveRunner:
     """
 
     def run_interleaved(
-        self, command: str, inputs: list, timeout: int, cwd: str = ""
+        self,
+        command: str,
+        inputs: list,
+        timeout: int,
+        cwd: str = "",
+        limit_address_space: bool = True,
     ) -> ExecutionOutputData:
         """
         Runs a program using sequential stdin/stdout collection.
@@ -40,6 +45,7 @@ class InteractiveRunner:
                 input_text=with_trailing_newline("\n".join(inputs)),
                 timeout=timeout,
                 cwd=cwd or None,
+                limit_address_space=limit_address_space,
             )
         except (OSError, ValueError) as exc:
             return ExecutionOutputData(
